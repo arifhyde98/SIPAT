@@ -158,6 +158,31 @@
                         </a>
                     </li>
                     <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                        <li class="nav-item <?= $is('surat') ? 'menu-open' : '' ?>">
+                            <a href="#" class="nav-link <?= $is('surat') ? 'active' : '' ?>">
+                                <i class="nav-icon bi bi-file-earmark-text"></i>
+                                <p>
+                                    Generate Surat Tanah
+                                    <i class="nav-arrow bi bi-chevron-right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="<?= base_url('surat/skpt') ?>" class="nav-link <?= $is('surat/skpt') ? 'active' : '' ?>">
+                                        <i class="nav-icon bi bi-file-text"></i>
+                                        <p>SKPT</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?= base_url('surat/pernyataan-batas') ?>" class="nav-link <?= $is('surat/pernyataan-batas') ? 'active' : '' ?>">
+                                        <i class="nav-icon bi bi-file-ruled"></i>
+                                        <p>Pernyataan Batas</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
+                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
                         <li class="nav-item">
                             <a href="<?= base_url('aset/import') ?>" class="nav-link <?= $is('aset/import') ? 'active' : '' ?>">
                                 <i class="nav-icon bi bi-upload"></i>
@@ -171,6 +196,41 @@
                                 <i class="nav-icon bi bi-people"></i>
                                 <p>Users</p>
                             </a>
+                        </li>
+                        <li class="nav-item <?= $is('master') ? 'menu-open' : '' ?>">
+                            <a href="#" class="nav-link <?= $is('master') ? 'active' : '' ?>">
+                                <i class="nav-icon bi bi-database-gear"></i>
+                                <p>
+                                    Master Data
+                                    <i class="nav-arrow bi bi-chevron-right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="<?= base_url('master/desa') ?>" class="nav-link <?= $is('master/desa') ? 'active' : '' ?>">
+                                        <i class="nav-icon bi bi-geo-alt"></i>
+                                        <p>Desa</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?= base_url('master/kepala-desa') ?>" class="nav-link <?= $is('master/kepala-desa') ? 'active' : '' ?>">
+                                        <i class="nav-icon bi bi-person-badge"></i>
+                                        <p>Kepala Desa</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?= base_url('master/camat') ?>" class="nav-link <?= $is('master/camat') ? 'active' : '' ?>">
+                                        <i class="nav-icon bi bi-person-lines-fill"></i>
+                                        <p>Camat</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="<?= base_url('master/pemohon') ?>" class="nav-link <?= $is('master/pemohon') ? 'active' : '' ?>">
+                                        <i class="nav-icon bi bi-person-vcard"></i>
+                                        <p>Pemohon</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a href="<?= base_url('status') ?>" class="nav-link <?= $is('status') ? 'active' : '' ?>">

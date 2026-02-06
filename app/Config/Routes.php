@@ -50,6 +50,13 @@ $routes->group('peta', ['filter' => 'auth'], static function ($routes) {
     $routes->get('/', 'Peta::index');
 });
 
+$routes->group('surat', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {
+    $routes->get('skpt', 'SuratTanah::skpt');
+    $routes->post('skpt', 'SuratTanah::storeSkpt');
+    $routes->get('skpt/(:num)', 'SuratTanah::showSkpt/$1');
+    $routes->get('pernyataan-batas', 'SuratTanah::pernyataanBatas');
+});
+
 $routes->group('users', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('/', 'Users::index');
     $routes->get('create', 'Users::create');
@@ -71,4 +78,22 @@ $routes->group('status', ['filter' => 'role:Admin'], static function ($routes) {
 $routes->group('landing-settings', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('/', 'LandingSettings::index');
     $routes->post('/', 'LandingSettings::update');
+});
+
+$routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
+    $routes->get('desa', 'MasterData::desa');
+    $routes->post('desa', 'MasterData::storeDesa');
+    $routes->post('desa/delete/(:num)', 'MasterData::deleteDesa/$1');
+
+    $routes->get('kepala-desa', 'MasterData::kepalaDesa');
+    $routes->post('kepala-desa', 'MasterData::storeKepalaDesa');
+    $routes->post('kepala-desa/delete/(:num)', 'MasterData::deleteKepalaDesa/$1');
+
+    $routes->get('camat', 'MasterData::camat');
+    $routes->post('camat', 'MasterData::storeCamat');
+    $routes->post('camat/delete/(:num)', 'MasterData::deleteCamat/$1');
+
+    $routes->get('pemohon', 'MasterData::pemohon');
+    $routes->post('pemohon', 'MasterData::storePemohon');
+    $routes->post('pemohon/delete/(:num)', 'MasterData::deletePemohon/$1');
 });
