@@ -82,18 +82,26 @@ $routes->group('landing-settings', ['filter' => 'role:Admin'], static function (
 
 $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('desa', 'MasterData::desa');
+    $routes->get('desa/(:num)/edit', 'MasterData::editDesa/$1');
     $routes->post('desa', 'MasterData::storeDesa');
+    $routes->post('desa/(:num)', 'MasterData::updateDesa/$1');
     $routes->post('desa/delete/(:num)', 'MasterData::deleteDesa/$1');
 
     $routes->get('kepala-desa', 'MasterData::kepalaDesa');
+    $routes->get('kepala-desa/(:num)/edit', 'MasterData::editKepalaDesa/$1');
     $routes->post('kepala-desa', 'MasterData::storeKepalaDesa');
+    $routes->post('kepala-desa/(:num)', 'MasterData::updateKepalaDesa/$1');
     $routes->post('kepala-desa/delete/(:num)', 'MasterData::deleteKepalaDesa/$1');
 
     $routes->get('camat', 'MasterData::camat');
+    $routes->get('camat/(:num)/edit', 'MasterData::editCamat/$1');
     $routes->post('camat', 'MasterData::storeCamat');
+    $routes->post('camat/(:num)', 'MasterData::updateCamat/$1');
     $routes->post('camat/delete/(:num)', 'MasterData::deleteCamat/$1');
 
     $routes->get('pemohon', 'MasterData::pemohon');
+    $routes->get('pemohon/(:num)/edit', 'MasterData::editPemohon/$1');
     $routes->post('pemohon', 'MasterData::storePemohon');
+    $routes->post('pemohon/(:num)', 'MasterData::updatePemohon/$1');
     $routes->post('pemohon/delete/(:num)', 'MasterData::deletePemohon/$1');
 });

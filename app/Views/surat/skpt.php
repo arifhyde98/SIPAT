@@ -21,7 +21,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Tanggal Surat</label>
-                            <input type="date" name="tanggal_surat" class="form-control">
+                            <input type="date" name="tanggal_surat" class="form-control" required>
                         </div>
                         <div class="col-12">
                             <h6 class="text-primary">Data Pemohon</h6>
@@ -89,7 +89,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Desa/Kelurahan</label>
-                            <select name="desa_id" id="desaSelect" class="form-select">
+                            <select name="desa_id" id="desaSelect" class="form-select" required>
                                 <option value="">- pilih desa -</option>
                                 <?php foreach ($desaList ?? [] as $desa) : ?>
                                     <option value="<?= esc($desa['id']) ?>"><?= esc($desa['nama']) ?></option>
@@ -133,7 +133,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Pilih Kepala Desa</label>
-                            <select name="kepala_desa_id" id="kepalaDesaSelect" class="form-select">
+                            <select name="kepala_desa_id" id="kepalaDesaSelect" class="form-select" required>
                                 <option value="">- pilih kepala desa -</option>
                                 <?php foreach ($kepalaList ?? [] as $kepala) : ?>
                                     <option value="<?= esc($kepala['id']) ?>" data-desa="<?= esc($kepala['desa_id']) ?>">
@@ -153,7 +153,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Pilih Camat</label>
-                            <select name="camat_id" class="form-select">
+                            <select name="camat_id" class="form-select" required>
                                 <option value="">- pilih camat -</option>
                                 <?php foreach ($camatList ?? [] as $camat) : ?>
                                     <option value="<?= esc($camat['id']) ?>"><?= esc($camat['nama']) ?></option>
@@ -318,9 +318,20 @@
             const pekerjaan = document.getElementById('pemohonPekerjaan');
             const alamat = document.getElementById('pemohonAlamat');
 
+            const setReadonly = (state) => {
+                [nama, nik, ttl, wn, agama, pekerjaan].forEach(el => {
+                    if (el) el.readOnly = state;
+                });
+                if (alamat) alamat.readOnly = state;
+                if (jk) jk.disabled = state;
+            };
+
             pemohonSelect.addEventListener('change', () => {
                 const opt = pemohonSelect.selectedOptions[0];
-                if (!opt || opt.value === '') return;
+                if (!opt || opt.value === '') {
+                    setReadonly(false);
+                    return;
+                }
                 if (nama) nama.value = opt.dataset.nama || '';
                 if (nik) nik.value = opt.dataset.nik || '';
                 if (ttl) ttl.value = opt.dataset.ttl || '';
@@ -329,7 +340,9 @@
                 if (agama) agama.value = opt.dataset.agama || '';
                 if (pekerjaan) pekerjaan.value = opt.dataset.pekerjaan || '';
                 if (alamat) alamat.value = opt.dataset.alamat || '';
+                setReadonly(true);
             });
+            setReadonly(false);
         }
     });
 </script>

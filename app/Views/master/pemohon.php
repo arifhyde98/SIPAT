@@ -75,6 +75,7 @@
                                     <td><?= esc($row['nama']) ?></td>
                                     <td><?= esc($row['nik'] ?? '-') ?></td>
                                     <td class="text-end">
+                                        <a href="<?= base_url('master/pemohon/' . $row['id'] . '/edit') ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                                         <form method="post" action="<?= base_url('master/pemohon/delete/' . $row['id']) ?>" onsubmit="return confirm('Hapus pemohon ini?')">
                                             <?= csrf_field() ?>
                                             <button class="btn btn-sm btn-outline-danger">Hapus</button>

@@ -112,6 +112,29 @@ class SuratTanah extends BaseController
             }
         }
 
+        if (trim((string) $data['nama_pemohon']) === '') {
+            return redirect()->back()->withInput()->with('errors', ['Nama pemohon wajib diisi.']);
+        }
+        if (empty($data['tanggal_surat'])) {
+            return redirect()->back()->withInput()->with('errors', ['Tanggal surat wajib diisi.']);
+        }
+        if (empty($data['desa_id'])) {
+            return redirect()->back()->withInput()->with('errors', ['Desa wajib dipilih.']);
+        }
+        if (empty($data['kepala_desa_id'])) {
+            return redirect()->back()->withInput()->with('errors', ['Kepala desa wajib dipilih.']);
+        }
+        if (empty($data['camat_id'])) {
+            return redirect()->back()->withInput()->with('errors', ['Camat wajib dipilih.']);
+        }
+
+        if (!empty($data['kepala_desa_id']) && !empty($data['desa_id'])) {
+            $kepala = $kepalaModel->find($data['kepala_desa_id']);
+            if ($kepala && (int) $kepala['desa_id'] !== (int) $data['desa_id']) {
+                return redirect()->back()->withInput()->with('errors', ['Kepala desa tidak sesuai dengan desa yang dipilih.']);
+            }
+        }
+
         if (!empty($data['kepala_desa_id'])) {
             $kepala = $kepalaModel->find($data['kepala_desa_id']);
             if ($kepala) {
@@ -126,10 +149,6 @@ class SuratTanah extends BaseController
                 $data['camat_nama'] = $camat['nama'];
                 $data['camat_nip'] = $camat['nip'] ?? null;
             }
-        }
-
-        if (trim((string) $data['nama_pemohon']) === '') {
-            return redirect()->back()->withInput()->with('errors', ['Nama pemohon wajib diisi.']);
         }
 
         $id = $model->insert($data, true);
