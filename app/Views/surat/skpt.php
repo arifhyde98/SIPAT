@@ -27,20 +27,42 @@
                             <h6 class="text-primary">Data Pemohon</h6>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Pilih Pemohon</label>
+                            <select name="pemohon_id" id="pemohonSelect" class="form-select">
+                                <option value="">- pilih pemohon -</option>
+                                <?php foreach ($pemohonList ?? [] as $pemohon) : ?>
+                                    <option
+                                        value="<?= esc($pemohon['id']) ?>"
+                                        data-nama="<?= esc($pemohon['nama']) ?>"
+                                        data-nik="<?= esc($pemohon['nik'] ?? '') ?>"
+                                        data-ttl="<?= esc($pemohon['ttl'] ?? '') ?>"
+                                        data-jk="<?= esc($pemohon['jenis_kelamin'] ?? '') ?>"
+                                        data-wn="<?= esc($pemohon['warga_negara'] ?? '') ?>"
+                                        data-agama="<?= esc($pemohon['agama'] ?? '') ?>"
+                                        data-pekerjaan="<?= esc($pemohon['pekerjaan'] ?? '') ?>"
+                                        data-alamat="<?= esc($pemohon['alamat'] ?? '') ?>"
+                                    >
+                                        <?= esc($pemohon['nama']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <small class="text-muted">Jika dipilih, data pemohon otomatis terisi.</small>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Nama Pemohon *</label>
-                            <input type="text" name="nama_pemohon" class="form-control" required>
+                            <input type="text" name="nama_pemohon" id="pemohonNama" class="form-control" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">NIK</label>
-                            <input type="text" name="nik" class="form-control">
+                            <input type="text" name="nik" id="pemohonNik" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Tempat, Tgl Lahir</label>
-                            <input type="text" name="ttl" class="form-control">
+                            <input type="text" name="ttl" id="pemohonTtl" class="form-control">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" class="form-select">
+                            <select name="jenis_kelamin" id="pemohonJk" class="form-select">
                                 <option value="">- pilih -</option>
                                 <option value="Laki-laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
@@ -48,19 +70,19 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Warga Negara</label>
-                            <input type="text" name="warga_negara" class="form-control">
+                            <input type="text" name="warga_negara" id="pemohonWn" class="form-control">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Agama</label>
-                            <input type="text" name="agama" class="form-control">
+                            <input type="text" name="agama" id="pemohonAgama" class="form-control">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Pekerjaan</label>
-                            <input type="text" name="pekerjaan" class="form-control">
+                            <input type="text" name="pekerjaan" id="pemohonPekerjaan" class="form-control">
                         </div>
                         <div class="col-12">
                             <label class="form-label">Alamat Pemohon</label>
-                            <textarea name="alamat_pemohon" class="form-control" rows="2"></textarea>
+                            <textarea name="alamat_pemohon" id="pemohonAlamat" class="form-control" rows="2"></textarea>
                         </div>
                         <div class="col-12">
                             <h6 class="text-primary">Data Tanah</h6>
@@ -265,6 +287,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         const desaSelect = document.getElementById('desaSelect');
         const kepalaSelect = document.getElementById('kepalaDesaSelect');
+        const pemohonSelect = document.getElementById('pemohonSelect');
         if (!desaSelect || !kepalaSelect) return;
 
         const allOptions = Array.from(kepalaSelect.options);
@@ -284,6 +307,30 @@
 
         desaSelect.addEventListener('change', filterKepala);
         filterKepala();
+
+        if (pemohonSelect) {
+            const nama = document.getElementById('pemohonNama');
+            const nik = document.getElementById('pemohonNik');
+            const ttl = document.getElementById('pemohonTtl');
+            const jk = document.getElementById('pemohonJk');
+            const wn = document.getElementById('pemohonWn');
+            const agama = document.getElementById('pemohonAgama');
+            const pekerjaan = document.getElementById('pemohonPekerjaan');
+            const alamat = document.getElementById('pemohonAlamat');
+
+            pemohonSelect.addEventListener('change', () => {
+                const opt = pemohonSelect.selectedOptions[0];
+                if (!opt || opt.value === '') return;
+                if (nama) nama.value = opt.dataset.nama || '';
+                if (nik) nik.value = opt.dataset.nik || '';
+                if (ttl) ttl.value = opt.dataset.ttl || '';
+                if (jk) jk.value = opt.dataset.jk || '';
+                if (wn) wn.value = opt.dataset.wn || '';
+                if (agama) agama.value = opt.dataset.agama || '';
+                if (pekerjaan) pekerjaan.value = opt.dataset.pekerjaan || '';
+                if (alamat) alamat.value = opt.dataset.alamat || '';
+            });
+        }
     });
 </script>
 <?= $this->endSection() ?>

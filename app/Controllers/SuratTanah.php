@@ -6,6 +6,7 @@ use App\Models\CamatModel;
 use App\Models\DesaModel;
 use App\Models\KepalaDesaModel;
 use App\Models\SuratSkptModel;
+use App\Models\PemohonModel;
 
 class SuratTanah extends BaseController
 {
@@ -16,6 +17,7 @@ class SuratTanah extends BaseController
         $desaModel = new DesaModel();
         $kepalaModel = new KepalaDesaModel();
         $camatModel = new CamatModel();
+        $pemohonModel = new PemohonModel();
 
         return view('surat/skpt', [
             'title' => 'Generate SKPT',
@@ -24,6 +26,7 @@ class SuratTanah extends BaseController
             'desaList' => $desaModel->orderBy('nama', 'ASC')->findAll(),
             'kepalaList' => $kepalaModel->where('aktif', 1)->orderBy('nama', 'ASC')->findAll(),
             'camatList' => $camatModel->where('aktif', 1)->orderBy('nama', 'ASC')->findAll(),
+            'pemohonList' => $pemohonModel->orderBy('nama', 'ASC')->findAll(),
         ]);
     }
 
@@ -40,6 +43,7 @@ class SuratTanah extends BaseController
         $desaModel = new DesaModel();
         $kepalaModel = new KepalaDesaModel();
         $camatModel = new CamatModel();
+        $pemohonModel = new PemohonModel();
 
         return view('surat/skpt', [
             'title' => 'Generate SKPT',
@@ -48,6 +52,7 @@ class SuratTanah extends BaseController
             'desaList' => $desaModel->orderBy('nama', 'ASC')->findAll(),
             'kepalaList' => $kepalaModel->where('aktif', 1)->orderBy('nama', 'ASC')->findAll(),
             'camatList' => $camatModel->where('aktif', 1)->orderBy('nama', 'ASC')->findAll(),
+            'pemohonList' => $pemohonModel->orderBy('nama', 'ASC')->findAll(),
         ]);
     }
 
@@ -56,6 +61,7 @@ class SuratTanah extends BaseController
         $model = new SuratSkptModel();
         $kepalaModel = new KepalaDesaModel();
         $camatModel = new CamatModel();
+        $pemohonModel = new PemohonModel();
         $post = $this->request->getPost();
 
         $nomor = trim((string) ($post['nomor_surat'] ?? ''));
@@ -68,6 +74,7 @@ class SuratTanah extends BaseController
             'desa_id' => $post['desa_id'] ?? null,
             'kepala_desa_id' => $post['kepala_desa_id'] ?? null,
             'camat_id' => $post['camat_id'] ?? null,
+            'pemohon_id' => $post['pemohon_id'] ?? null,
             'nama_pemohon' => $post['nama_pemohon'] ?? '',
             'nik' => $post['nik'] ?? null,
             'ttl' => $post['ttl'] ?? null,
@@ -90,6 +97,20 @@ class SuratTanah extends BaseController
             'camat_nama' => $post['camat_nama'] ?? null,
             'camat_nip' => $post['camat_nip'] ?? null,
         ];
+
+        if (!empty($data['pemohon_id'])) {
+            $pemohon = $pemohonModel->find($data['pemohon_id']);
+            if ($pemohon) {
+                $data['nama_pemohon'] = $pemohon['nama'];
+                $data['nik'] = $pemohon['nik'] ?? null;
+                $data['ttl'] = $pemohon['ttl'] ?? null;
+                $data['jenis_kelamin'] = $pemohon['jenis_kelamin'] ?? null;
+                $data['warga_negara'] = $pemohon['warga_negara'] ?? null;
+                $data['agama'] = $pemohon['agama'] ?? null;
+                $data['pekerjaan'] = $pemohon['pekerjaan'] ?? null;
+                $data['alamat_pemohon'] = $pemohon['alamat'] ?? null;
+            }
+        }
 
         if (!empty($data['kepala_desa_id'])) {
             $kepala = $kepalaModel->find($data['kepala_desa_id']);
