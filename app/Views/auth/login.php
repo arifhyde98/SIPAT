@@ -144,7 +144,8 @@
                 </div>
             </div>
             <div class="text-center mt-4 footer-text text-muted">
-All Right Reserved - KEMENTERIAN DALAM NEGERI
+All Right Reserved - PEMERINTAH KABUPATEN DONGGALA 2026
+
             </div>
         </div>
     </div>
