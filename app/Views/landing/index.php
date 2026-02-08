@@ -30,7 +30,14 @@
             letter-spacing: 0.2px;
         }
         .gov-container {
-            max-width: 1200px;
+            max-width: 1320px;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+        @media (min-width: 1600px) {
+            .gov-container {
+                max-width: 1440px;
+            }
         }
         .nav-brand {
             display: flex;
@@ -38,8 +45,8 @@
             gap: 12px;
         }
         .nav-brand img {
-            width: 44px;
-            height: 44px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: #fff;
             border: 1px solid rgba(31, 58, 95, 0.15);
@@ -48,9 +55,10 @@
         .nav-title {
             font-weight: 700;
             letter-spacing: 0.2px;
+            font-size: 18px;
         }
         .nav-subtitle {
-            font-size: 12px;
+            font-size: 13px;
             color: var(--gov-muted);
             text-transform: uppercase;
             letter-spacing: 0.12em;
