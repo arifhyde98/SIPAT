@@ -14,7 +14,6 @@ class Aset extends BaseController
     public function index()
     {
         $asetModel = new AsetModel();
-        $prosesModel = new ProsesAsetModel();
         $statusModel = new StatusProsesModel();
         $db = \Config\Database::connect();
 
@@ -127,24 +126,23 @@ class Aset extends BaseController
 
     public function exportCsv()
     {
-        $asetModel = new AsetModel();
-        $rows = $asetModel->findAll();
-
         $db = \Config\Database::connect();
-        $ids = array_column($rows, 'id_aset');
-        $statusMap = [];
-        if (!empty($ids)) {
-            $idList = implode(',', array_map('intval', $ids));
-            $sql = "SELECT p.id_aset, p.durasi_hari, s.nama_status
-                    FROM proses_aset p
-                    JOIN status_proses s ON s.id_status = p.id_status
-                    WHERE p.id_proses IN (
-                        SELECT MAX(id_proses) FROM proses_aset WHERE id_aset IN ($idList) GROUP BY id_aset
-                    )";
-            foreach ($db->query($sql)->getResultArray() as $r) {
-                $statusMap[$r['id_aset']] = $r;
-            }
-        }
+        $query = $db->query(
+            "SELECT a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan,
+                    a.tanggal_perolehan, sp.nama_status, p.durasi_hari
+             FROM aset_tanah a
+             LEFT JOIN (
+                 SELECT p1.id_aset, p1.id_status, p1.durasi_hari
+                 FROM proses_aset p1
+                 JOIN (
+                     SELECT id_aset, MAX(id_proses) AS max_id
+                     FROM proses_aset
+                     GROUP BY id_aset
+                 ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
+             ) p ON p.id_aset = a.id_aset
+             LEFT JOIN status_proses sp ON sp.id_status = p.id_status
+             ORDER BY a.id_aset DESC"
+        );
 
         $filename = 'aset_export_' . date('Ymd_His') . '.csv';
         $this->response->setHeader('Content-Type', 'text/csv');
@@ -155,8 +153,7 @@ class Aset extends BaseController
             'kode_aset', 'nama_aset', 'peruntukan', 'opd', 'luas', 'harga_perolehan',
             'tanggal_perolehan', 'status_terkini', 'durasi_hari',
         ]);
-        foreach ($rows as $row) {
-            $status = $statusMap[$row['id_aset']] ?? null;
+        while ($row = $query->getUnbufferedRow('array')) {
             fputcsv($out, [
                 $row['kode_aset'],
                 $row['nama_aset'],
@@ -165,8 +162,8 @@ class Aset extends BaseController
                 $row['luas'],
                 $row['harga_perolehan'],
                 $row['tanggal_perolehan'],
-                $status['nama_status'] ?? 'Belum Diurus',
-                $status['durasi_hari'] ?? '',
+                $row['nama_status'] ?? 'Belum Diurus',
+                $row['durasi_hari'] ?? '',
             ]);
         }
         rewind($out);
@@ -178,28 +175,26 @@ class Aset extends BaseController
 
     public function printReport()
     {
-        $asetModel = new AsetModel();
-        $rows = $asetModel->findAll();
-
         $db = \Config\Database::connect();
-        $ids = array_column($rows, 'id_aset');
-        $statusMap = [];
-        if (!empty($ids)) {
-            $idList = implode(',', array_map('intval', $ids));
-            $sql = "SELECT p.id_aset, p.durasi_hari, s.nama_status
-                    FROM proses_aset p
-                    JOIN status_proses s ON s.id_status = p.id_status
-                    WHERE p.id_proses IN (
-                        SELECT MAX(id_proses) FROM proses_aset WHERE id_aset IN ($idList) GROUP BY id_aset
-                    )";
-            foreach ($db->query($sql)->getResultArray() as $r) {
-                $statusMap[$r['id_aset']] = $r;
-            }
-        }
+        $rows = $db->query(
+            "SELECT a.kode_aset, a.nama_aset, a.opd, a.luas, a.harga_perolehan,
+                    a.tanggal_perolehan, sp.nama_status, p.durasi_hari
+             FROM aset_tanah a
+             LEFT JOIN (
+                 SELECT p1.id_aset, p1.id_status, p1.durasi_hari
+                 FROM proses_aset p1
+                 JOIN (
+                     SELECT id_aset, MAX(id_proses) AS max_id
+                     FROM proses_aset
+                     GROUP BY id_aset
+                 ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
+             ) p ON p.id_aset = a.id_aset
+             LEFT JOIN status_proses sp ON sp.id_status = p.id_status
+             ORDER BY a.id_aset DESC"
+        )->getResultArray();
 
         return view('aset/print', [
-            'rows'      => $rows,
-            'statusMap' => $statusMap,
+            'rows' => $rows,
         ]);
     }
 
@@ -309,127 +304,142 @@ class Aset extends BaseController
             }
         }
 
-        $model = new AsetModel();
-        $statusModel = new StatusProsesModel();
-        $prosesModel = new ProsesAsetModel();
-        $existing = $model->select('kode_aset')->findAll();
-        $existingSet = [];
-        foreach ($existing as $row) {
-            $existingSet[$row['kode_aset']] = true;
-        }
+        $db = \Config\Database::connect();
+        $db->transBegin();
 
-        $inserted = 0;
-        $skipped = 0;
-        $batch = [];
-        $statusMap = [];
-        foreach ($statusModel->select('id_status,nama_status')->findAll() as $st) {
-            $statusMap[strtolower($st['nama_status'])] = (int) $st['id_status'];
-        }
-
-        foreach ($rows as $row) {
-            if (count(array_filter($row, static fn ($v) => trim((string) $v) !== '')) === 0) {
-                continue;
+        try {
+            $model = new AsetModel();
+            $statusModel = new StatusProsesModel();
+            $prosesModel = new ProsesAsetModel();
+            $existing = $model->select('kode_aset')->findAll();
+            $existingSet = [];
+            foreach ($existing as $row) {
+                $existingSet[$row['kode_aset']] = true;
             }
 
-            $data = [];
-            foreach ($header as $i => $col) {
-                $data[$col] = isset($row[$i]) ? trim((string) $row[$i]) : null;
+            $inserted = 0;
+            $skipped = 0;
+            $batch = [];
+            $statusMap = [];
+            foreach ($statusModel->select('id_status,nama_status')->findAll() as $st) {
+                $statusMap[strtolower($st['nama_status'])] = (int) $st['id_status'];
             }
 
-            $kode = $data['kode_aset'] ?? '';
-            $nama = $data['nama_aset'] ?? '';
-            if ($kode === '' || $nama === '') {
-                $skipped++;
-                continue;
-            }
-
-            if (isset($existingSet[$kode])) {
-                $skipped++;
-                continue;
-            }
-
-            $luas = $data['luas'] ?? null;
-            $harga = $data['harga_perolehan'] ?? null;
-            $luas = $luas !== null ? str_replace(',', '', $luas) : null;
-            $harga = $harga !== null ? str_replace(',', '', $harga) : null;
-
-            $tanggal = $data['tanggal_perolehan'] ?? null;
-            if ($tanggal !== null && $tanggal !== '') {
-                if (is_numeric($tanggal)) {
-                    try {
-                        $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $tanggal);
-                        $tanggal = $dt->format('Y-m-d');
-                    } catch (\Throwable $e) {
-                        $tanggal = (string) $tanggal;
-                    }
-                } elseif (strpos($tanggal, '/') !== false) {
-                    $dt = \DateTime::createFromFormat('d/m/Y', $tanggal);
-                    $tanggal = $dt ? $dt->format('Y-m-d') : $tanggal;
+            foreach ($rows as $row) {
+                if (count(array_filter($row, static fn ($v) => trim((string) $v) !== '')) === 0) {
+                    continue;
                 }
-            }
 
-            $rowData = [
-                'kode_aset'         => $kode,
-                'nama_aset'         => $nama,
-                'peruntukan'        => $data['peruntukan'] ?? null,
-                'luas'              => $luas ?: null,
-                'alamat'            => $data['alamat'] ?? null,
-                'lat'               => $data['lat'] ?? null,
-                'lng'               => $data['lng'] ?? null,
-                'opd'               => $data['opd'] ?? null,
-                'dasar_perolehan'   => $data['dasar_perolehan'] ?? null,
-                'harga_perolehan'   => $harga ?: null,
-                'tanggal_perolehan' => $tanggal ?: null,
-            ];
+                $data = [];
+                foreach ($header as $i => $col) {
+                    $data[$col] = isset($row[$i]) ? trim((string) $row[$i]) : null;
+                }
 
-            $statusName = $data['status_proses'] ?? null;
-            $tglMulai = $data['tgl_mulai'] ?? null;
-            $tglSelesai = $data['tgl_selesai'] ?? null;
-            $keterangan = $data['keterangan'] ?? null;
-
-            if (!empty($statusName)) {
-                $statusId = $statusMap[strtolower($statusName)] ?? null;
-                if ($statusId) {
-                    $model->insert($rowData);
-                    $idAset = $model->getInsertID();
-
-                    $durasi = null;
-                    if (!empty($tglMulai) && !empty($tglSelesai)) {
-                        $durasi = (int) floor((strtotime($tglSelesai) - strtotime($tglMulai)) / 86400);
-                        if ($durasi < 0) {
-                            $durasi = null;
-                        }
-                    }
-
-                    $prosesModel->insert([
-                        'id_aset'     => $idAset,
-                        'id_status'   => $statusId,
-                        'tgl_mulai'   => $tglMulai ?: ($tanggal ?: null),
-                        'tgl_selesai' => $tglSelesai ?: null,
-                        'keterangan'  => $keterangan,
-                        'durasi_hari' => $durasi,
-                    ]);
-
-                    $inserted++;
-                } else {
+                $kode = $data['kode_aset'] ?? '';
+                $nama = $data['nama_aset'] ?? '';
+                if ($kode === '' || $nama === '') {
                     $skipped++;
+                    continue;
                 }
-            } else {
-                $batch[] = $rowData;
+
+                if (isset($existingSet[$kode])) {
+                    $skipped++;
+                    continue;
+                }
+
+                $luas = $data['luas'] ?? null;
+                $harga = $data['harga_perolehan'] ?? null;
+                $luas = $luas !== null ? str_replace(',', '', $luas) : null;
+                $harga = $harga !== null ? str_replace(',', '', $harga) : null;
+
+                $tanggal = $data['tanggal_perolehan'] ?? null;
+                if ($tanggal !== null && $tanggal !== '') {
+                    if (is_numeric($tanggal)) {
+                        try {
+                            $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $tanggal);
+                            $tanggal = $dt->format('Y-m-d');
+                        } catch (\Throwable $e) {
+                            $tanggal = (string) $tanggal;
+                        }
+                    } elseif (strpos($tanggal, '/') !== false) {
+                        $dt = \DateTime::createFromFormat('d/m/Y', $tanggal);
+                        $tanggal = $dt ? $dt->format('Y-m-d') : $tanggal;
+                    }
+                }
+
+                $rowData = [
+                    'kode_aset'         => $kode,
+                    'nama_aset'         => $nama,
+                    'peruntukan'        => $data['peruntukan'] ?? null,
+                    'luas'              => $luas ?: null,
+                    'alamat'            => $data['alamat'] ?? null,
+                    'lat'               => $data['lat'] ?? null,
+                    'lng'               => $data['lng'] ?? null,
+                    'opd'               => $data['opd'] ?? null,
+                    'dasar_perolehan'   => $data['dasar_perolehan'] ?? null,
+                    'harga_perolehan'   => $harga ?: null,
+                    'tanggal_perolehan' => $tanggal ?: null,
+                ];
+
+                $statusName = $data['status_proses'] ?? null;
+                $tglMulai = $data['tgl_mulai'] ?? null;
+                $tglSelesai = $data['tgl_selesai'] ?? null;
+                $keterangan = $data['keterangan'] ?? null;
+
+                if (!empty($statusName)) {
+                    $statusId = $statusMap[strtolower($statusName)] ?? null;
+                    if ($statusId) {
+                        $model->insert($rowData);
+                        $idAset = $model->getInsertID();
+
+                        $durasi = null;
+                        if (!empty($tglMulai) && !empty($tglSelesai)) {
+                            $durasi = (int) floor((strtotime($tglSelesai) - strtotime($tglMulai)) / 86400);
+                            if ($durasi < 0) {
+                                $durasi = null;
+                            }
+                        }
+
+                        $prosesModel->insert([
+                            'id_aset'     => $idAset,
+                            'id_status'   => $statusId,
+                            'tgl_mulai'   => $tglMulai ?: ($tanggal ?: null),
+                            'tgl_selesai' => $tglSelesai ?: null,
+                            'keterangan'  => $keterangan,
+                            'durasi_hari' => $durasi,
+                        ]);
+
+                        $inserted++;
+                    } else {
+                        $skipped++;
+                    }
+                } else {
+                    $batch[] = $rowData;
+                }
+
+                $existingSet[$kode] = true;
+
+                if (count($batch) >= 200) {
+                    $model->insertBatch($batch);
+                    $inserted += count($batch);
+                    $batch = [];
+                }
             }
 
-            $existingSet[$kode] = true;
-
-            if (count($batch) >= 200) {
+            if (!empty($batch)) {
                 $model->insertBatch($batch);
                 $inserted += count($batch);
-                $batch = [];
             }
-        }
 
-        if (!empty($batch)) {
-            $model->insertBatch($batch);
-            $inserted += count($batch);
+            if ($db->transStatus() === false) {
+                throw new \RuntimeException('Transaksi import gagal.');
+            }
+            $db->transCommit();
+        } catch (\Throwable $e) {
+            if ($db->transStatus()) {
+                $db->transRollback();
+            }
+            return redirect()->back()->with('errors', ['Import gagal: ' . $e->getMessage()]);
         }
 
         return redirect()->to('/aset')->with('success', "Import selesai. Berhasil: {$inserted}, Dilewati: {$skipped}.");
@@ -447,7 +457,7 @@ class Aset extends BaseController
         }
 
         $asetModel = new AsetModel();
-        $asetModel->insert([
+        $payload = [
             'kode_aset'       => $this->request->getPost('kode_aset'),
             'nama_aset'       => $this->request->getPost('nama_aset'),
             'peruntukan'      => $this->request->getPost('peruntukan'),
@@ -459,7 +469,9 @@ class Aset extends BaseController
             'dasar_perolehan' => $this->request->getPost('dasar_perolehan'),
             'harga_perolehan' => $this->request->getPost('harga_perolehan'),
             'tanggal_perolehan' => $this->request->getPost('tanggal_perolehan'),
-        ]);
+        ];
+        $asetModel->insert($payload);
+        $this->logAudit('create', 'aset_tanah', (int) $asetModel->getInsertID(), [], $payload);
 
         return redirect()->to('/aset')->with('success', 'Aset berhasil dibuat.');
     }
@@ -487,7 +499,8 @@ class Aset extends BaseController
         }
 
         $asetModel = new AsetModel();
-        $asetModel->update($id, [
+        $old = $asetModel->find($id) ?? [];
+        $payload = [
             'kode_aset'       => $this->request->getPost('kode_aset'),
             'nama_aset'       => $this->request->getPost('nama_aset'),
             'peruntukan'      => $this->request->getPost('peruntukan'),
@@ -499,7 +512,9 @@ class Aset extends BaseController
             'dasar_perolehan' => $this->request->getPost('dasar_perolehan'),
             'harga_perolehan' => $this->request->getPost('harga_perolehan'),
             'tanggal_perolehan' => $this->request->getPost('tanggal_perolehan'),
-        ]);
+        ];
+        $asetModel->update($id, $payload);
+        $this->logAudit('update', 'aset_tanah', (int) $id, $old, $payload);
 
         return redirect()->to('/aset')->with('success', 'Aset berhasil diperbarui.');
     }
@@ -507,7 +522,9 @@ class Aset extends BaseController
     public function delete($id)
     {
         $asetModel = new AsetModel();
+        $old = $asetModel->find($id) ?? [];
         $asetModel->delete($id);
+        $this->logAudit('delete', 'aset_tanah', (int) $id, $old, []);
 
         return redirect()->to('/aset')->with('success', 'Aset berhasil dihapus.');
     }

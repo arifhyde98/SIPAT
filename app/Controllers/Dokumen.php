@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\DokumenAsetModel;
+use App\Models\ProsesAsetModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class Dokumen extends BaseController
@@ -18,6 +19,15 @@ class Dokumen extends BaseController
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
+        $idProses = $this->request->getPost('id_proses') ?: null;
+        if (!empty($idProses)) {
+            $prosesModel = new ProsesAsetModel();
+            $proses = $prosesModel->where('id_proses', $idProses)->where('id_aset', $idAset)->first();
+            if (!$proses) {
+                return redirect()->back()->withInput()->with('errors', ['Proses tidak valid untuk aset ini.']);
+            }
+        }
+
         $file = $this->request->getFile('file');
         $path = null;
         if ($file && $file->isValid()) {
@@ -31,14 +41,16 @@ class Dokumen extends BaseController
         }
 
         $model = new DokumenAsetModel();
-        $model->insert([
+        $payload = [
             'id_aset'        => $idAset,
-            'id_proses'      => $this->request->getPost('id_proses') ?: null,
+            'id_proses'      => $idProses ?: null,
             'jenis_dokumen'  => $this->request->getPost('jenis_dokumen'),
             'file_path'      => $path,
             'status_dokumen' => $this->request->getPost('status_dokumen'),
             'uploaded_at'    => date('Y-m-d H:i:s'),
-        ]);
+        ];
+        $model->insert($payload);
+        $this->logAudit('create', 'dokumen_aset', (int) $model->getInsertID(), [], $payload);
 
         return redirect()->back()->with('success', 'Dokumen berhasil diunggah.');
     }
@@ -106,6 +118,7 @@ class Dokumen extends BaseController
         }
 
         $model->delete($id);
+        $this->logAudit('delete', 'dokumen_aset', (int) $id, $dok, []);
         return redirect()->back()->with('success', 'Dokumen berhasil dihapus.');
     }
 }

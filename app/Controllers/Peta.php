@@ -2,39 +2,38 @@
 
 namespace App\Controllers;
 
-use App\Models\AsetModel;
-use App\Models\ProsesAsetModel;
 
 class Peta extends BaseController
 {
     public function index()
     {
-        $asetModel = new AsetModel();
-        $prosesModel = new ProsesAsetModel();
+        $db = \Config\Database::connect();
+        $query = $db->query(
+            "SELECT a.id_aset, a.kode_aset, a.nama_aset, a.lat, a.lng, sp.nama_status, sp.warna
+             FROM aset_tanah a
+             LEFT JOIN (
+                 SELECT p1.id_aset, p1.id_status
+                 FROM proses_aset p1
+                 JOIN (
+                     SELECT id_aset, MAX(id_proses) AS max_id
+                     FROM proses_aset
+                     GROUP BY id_aset
+                 ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
+             ) p ON p.id_aset = a.id_aset
+             LEFT JOIN status_proses sp ON sp.id_status = p.id_status
+             WHERE a.lat IS NOT NULL AND a.lng IS NOT NULL"
+        );
 
-        $asetList = $asetModel->findAll();
         $markers = [];
-
-        foreach ($asetList as $aset) {
-            if (empty($aset['lat']) || empty($aset['lng'])) {
-                continue;
-            }
-
-            $latest = $prosesModel
-                ->select('proses_aset.*, status_proses.nama_status, status_proses.warna')
-                ->join('status_proses', 'status_proses.id_status = proses_aset.id_status', 'left')
-                ->where('proses_aset.id_aset', $aset['id_aset'])
-                ->orderBy('proses_aset.id_proses', 'DESC')
-                ->first();
-
+        foreach ($query->getResultArray() as $row) {
             $markers[] = [
-                'id'           => $aset['id_aset'],
-                'kode'         => $aset['kode_aset'],
-                'nama'         => $aset['nama_aset'],
-                'lat'          => (float) $aset['lat'],
-                'lng'          => (float) $aset['lng'],
-                'status'       => $latest['nama_status'] ?? 'Belum Diurus',
-                'warna_status' => $latest['warna'] ?? 'secondary',
+                'id'           => $row['id_aset'],
+                'kode'         => $row['kode_aset'],
+                'nama'         => $row['nama_aset'],
+                'lat'          => (float) $row['lat'],
+                'lng'          => (float) $row['lng'],
+                'status'       => $row['nama_status'] ?? 'Belum Diurus',
+                'warna_status' => $row['warna'] ?? 'secondary',
             ];
         }
 

@@ -144,7 +144,7 @@
                 </div>
             </div>
             <div class="text-center mt-4 footer-text text-muted">
-                All Right Reserved —
+All Right Reserved - KEMENTERIAN DALAM NEGERI
             </div>
         </div>
     </div>

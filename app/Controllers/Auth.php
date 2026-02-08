@@ -33,6 +33,7 @@ class Auth extends BaseController
             return redirect()->back()->withInput()->with('errors', ['Email atau password salah.']);
         }
 
+        session()->regenerate(true);
         session()->set([
             'user_id'    => $user['id_user'],
             'user_name'  => $user['nama'],

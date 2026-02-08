@@ -34,13 +34,17 @@ class Users extends BaseController
         }
 
         $model = new UserModel();
-        $model->insert([
+        $payload = [
             'nama'     => $this->request->getPost('nama'),
             'role'     => $this->request->getPost('role'),
             'opd'      => $this->request->getPost('opd'),
             'email'    => $this->request->getPost('email'),
             'password' => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT),
-        ]);
+        ];
+        $model->insert($payload);
+        $logData = $payload;
+        unset($logData['password']);
+        $this->logAudit('create', 'users', (int) $model->getInsertID(), [], $logData);
 
         return redirect()->to('/users')->with('success', 'User berhasil dibuat.');
     }
@@ -81,7 +85,12 @@ class Users extends BaseController
         }
 
         $model = new UserModel();
+        $old = $model->find($id) ?? [];
         $model->update($id, $data);
+        unset($old['password']);
+        $logData = $data;
+        unset($logData['password']);
+        $this->logAudit('update', 'users', (int) $id, $old, $logData);
 
         return redirect()->to('/users')->with('success', 'User berhasil diperbarui.');
     }
@@ -89,7 +98,10 @@ class Users extends BaseController
     public function delete($id)
     {
         $model = new UserModel();
+        $old = $model->find($id) ?? [];
         $model->delete($id);
+        unset($old['password']);
+        $this->logAudit('delete', 'users', (int) $id, $old, []);
 
         return redirect()->to('/users')->with('success', 'User berhasil dihapus.');
     }

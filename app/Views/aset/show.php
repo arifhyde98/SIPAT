@@ -1,13 +1,20 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
+<noscript>
+    <style>
+        .modal { display: block; position: static; }
+        .modal-dialog { max-width: 100%; margin: 0; }
+        .modal-backdrop { display: none; }
+    </style>
+</noscript>
 <div class="modal fade modal-modern" id="modalForm" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <div>
                     <h5 class="modal-title">Detail Aset</h5>
-                    <small class="text-muted"><?= esc($aset['kode_aset']) ?> • <?= esc($aset['nama_aset']) ?></small>
+                    <small class="text-muted"><?= esc($aset['kode_aset']) ?> - <?= esc($aset['nama_aset']) ?></small>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
@@ -78,7 +85,7 @@
                                                         <strong><?= esc($proses['keterangan'] ?? '-') ?></strong>
                                                     </div>
                                                     <small class="text-muted">
-                                                        <?= esc($proses['tgl_mulai'] ?? '-') ?> → <?= esc($proses['tgl_selesai'] ?? '-') ?>
+                                                        <?= esc($proses['tgl_mulai'] ?? '-') ?> -> <?= esc($proses['tgl_selesai'] ?? '-') ?>
                                                     </small>
                                                 </div>
                                                 <div class="text-muted small">Durasi: <?= esc($proses['durasi_hari'] ?? '-') ?> hari</div>
@@ -183,7 +190,8 @@
                                 <h3 class="card-title text-primary mb-0">Dokumen Aset</h3>
                             </div>
                             <div class="card-body">
-                                <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset', 'Petugas Lapangan'], true)) : ?>
+                                <?php $canManageDocs = in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset', 'Petugas Lapangan'], true); ?>
+                                <?php if ($canManageDocs) : ?>
                                     <form action="<?= base_url('dokumen/' . $aset['id_aset']) ?>" method="post" enctype="multipart/form-data" class="mb-3">
                                         <?= csrf_field() ?>
                                         <div class="mb-2">
@@ -225,13 +233,13 @@
                                                     <small class="text-muted"><?= esc($dok['status_dokumen'] ?? '-') ?></small>
                                                 </div>
                                                 <div class="d-flex gap-2">
-                                                    <a href="<?= base_url('dokumen/view/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank" rel="noopener">
-                                                        <i class="bi bi-eye me-1"></i>Lihat
-                                                    </a>
-                                                    <a href="<?= base_url('dokumen/download/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-secondary rounded-pill">
-                                                        <i class="bi bi-download me-1"></i>Unduh
-                                                    </a>
-                                                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset', 'Petugas Lapangan'], true)) : ?>
+                                                    <?php if ($canManageDocs) : ?>
+                                                        <a href="<?= base_url('dokumen/view/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank" rel="noopener">
+                                                            <i class="bi bi-eye me-1"></i>Lihat
+                                                        </a>
+                                                        <a href="<?= base_url('dokumen/download/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-secondary rounded-pill">
+                                                            <i class="bi bi-download me-1"></i>Unduh
+                                                        </a>
                                                         <form action="<?= base_url('dokumen/' . $dok['id_dokumen']) ?>" method="post">
                                                             <?= csrf_field() ?>
                                                             <input type="hidden" name="_method" value="DELETE">
@@ -239,6 +247,8 @@
                                                                 <i class="bi bi-trash3 me-1"></i>Hapus
                                                             </button>
                                                         </form>
+                                                    <?php else : ?>
+                                                        <span class="text-muted small">Akses dokumen terbatas.</span>
                                                     <?php endif; ?>
                                                 </div>
                                             </li>

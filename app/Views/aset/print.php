@@ -33,7 +33,6 @@
         </thead>
         <tbody>
             <?php foreach ($rows as $row) : ?>
-                <?php $status = $statusMap[$row['id_aset']] ?? null; ?>
                 <tr>
                     <td><?= esc($row['kode_aset']) ?></td>
                     <td><?= esc($row['nama_aset']) ?></td>
@@ -41,8 +40,8 @@
                     <td><?= esc($row['luas']) ?></td>
                     <td><?= esc($row['harga_perolehan']) ?></td>
                     <td><?= esc($row['tanggal_perolehan']) ?></td>
-                    <td><?= esc($status['nama_status'] ?? 'Belum Diurus') ?></td>
-                    <td><?= esc($status['durasi_hari'] ?? '-') ?></td>
+                    <td><?= esc($row['nama_status'] ?? 'Belum Diurus') ?></td>
+                    <td><?= esc($row['durasi_hari'] ?? '-') ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
