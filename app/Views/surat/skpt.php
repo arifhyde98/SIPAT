@@ -88,11 +88,22 @@
                             <h6 class="text-primary">Data Tanah</h6>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Kecamatan</label>
+                            <select name="kecamatan_id" id="kecamatanSelect" class="form-select" required>
+                                <option value="">- pilih kecamatan -</option>
+                                <?php foreach ($kecamatanList ?? [] as $kecamatan) : ?>
+                                    <option value="<?= esc($kecamatan['id']) ?>"><?= esc($kecamatan['nama']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Desa/Kelurahan</label>
                             <select name="desa_id" id="desaSelect" class="form-select" required>
                                 <option value="">- pilih desa -</option>
                                 <?php foreach ($desaList ?? [] as $desa) : ?>
-                                    <option value="<?= esc($desa['id']) ?>"><?= esc($desa['nama']) ?></option>
+                                    <option value="<?= esc($desa['id']) ?>" data-kec="<?= esc($desa['kecamatan_id'] ?? '') ?>">
+                                        <?= esc($desa['nama']) ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -163,6 +174,7 @@
                                 <?php foreach ($camatList ?? [] as $camat) : ?>
                                     <option
                                         value="<?= esc($camat['id']) ?>"
+                                        data-kec="<?= esc($camat['kecamatan_id'] ?? '') ?>"
                                         data-nama="<?= esc($camat['nama']) ?>"
                                         data-nip="<?= esc($camat['nip'] ?? '') ?>"
                                     >
@@ -192,6 +204,22 @@
             <div class="card border-0 fancy-card">
                 <div class="card-body">
                     <h6 class="fw-semibold">SKPT Terbaru</h6>
+                    <form method="get" action="<?= current_url() ?>" class="row g-2 align-items-end mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label">Filter Kecamatan</label>
+                            <select name="kecamatan_id" class="form-select">
+                                <option value="">- semua kecamatan -</option>
+                                <?php foreach ($kecamatanList ?? [] as $kecamatan) : ?>
+                                    <option value="<?= esc($kecamatan['id']) ?>" <?= ((int) ($filterKecamatan ?? 0) === (int) $kecamatan['id']) ? 'selected' : '' ?>>
+                                        <?= esc($kecamatan['nama']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <button class="btn btn-outline-primary w-100">Terapkan</button>
+                        </div>
+                    </form>
                     <div class="table-responsive">
                         <table class="table align-middle mb-0 table-premium">
                             <thead>
@@ -199,8 +227,9 @@
                                     <th>No</th>
                                     <th>Nomor Surat</th>
                                     <th>Pemohon</th>
+                                    <th>Kecamatan</th>
                                     <th>Tanggal</th>
-                                    <th></th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -209,9 +238,14 @@
                                         <td><?= esc($r['id']) ?></td>
                                         <td><?= esc($r['nomor_surat']) ?></td>
                                         <td><?= esc($r['pemohon_nama'] ?? '-') ?></td>
+                                        <td><?= esc($r['kecamatan_nama'] ?? '-') ?></td>
                                         <td><?= esc($r['tanggal_surat'] ?? '-') ?></td>
                                         <td>
-                                            <a href="<?= base_url('surat/skpt/' . $r['id']) ?>" class="btn btn-sm btn-outline-primary">Preview</a>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <a href="<?= base_url('surat/skpt/' . $r['id']) ?>" class="btn btn-sm btn-outline-primary">Preview</a>
+                                                <a href="<?= base_url('surat/skpt/' . $r['id'] . '/pdf') ?>" class="btn btn-sm btn-outline-danger">PDF</a>
+                                                <a href="<?= base_url('surat/skpt/' . $r['id'] . '/word') ?>" class="btn btn-sm btn-outline-primary">Word</a>
+                                            </div>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -230,17 +264,25 @@
                 <?php if (empty($skpt)) : ?>
                     <p class="text-muted mb-0">Isi form dan simpan untuk melihat preview.</p>
                 <?php else : ?>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <a href="<?= base_url('surat/skpt/' . $skpt['id'] . '/pdf') ?>" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-file-earmark-pdf"></i> Download PDF
+                        </a>
+                        <a href="<?= base_url('surat/skpt/' . $skpt['id'] . '/word') ?>" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-file-earmark-word"></i> Export Word
+                        </a>
+                    </div>
                     <div class="border p-3" style="background: #fff;">
                         <div class="text-center" style="font-size: 12px; line-height: 1.4;">
                             <div class="fw-semibold">PEMERINTAH KABUPATEN DONGGALA</div>
-                            <div class="fw-semibold">KECAMATAN BANAWA</div>
+                            <div class="fw-semibold">KECAMATAN <?= esc($skpt['kecamatan_nama'] ?? '-') ?></div>
                             <div class="text-danger fw-semibold">DESA/KELURAHAN <?= esc($skpt['desa_nama'] ?? '-') ?></div>
                             <div class="fw-semibold">SURAT KETERANGAN PENGUASAAN TANAH</div>
                             <div class="mt-2">NOMOR : <?= esc($skpt['nomor_surat']) ?></div>
                         </div>
                         <hr>
                         <div style="font-size: 12px; line-height: 1.5;">
-                            Yang bertanda tangan di bawah ini Lurah Kabonga Kecil Kecamatan Banawa Kabupaten Donggala
+                            Yang bertanda tangan di bawah ini Kepala Desa/Lurah <?= esc($skpt['desa_nama'] ?? '-') ?> Kecamatan <?= esc($skpt['kecamatan_nama'] ?? '-') ?> Kabupaten Donggala
                             menerangkan bahwa yang bersangkutan:
                             <div class="mt-2">
                                 <div>Nama: <?= esc($skpt['pemohon_nama'] ?? '-') ?></div>
@@ -269,12 +311,12 @@
                                 Keterangan: <?= esc($skpt['keterangan'] ?? '-') ?>
                             </div>
                             <div class="mt-4 text-end">
-                                Kabonga Kecil, <?= esc($skpt['tanggal_surat'] ?? '-') ?>
+                                <?= esc($skpt['desa_nama'] ?? '-') ?>, <?= esc($skpt['tanggal_surat'] ?? '-') ?>
                             </div>
                             <div class="mt-4 d-flex justify-content-between">
                                 <div class="text-center">
                                     Mengetahui,<br>
-                                    Camat Banawa<br><br><br>
+                                    Camat <?= esc($skpt['kecamatan_nama'] ?? '-') ?><br><br><br>
                                     <strong><?= esc($skpt['camat_nama'] ?? '-') ?></strong><br>
                                     <?= esc($skpt['camat_nip'] ?? '') ?>
                                 </div>
@@ -296,23 +338,55 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const kecamatanSelect = document.getElementById('kecamatanSelect');
         const desaSelect = document.getElementById('desaSelect');
         const kepalaSelect = document.getElementById('kepalaDesaSelect');
         const pemohonSelect = document.getElementById('pemohonSelect');
         const camatSelect = document.getElementById('camatSelect');
-        if (!desaSelect || !kepalaSelect) return;
+        if (!desaSelect || !kepalaSelect || !kecamatanSelect) return;
 
-        const allOptions = Array.from(kepalaSelect.options);
+        const allKepalaOptions = Array.from(kepalaSelect.options);
+        const allDesaOptions = Array.from(desaSelect.options);
+        const allCamatOptions = camatSelect ? Array.from(camatSelect.options) : [];
         const filterKepala = () => {
             const desaId = desaSelect.value;
             kepalaSelect.innerHTML = '';
-            allOptions.forEach(opt => {
+            allKepalaOptions.forEach(opt => {
                 if (opt.value === '') {
                     kepalaSelect.appendChild(opt.cloneNode(true));
                     return;
                 }
                 if (desaId === '' || opt.dataset.desa === desaId) {
                     kepalaSelect.appendChild(opt.cloneNode(true));
+                }
+            });
+        };
+
+        const filterDesa = () => {
+            const kecId = kecamatanSelect.value;
+            desaSelect.innerHTML = '';
+            allDesaOptions.forEach(opt => {
+                if (opt.value === '') {
+                    desaSelect.appendChild(opt.cloneNode(true));
+                    return;
+                }
+                if (kecId === '' || opt.dataset.kec === kecId) {
+                    desaSelect.appendChild(opt.cloneNode(true));
+                }
+            });
+        };
+
+        const filterCamat = () => {
+            if (!camatSelect) return;
+            const kecId = kecamatanSelect.value;
+            camatSelect.innerHTML = '';
+            allCamatOptions.forEach(opt => {
+                if (opt.value === '') {
+                    camatSelect.appendChild(opt.cloneNode(true));
+                    return;
+                }
+                if (kecId === '' || opt.dataset.kec === kecId) {
+                    camatSelect.appendChild(opt.cloneNode(true));
                 }
             });
         };
@@ -377,7 +451,20 @@
             if (alamat) alamat.value = opt.dataset.alamat || '';
         };
 
+        kecamatanSelect.addEventListener('change', () => {
+            filterDesa();
+            filterCamat();
+            filterKepala();
+            updateKepalaInfo();
+            updateCamatInfo();
+        });
         desaSelect.addEventListener('change', () => {
+            const opt = desaSelect.selectedOptions[0];
+            if (opt && opt.dataset.kec) {
+                kecamatanSelect.value = opt.dataset.kec;
+                filterDesa();
+                filterCamat();
+            }
             filterKepala();
             updateKepalaInfo();
         });
@@ -385,6 +472,8 @@
         if (camatSelect) camatSelect.addEventListener('change', updateCamatInfo);
         if (pemohonSelect) pemohonSelect.addEventListener('change', updatePemohonInfo);
 
+        filterDesa();
+        filterCamat();
         filterKepala();
         updateKepalaInfo();
         updateCamatInfo();

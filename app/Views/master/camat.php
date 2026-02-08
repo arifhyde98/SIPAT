@@ -15,6 +15,15 @@
                 <form method="post" action="<?= base_url('master/camat') ?>">
                     <?= csrf_field() ?>
                     <div class="mb-3">
+                        <label class="form-label">Kecamatan</label>
+                        <select name="kecamatan_id" class="form-select" required>
+                            <option value="">- pilih kecamatan -</option>
+                            <?php foreach ($kecamatanList ?? [] as $kecamatan) : ?>
+                                <option value="<?= esc($kecamatan['id']) ?>"><?= esc($kecamatan['nama']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Nama Camat</label>
                         <input type="text" name="nama" class="form-control" required>
                     </div>
@@ -34,11 +43,31 @@
     <div class="col-lg-7">
         <div class="card border-0 fancy-card">
             <div class="card-body">
+                <form method="post" action="<?= base_url('master/camat/bulk-kecamatan') ?>" id="bulkCamatForm" class="row g-2 align-items-end mb-3">
+                    <?= csrf_field() ?>
+                    <div class="col-md-7">
+                        <label class="form-label">Kecamatan (Bulk)</label>
+                        <select name="kecamatan_id" class="form-select" required>
+                            <option value="">- pilih kecamatan -</option>
+                            <?php foreach ($kecamatanList ?? [] as $kecamatan) : ?>
+                                <option value="<?= esc($kecamatan['id']) ?>"><?= esc($kecamatan['nama']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <small class="text-muted">Centang camat yang ingin diperbarui.</small>
+                    </div>
+                    <div class="col-md-5">
+                        <button class="btn btn-outline-primary w-100">Terapkan ke yang dipilih</button>
+                    </div>
+                </form>
                 <div class="table-responsive">
                     <table class="table align-middle mb-0 table-premium">
                         <thead>
                             <tr>
+                                <th>
+                                    <input type="checkbox" id="camatCheckAll" class="form-check-input">
+                                </th>
                                 <th>ID</th>
+                                <th>Kecamatan</th>
                                 <th>Nama</th>
                                 <th>Status</th>
                                 <th></th>
@@ -47,7 +76,11 @@
                         <tbody>
                             <?php foreach ($rows as $row) : ?>
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" name="ids[]" value="<?= esc($row['id']) ?>" form="bulkCamatForm" class="form-check-input camat-check">
+                                    </td>
                                     <td><?= esc($row['id']) ?></td>
+                                    <td><?= esc($row['kecamatan_nama'] ?? '-') ?></td>
                                     <td><?= esc($row['nama']) ?></td>
                                     <td>
                                         <span class="badge <?= $row['aktif'] ? 'text-bg-success' : 'text-bg-secondary' ?>">
@@ -70,4 +103,17 @@
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkAll = document.getElementById('camatCheckAll');
+        if (!checkAll) return;
+        const checks = Array.from(document.querySelectorAll('.camat-check'));
+        checkAll.addEventListener('change', () => {
+            checks.forEach(cb => { cb.checked = checkAll.checked; });
+        });
+    });
+</script>
 <?= $this->endSection() ?>

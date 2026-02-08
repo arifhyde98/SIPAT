@@ -13,6 +13,17 @@
         <form method="post" action="<?= base_url('master/desa/' . $row['id']) ?>">
             <?= csrf_field() ?>
             <div class="mb-3">
+                <label class="form-label">Kecamatan</label>
+                <select name="kecamatan_id" class="form-select" required>
+                    <option value="">- pilih kecamatan -</option>
+                    <?php foreach ($kecamatanList ?? [] as $kecamatan) : ?>
+                        <option value="<?= esc($kecamatan['id']) ?>" <?= (int) $row['kecamatan_id'] === (int) $kecamatan['id'] ? 'selected' : '' ?>>
+                            <?= esc($kecamatan['nama']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Nama Desa/Kelurahan</label>
                 <input type="text" name="nama" class="form-control" value="<?= esc($row['nama']) ?>" required>
             </div>

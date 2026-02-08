@@ -224,6 +224,12 @@
                                 </a>
                                 <ul class="nav nav-treeview">
                                     <li class="nav-item">
+                                        <a href="<?= base_url('master/kecamatan') ?>" class="nav-link <?= $is('master/kecamatan') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-geo"></i>
+                                            <p>Kecamatan</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a href="<?= base_url('master/desa') ?>" class="nav-link <?= $is('master/desa') ? 'active' : '' ?>">
                                             <i class="nav-icon bi bi-geo-alt"></i>
                                             <p>Desa</p>

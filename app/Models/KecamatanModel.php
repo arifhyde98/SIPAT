@@ -4,15 +4,12 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class CamatModel extends Model
+class KecamatanModel extends Model
 {
-    protected $table = 'camat';
+    protected $table = 'kecamatan';
     protected $primaryKey = 'id';
     protected $allowedFields = [
-        'kecamatan_id',
         'nama',
-        'nip',
-        'aktif',
     ];
     protected $useTimestamps = true;
 }

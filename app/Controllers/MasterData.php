@@ -4,29 +4,96 @@ namespace App\Controllers;
 
 use App\Models\CamatModel;
 use App\Models\DesaModel;
+use App\Models\KecamatanModel;
 use App\Models\KepalaDesaModel;
 use App\Models\PemohonModel;
 
 class MasterData extends BaseController
 {
+    public function kecamatan()
+    {
+        $model = new KecamatanModel();
+        return view('master/kecamatan', [
+            'title' => 'Master Kecamatan',
+            'rows' => $model->orderBy('nama', 'ASC')->findAll(),
+        ]);
+    }
+
+    public function storeKecamatan()
+    {
+        $nama = trim((string) $this->request->getPost('nama'));
+        if ($nama === '') {
+            return redirect()->back()->withInput()->with('errors', ['Nama kecamatan wajib diisi.']);
+        }
+
+        $model = new KecamatanModel();
+        $model->insert(['nama' => $nama]);
+
+        return redirect()->to('/master/kecamatan')->with('success', 'Kecamatan disimpan.');
+    }
+
+    public function editKecamatan(int $id)
+    {
+        $model = new KecamatanModel();
+        $row = $model->find($id);
+        if (! $row) {
+            return redirect()->to('/master/kecamatan')->with('errors', ['Kecamatan tidak ditemukan.']);
+        }
+
+        return view('master/kecamatan_edit', [
+            'title' => 'Edit Kecamatan',
+            'row' => $row,
+        ]);
+    }
+
+    public function updateKecamatan(int $id)
+    {
+        $nama = trim((string) $this->request->getPost('nama'));
+        if ($nama === '') {
+            return redirect()->back()->withInput()->with('errors', ['Nama kecamatan wajib diisi.']);
+        }
+
+        $model = new KecamatanModel();
+        $model->update($id, ['nama' => $nama]);
+
+        return redirect()->to('/master/kecamatan')->with('success', 'Kecamatan diperbarui.');
+    }
+
+    public function deleteKecamatan(int $id)
+    {
+        $model = new KecamatanModel();
+        $model->delete($id);
+        return redirect()->to('/master/kecamatan')->with('success', 'Kecamatan dihapus.');
+    }
+
     public function desa()
     {
         $model = new DesaModel();
+        $kecamatanModel = new KecamatanModel();
+        $rows = $model->select('desa.*, kecamatan.nama as kecamatan_nama')
+            ->join('kecamatan', 'kecamatan.id = desa.kecamatan_id', 'left')
+            ->orderBy('desa.nama', 'ASC')
+            ->findAll();
         return view('master/desa', [
             'title' => 'Master Desa',
-            'rows' => $model->orderBy('nama', 'ASC')->findAll(),
+            'rows' => $rows,
+            'kecamatanList' => $kecamatanModel->orderBy('nama', 'ASC')->findAll(),
         ]);
     }
 
     public function storeDesa()
     {
         $nama = trim((string) $this->request->getPost('nama'));
-        if ($nama === '') {
-            return redirect()->back()->withInput()->with('errors', ['Nama desa wajib diisi.']);
+        $kecamatanId = $this->request->getPost('kecamatan_id');
+        if ($nama === '' || empty($kecamatanId)) {
+            return redirect()->back()->withInput()->with('errors', ['Nama desa dan kecamatan wajib diisi.']);
         }
 
         $model = new DesaModel();
-        $model->insert(['nama' => $nama]);
+        $model->insert([
+            'nama' => $nama,
+            'kecamatan_id' => $kecamatanId,
+        ]);
 
         return redirect()->to('/master/desa')->with('success', 'Desa disimpan.');
     }
@@ -34,6 +101,7 @@ class MasterData extends BaseController
     public function editDesa(int $id)
     {
         $model = new DesaModel();
+        $kecamatanModel = new KecamatanModel();
         $row = $model->find($id);
         if (! $row) {
             return redirect()->to('/master/desa')->with('errors', ['Desa tidak ditemukan.']);
@@ -42,18 +110,23 @@ class MasterData extends BaseController
         return view('master/desa_edit', [
             'title' => 'Edit Desa',
             'row' => $row,
+            'kecamatanList' => $kecamatanModel->orderBy('nama', 'ASC')->findAll(),
         ]);
     }
 
     public function updateDesa(int $id)
     {
         $nama = trim((string) $this->request->getPost('nama'));
-        if ($nama === '') {
-            return redirect()->back()->withInput()->with('errors', ['Nama desa wajib diisi.']);
+        $kecamatanId = $this->request->getPost('kecamatan_id');
+        if ($nama === '' || empty($kecamatanId)) {
+            return redirect()->back()->withInput()->with('errors', ['Nama desa dan kecamatan wajib diisi.']);
         }
 
         $model = new DesaModel();
-        $model->update($id, ['nama' => $nama]);
+        $model->update($id, [
+            'nama' => $nama,
+            'kecamatan_id' => $kecamatanId,
+        ]);
 
         return redirect()->to('/master/desa')->with('success', 'Desa diperbarui.');
     }
@@ -63,6 +136,29 @@ class MasterData extends BaseController
         $model = new DesaModel();
         $model->delete($id);
         return redirect()->to('/master/desa')->with('success', 'Desa dihapus.');
+    }
+
+    public function bulkUpdateDesaKecamatan()
+    {
+        $ids = (array) $this->request->getPost('ids');
+        $kecamatanId = $this->request->getPost('kecamatan_id');
+        $ids = array_values(array_filter($ids, static function ($id) {
+            return ctype_digit((string) $id);
+        }));
+
+        if (empty($kecamatanId) || empty($ids)) {
+            return redirect()->back()->with('errors', ['Pilih desa dan kecamatan untuk diperbarui.']);
+        }
+
+        $kecamatanModel = new KecamatanModel();
+        if (! $kecamatanModel->find($kecamatanId)) {
+            return redirect()->back()->with('errors', ['Kecamatan tidak ditemukan.']);
+        }
+
+        $model = new DesaModel();
+        $model->whereIn('id', $ids)->set(['kecamatan_id' => $kecamatanId])->update();
+
+        return redirect()->to('/master/desa')->with('success', 'Kecamatan desa diperbarui.');
     }
 
     public function kepalaDesa()
@@ -150,9 +246,16 @@ class MasterData extends BaseController
     public function camat()
     {
         $model = new CamatModel();
+        $kecamatanModel = new KecamatanModel();
+        $rows = $model->select('camat.*, kecamatan.nama as kecamatan_nama')
+            ->join('kecamatan', 'kecamatan.id = camat.kecamatan_id', 'left')
+            ->orderBy('camat.aktif', 'DESC')
+            ->orderBy('camat.nama', 'ASC')
+            ->findAll();
         return view('master/camat', [
             'title' => 'Master Camat',
-            'rows' => $model->orderBy('aktif', 'DESC')->orderBy('nama', 'ASC')->findAll(),
+            'rows' => $rows,
+            'kecamatanList' => $kecamatanModel->orderBy('nama', 'ASC')->findAll(),
         ]);
     }
 
@@ -160,12 +263,14 @@ class MasterData extends BaseController
     {
         $post = $this->request->getPost();
         $nama = trim((string) ($post['nama'] ?? ''));
-        if ($nama === '') {
-            return redirect()->back()->withInput()->with('errors', ['Nama camat wajib diisi.']);
+        $kecamatanId = $post['kecamatan_id'] ?? null;
+        if ($nama === '' || empty($kecamatanId)) {
+            return redirect()->back()->withInput()->with('errors', ['Nama camat dan kecamatan wajib diisi.']);
         }
 
         $model = new CamatModel();
         $model->insert([
+            'kecamatan_id' => $kecamatanId,
             'nama' => $nama,
             'nip' => $post['nip'] ?? null,
             'aktif' => isset($post['aktif']) ? 1 : 0,
@@ -177,6 +282,7 @@ class MasterData extends BaseController
     public function editCamat(int $id)
     {
         $model = new CamatModel();
+        $kecamatanModel = new KecamatanModel();
         $row = $model->find($id);
         if (! $row) {
             return redirect()->to('/master/camat')->with('errors', ['Camat tidak ditemukan.']);
@@ -185,6 +291,7 @@ class MasterData extends BaseController
         return view('master/camat_edit', [
             'title' => 'Edit Camat',
             'row' => $row,
+            'kecamatanList' => $kecamatanModel->orderBy('nama', 'ASC')->findAll(),
         ]);
     }
 
@@ -192,12 +299,14 @@ class MasterData extends BaseController
     {
         $post = $this->request->getPost();
         $nama = trim((string) ($post['nama'] ?? ''));
-        if ($nama === '') {
-            return redirect()->back()->withInput()->with('errors', ['Nama camat wajib diisi.']);
+        $kecamatanId = $post['kecamatan_id'] ?? null;
+        if ($nama === '' || empty($kecamatanId)) {
+            return redirect()->back()->withInput()->with('errors', ['Nama camat dan kecamatan wajib diisi.']);
         }
 
         $model = new CamatModel();
         $model->update($id, [
+            'kecamatan_id' => $kecamatanId,
             'nama' => $nama,
             'nip' => $post['nip'] ?? null,
             'aktif' => isset($post['aktif']) ? 1 : 0,
@@ -211,6 +320,29 @@ class MasterData extends BaseController
         $model = new CamatModel();
         $model->delete($id);
         return redirect()->to('/master/camat')->with('success', 'Camat dihapus.');
+    }
+
+    public function bulkUpdateCamatKecamatan()
+    {
+        $ids = (array) $this->request->getPost('ids');
+        $kecamatanId = $this->request->getPost('kecamatan_id');
+        $ids = array_values(array_filter($ids, static function ($id) {
+            return ctype_digit((string) $id);
+        }));
+
+        if (empty($kecamatanId) || empty($ids)) {
+            return redirect()->back()->with('errors', ['Pilih camat dan kecamatan untuk diperbarui.']);
+        }
+
+        $kecamatanModel = new KecamatanModel();
+        if (! $kecamatanModel->find($kecamatanId)) {
+            return redirect()->back()->with('errors', ['Kecamatan tidak ditemukan.']);
+        }
+
+        $model = new CamatModel();
+        $model->whereIn('id', $ids)->set(['kecamatan_id' => $kecamatanId])->update();
+
+        return redirect()->to('/master/camat')->with('success', 'Kecamatan camat diperbarui.');
     }
 
     public function pemohon()

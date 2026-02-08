@@ -8,8 +8,15 @@ class CamatSeeder extends Seeder
 {
     public function run()
     {
+        $kecamatan = $this->db->table('kecamatan')->get()->getRowArray();
+        $kecamatanId = $kecamatan['id'] ?? null;
+        if (!$kecamatanId) {
+            return;
+        }
+
         $data = [
             [
+                'kecamatan_id' => $kecamatanId,
                 'nama' => 'Camat Banawa',
                 'nip' => '197802021999031001',
                 'aktif' => 1,

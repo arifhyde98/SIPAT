@@ -55,6 +55,9 @@ $routes->group('surat', ['filter' => 'role:Admin,Pengelola Aset'], static functi
     $routes->get('skpt', 'SuratTanah::skpt');
     $routes->post('skpt', 'SuratTanah::storeSkpt');
     $routes->get('skpt/(:num)', 'SuratTanah::showSkpt/$1');
+    $routes->get('skpt/(:num)/print', 'SuratTanah::printSkpt/$1');
+    $routes->get('skpt/(:num)/pdf', 'SuratTanah::pdfSkpt/$1');
+    $routes->get('skpt/(:num)/word', 'SuratTanah::exportWordSkpt/$1');
     $routes->get('pernyataan-batas', 'SuratTanah::pernyataanBatas');
 });
 
@@ -86,9 +89,16 @@ $routes->group('landing-settings', ['filter' => 'role:Admin'], static function (
 });
 
 $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
+    $routes->get('kecamatan', 'MasterData::kecamatan');
+    $routes->get('kecamatan/(:num)/edit', 'MasterData::editKecamatan/$1');
+    $routes->post('kecamatan', 'MasterData::storeKecamatan');
+    $routes->post('kecamatan/(:num)', 'MasterData::updateKecamatan/$1');
+    $routes->post('kecamatan/delete/(:num)', 'MasterData::deleteKecamatan/$1');
+
     $routes->get('desa', 'MasterData::desa');
     $routes->get('desa/(:num)/edit', 'MasterData::editDesa/$1');
     $routes->post('desa', 'MasterData::storeDesa');
+    $routes->post('desa/bulk-kecamatan', 'MasterData::bulkUpdateDesaKecamatan');
     $routes->post('desa/(:num)', 'MasterData::updateDesa/$1');
     $routes->post('desa/delete/(:num)', 'MasterData::deleteDesa/$1');
 
@@ -101,6 +111,7 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('camat', 'MasterData::camat');
     $routes->get('camat/(:num)/edit', 'MasterData::editCamat/$1');
     $routes->post('camat', 'MasterData::storeCamat');
+    $routes->post('camat/bulk-kecamatan', 'MasterData::bulkUpdateCamatKecamatan');
     $routes->post('camat/(:num)', 'MasterData::updateCamat/$1');
     $routes->post('camat/delete/(:num)', 'MasterData::deleteCamat/$1');
 

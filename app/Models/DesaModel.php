@@ -9,6 +9,7 @@ class DesaModel extends Model
     protected $table = 'desa';
     protected $primaryKey = 'id';
     protected $allowedFields = [
+        'kecamatan_id',
         'nama',
     ];
     protected $useTimestamps = true;
