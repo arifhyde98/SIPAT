@@ -28,7 +28,7 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Pilih Pemohon</label>
-                            <select name="pemohon_id" id="pemohonSelect" class="form-select">
+                            <select name="pemohon_id" id="pemohonSelect" class="form-select" required>
                                 <option value="">- pilih pemohon -</option>
                                 <?php foreach ($pemohonList ?? [] as $pemohon) : ?>
                                     <option
@@ -49,20 +49,20 @@
                             <small class="text-muted">Jika dipilih, data pemohon otomatis terisi.</small>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Nama Pemohon *</label>
-                            <input type="text" name="nama_pemohon" id="pemohonNama" class="form-control" required>
+                            <label class="form-label">Nama Pemohon</label>
+                            <input type="text" id="pemohonNama" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">NIK</label>
-                            <input type="text" name="nik" id="pemohonNik" class="form-control">
+                            <input type="text" id="pemohonNik" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Tempat, Tgl Lahir</label>
-                            <input type="text" name="ttl" id="pemohonTtl" class="form-control">
+                            <input type="text" id="pemohonTtl" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" id="pemohonJk" class="form-select">
+                            <select id="pemohonJk" class="form-select" disabled>
                                 <option value="">- pilih -</option>
                                 <option value="Laki-laki">Laki-laki</option>
                                 <option value="Perempuan">Perempuan</option>
@@ -70,19 +70,19 @@
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Warga Negara</label>
-                            <input type="text" name="warga_negara" id="pemohonWn" class="form-control">
+                            <input type="text" id="pemohonWn" class="form-control" readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Agama</label>
-                            <input type="text" name="agama" id="pemohonAgama" class="form-control">
+                            <input type="text" id="pemohonAgama" class="form-control" readonly>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Pekerjaan</label>
-                            <input type="text" name="pekerjaan" id="pemohonPekerjaan" class="form-control">
+                            <input type="text" id="pemohonPekerjaan" class="form-control" readonly>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Alamat Pemohon</label>
-                            <textarea name="alamat_pemohon" id="pemohonAlamat" class="form-control" rows="2"></textarea>
+                            <textarea id="pemohonAlamat" class="form-control" rows="2" readonly></textarea>
                         </div>
                         <div class="col-12">
                             <h6 class="text-primary">Data Tanah</h6>
@@ -136,7 +136,12 @@
                             <select name="kepala_desa_id" id="kepalaDesaSelect" class="form-select" required>
                                 <option value="">- pilih kepala desa -</option>
                                 <?php foreach ($kepalaList ?? [] as $kepala) : ?>
-                                    <option value="<?= esc($kepala['id']) ?>" data-desa="<?= esc($kepala['desa_id']) ?>">
+                                    <option
+                                        value="<?= esc($kepala['id']) ?>"
+                                        data-desa="<?= esc($kepala['desa_id']) ?>"
+                                        data-nama="<?= esc($kepala['nama']) ?>"
+                                        data-nip="<?= esc($kepala['nip'] ?? '') ?>"
+                                    >
                                         <?= esc($kepala['nama']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -145,29 +150,35 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nama Kepala Desa</label>
-                            <input type="text" name="kepala_desa_nama" class="form-control">
+                            <input type="text" id="kepalaDesaNama" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">NIP Kepala Desa</label>
-                            <input type="text" name="kepala_desa_nip" class="form-control">
+                            <input type="text" id="kepalaDesaNip" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Pilih Camat</label>
-                            <select name="camat_id" class="form-select" required>
+                            <select name="camat_id" id="camatSelect" class="form-select" required>
                                 <option value="">- pilih camat -</option>
                                 <?php foreach ($camatList ?? [] as $camat) : ?>
-                                    <option value="<?= esc($camat['id']) ?>"><?= esc($camat['nama']) ?></option>
+                                    <option
+                                        value="<?= esc($camat['id']) ?>"
+                                        data-nama="<?= esc($camat['nama']) ?>"
+                                        data-nip="<?= esc($camat['nip'] ?? '') ?>"
+                                    >
+                                        <?= esc($camat['nama']) ?>
+                                    </option>
                                 <?php endforeach; ?>
                             </select>
                             <small class="text-muted">Jika dipilih, nama & NIP otomatis terisi.</small>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nama Camat</label>
-                            <input type="text" name="camat_nama" class="form-control">
+                            <input type="text" id="camatNama" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">NIP Camat</label>
-                            <input type="text" name="camat_nip" class="form-control">
+                            <input type="text" id="camatNip" class="form-control" readonly>
                         </div>
                     </div>
                     <div class="mt-3 d-flex justify-content-end">
@@ -197,7 +208,7 @@
                                     <tr>
                                         <td><?= esc($r['id']) ?></td>
                                         <td><?= esc($r['nomor_surat']) ?></td>
-                                        <td><?= esc($r['nama_pemohon']) ?></td>
+                                        <td><?= esc($r['pemohon_nama'] ?? '-') ?></td>
                                         <td><?= esc($r['tanggal_surat'] ?? '-') ?></td>
                                         <td>
                                             <a href="<?= base_url('surat/skpt/' . $r['id']) ?>" class="btn btn-sm btn-outline-primary">Preview</a>
@@ -223,7 +234,7 @@
                         <div class="text-center" style="font-size: 12px; line-height: 1.4;">
                             <div class="fw-semibold">PEMERINTAH KABUPATEN DONGGALA</div>
                             <div class="fw-semibold">KECAMATAN BANAWA</div>
-                            <div class="text-danger fw-semibold">KELURAHAN KABONGA KECIL</div>
+                            <div class="text-danger fw-semibold">DESA/KELURAHAN <?= esc($skpt['desa_nama'] ?? '-') ?></div>
                             <div class="fw-semibold">SURAT KETERANGAN PENGUASAAN TANAH</div>
                             <div class="mt-2">NOMOR : <?= esc($skpt['nomor_surat']) ?></div>
                         </div>
@@ -232,14 +243,14 @@
                             Yang bertanda tangan di bawah ini Lurah Kabonga Kecil Kecamatan Banawa Kabupaten Donggala
                             menerangkan bahwa yang bersangkutan:
                             <div class="mt-2">
-                                <div>Nama: <?= esc($skpt['nama_pemohon']) ?></div>
-                                <div>NIK: <?= esc($skpt['nik'] ?? '-') ?></div>
-                                <div>TTL: <?= esc($skpt['ttl'] ?? '-') ?></div>
-                                <div>Jenis Kelamin: <?= esc($skpt['jenis_kelamin'] ?? '-') ?></div>
-                                <div>Warga Negara: <?= esc($skpt['warga_negara'] ?? '-') ?></div>
-                                <div>Agama: <?= esc($skpt['agama'] ?? '-') ?></div>
-                                <div>Pekerjaan: <?= esc($skpt['pekerjaan'] ?? '-') ?></div>
-                                <div>Alamat: <?= esc($skpt['alamat_pemohon'] ?? '-') ?></div>
+                                <div>Nama: <?= esc($skpt['pemohon_nama'] ?? '-') ?></div>
+                                <div>NIK: <?= esc($skpt['pemohon_nik'] ?? '-') ?></div>
+                                <div>TTL: <?= esc($skpt['pemohon_ttl'] ?? '-') ?></div>
+                                <div>Jenis Kelamin: <?= esc($skpt['pemohon_jk'] ?? '-') ?></div>
+                                <div>Warga Negara: <?= esc($skpt['pemohon_wn'] ?? '-') ?></div>
+                                <div>Agama: <?= esc($skpt['pemohon_agama'] ?? '-') ?></div>
+                                <div>Pekerjaan: <?= esc($skpt['pemohon_pekerjaan'] ?? '-') ?></div>
+                                <div>Alamat: <?= esc($skpt['pemohon_alamat'] ?? '-') ?></div>
                             </div>
                             <div class="mt-3">
                                 Menguasai sebidang tanah yang terletak di:
@@ -268,7 +279,7 @@
                                     <?= esc($skpt['camat_nip'] ?? '') ?>
                                 </div>
                                 <div class="text-center">
-                                    Kepala Desa Kabonga Kecil<br><br><br>
+                                    Kepala Desa <?= esc($skpt['desa_nama'] ?? '-') ?><br><br><br>
                                     <strong><?= esc($skpt['kepala_desa_nama'] ?? '-') ?></strong><br>
                                     <?= esc($skpt['kepala_desa_nip'] ?? '') ?>
                                 </div>
@@ -288,6 +299,7 @@
         const desaSelect = document.getElementById('desaSelect');
         const kepalaSelect = document.getElementById('kepalaDesaSelect');
         const pemohonSelect = document.getElementById('pemohonSelect');
+        const camatSelect = document.getElementById('camatSelect');
         if (!desaSelect || !kepalaSelect) return;
 
         const allOptions = Array.from(kepalaSelect.options);
@@ -305,10 +317,36 @@
             });
         };
 
-        desaSelect.addEventListener('change', filterKepala);
-        filterKepala();
+        const kepalaNama = document.getElementById('kepalaDesaNama');
+        const kepalaNip = document.getElementById('kepalaDesaNip');
+        const camatNama = document.getElementById('camatNama');
+        const camatNip = document.getElementById('camatNip');
 
-        if (pemohonSelect) {
+        const updateKepalaInfo = () => {
+            const opt = kepalaSelect.selectedOptions[0];
+            if (!opt || opt.value === '') {
+                if (kepalaNama) kepalaNama.value = '';
+                if (kepalaNip) kepalaNip.value = '';
+                return;
+            }
+            if (kepalaNama) kepalaNama.value = opt.dataset.nama || '';
+            if (kepalaNip) kepalaNip.value = opt.dataset.nip || '';
+        };
+
+        const updateCamatInfo = () => {
+            const opt = camatSelect ? camatSelect.selectedOptions[0] : null;
+            if (!opt || opt.value === '') {
+                if (camatNama) camatNama.value = '';
+                if (camatNip) camatNip.value = '';
+                return;
+            }
+            if (camatNama) camatNama.value = opt.dataset.nama || '';
+            if (camatNip) camatNip.value = opt.dataset.nip || '';
+        };
+
+        const updatePemohonInfo = () => {
+            if (!pemohonSelect) return;
+            const opt = pemohonSelect.selectedOptions[0];
             const nama = document.getElementById('pemohonNama');
             const nik = document.getElementById('pemohonNik');
             const ttl = document.getElementById('pemohonTtl');
@@ -318,32 +356,39 @@
             const pekerjaan = document.getElementById('pemohonPekerjaan');
             const alamat = document.getElementById('pemohonAlamat');
 
-            const setReadonly = (state) => {
-                [nama, nik, ttl, wn, agama, pekerjaan].forEach(el => {
-                    if (el) el.readOnly = state;
-                });
-                if (alamat) alamat.readOnly = state;
-                if (jk) jk.disabled = state;
-            };
+            if (!opt || opt.value === '') {
+                if (nama) nama.value = '';
+                if (nik) nik.value = '';
+                if (ttl) ttl.value = '';
+                if (jk) jk.value = '';
+                if (wn) wn.value = '';
+                if (agama) agama.value = '';
+                if (pekerjaan) pekerjaan.value = '';
+                if (alamat) alamat.value = '';
+                return;
+            }
+            if (nama) nama.value = opt.dataset.nama || '';
+            if (nik) nik.value = opt.dataset.nik || '';
+            if (ttl) ttl.value = opt.dataset.ttl || '';
+            if (jk) jk.value = opt.dataset.jk || '';
+            if (wn) wn.value = opt.dataset.wn || '';
+            if (agama) agama.value = opt.dataset.agama || '';
+            if (pekerjaan) pekerjaan.value = opt.dataset.pekerjaan || '';
+            if (alamat) alamat.value = opt.dataset.alamat || '';
+        };
 
-            pemohonSelect.addEventListener('change', () => {
-                const opt = pemohonSelect.selectedOptions[0];
-                if (!opt || opt.value === '') {
-                    setReadonly(false);
-                    return;
-                }
-                if (nama) nama.value = opt.dataset.nama || '';
-                if (nik) nik.value = opt.dataset.nik || '';
-                if (ttl) ttl.value = opt.dataset.ttl || '';
-                if (jk) jk.value = opt.dataset.jk || '';
-                if (wn) wn.value = opt.dataset.wn || '';
-                if (agama) agama.value = opt.dataset.agama || '';
-                if (pekerjaan) pekerjaan.value = opt.dataset.pekerjaan || '';
-                if (alamat) alamat.value = opt.dataset.alamat || '';
-                setReadonly(true);
-            });
-            setReadonly(false);
-        }
+        desaSelect.addEventListener('change', () => {
+            filterKepala();
+            updateKepalaInfo();
+        });
+        kepalaSelect.addEventListener('change', updateKepalaInfo);
+        if (camatSelect) camatSelect.addEventListener('change', updateCamatInfo);
+        if (pemohonSelect) pemohonSelect.addEventListener('change', updatePemohonInfo);
+
+        filterKepala();
+        updateKepalaInfo();
+        updateCamatInfo();
+        updatePemohonInfo();
     });
 </script>
 <?= $this->endSection() ?>

@@ -6,7 +6,12 @@
         <h1 class="h4 fw-semibold mb-1">Master Status Proses</h1>
         <small class="text-muted">Urutan & warna status</small>
     </div>
-    <a href="<?= base_url('status/create') ?>" class="btn btn-primary">Tambah Status</a>
+    <a
+        href="<?= base_url('status/create') ?>"
+        data-modal-status
+        data-modal-url="<?= base_url('status/create/modal') ?>"
+        class="btn btn-primary"
+    >Tambah Status</a>
 </div>
 
 <div class="card">
@@ -32,7 +37,12 @@
                             <td><span class="badge bg-<?= esc($row['warna'] ?? 'secondary') ?>"><?= esc($row['warna'] ?? '-') ?></span></td>
                             <td class="text-end">
                                 <div class="btn-group gap-1" role="group">
-                                    <a href="<?= base_url('status/' . $row['id_status'] . '/edit') ?>" class="btn btn-xs btn-warning">
+                                    <a
+                                        href="<?= base_url('status/' . $row['id_status'] . '/edit') ?>"
+                                        data-modal-status
+                                        data-modal-url="<?= base_url('status/' . $row['id_status'] . '/edit/modal') ?>"
+                                        class="btn btn-xs btn-warning"
+                                    >
                                         <i class="bi bi-pencil-square me-1"></i>Edit
                                     </a>
                                     <form action="<?= base_url('status/' . $row['id_status']) ?>" method="post" class="d-inline">
@@ -52,4 +62,41 @@
         <?php endif; ?>
     </div>
 </div>
+<div class="modal fade modal-modern" id="modalStatus" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalEl = document.getElementById('modalStatus');
+        if (!modalEl || typeof bootstrap === 'undefined') return;
+        const modal = new bootstrap.Modal(modalEl);
+
+        document.querySelectorAll('[data-modal-status]').forEach(function (link) {
+            link.addEventListener('click', async function (e) {
+                e.preventDefault();
+                const url = link.getAttribute('data-modal-url') || link.getAttribute('href');
+                const fallback = link.getAttribute('href');
+                const content = modalEl.querySelector('.modal-content');
+                content.innerHTML = '<div class="modal-body p-4">Memuat...</div>';
+                try {
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) {
+                        window.location.href = fallback;
+                        return;
+                    }
+                    const html = await res.text();
+                    content.innerHTML = html;
+                    modal.show();
+                } catch (err) {
+                    window.location.href = fallback;
+                }
+            });
+        });
+    });
+</script>
 <?= $this->endSection() ?>

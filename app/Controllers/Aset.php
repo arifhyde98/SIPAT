@@ -235,6 +235,43 @@ class Aset extends BaseController
         ]);
     }
 
+    public function modal($id)
+    {
+        $asetModel = new AsetModel();
+        $prosesModel = new ProsesAsetModel();
+        $statusModel = new StatusProsesModel();
+        $dokumenModel = new DokumenAsetModel();
+        $pengamananModel = new PengamananFisikModel();
+
+        $aset = $asetModel->find($id);
+        if (!$aset) {
+            throw new PageNotFoundException('Aset tidak ditemukan');
+        }
+
+        $prosesList = $prosesModel
+            ->select('proses_aset.*, status_proses.nama_status, status_proses.warna')
+            ->join('status_proses', 'status_proses.id_status = proses_aset.id_status', 'left')
+            ->where('proses_aset.id_aset', $id)
+            ->orderBy('proses_aset.id_proses', 'ASC')
+            ->findAll();
+
+        $dokumenList = $dokumenModel
+            ->where('id_aset', $id)
+            ->orderBy('uploaded_at', 'DESC')
+            ->findAll();
+
+        $pengamanan = $pengamananModel->where('id_aset', $id)->first();
+        $statusList = $statusModel->orderBy('urutan', 'ASC')->findAll();
+
+        return view('aset/modal', [
+            'aset'        => $aset,
+            'prosesList'  => $prosesList,
+            'dokumenList' => $dokumenList,
+            'pengamanan'  => $pengamanan,
+            'statusList'  => $statusList,
+        ]);
+    }
+
     public function create()
     {
         return view('aset/create');

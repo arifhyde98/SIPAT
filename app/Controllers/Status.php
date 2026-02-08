@@ -20,6 +20,11 @@ class Status extends BaseController
         return view('status/create');
     }
 
+    public function modalCreate()
+    {
+        return view('status/modal-create');
+    }
+
     public function store()
     {
         $rules = [
@@ -52,6 +57,17 @@ class Status extends BaseController
         }
 
         return view('status/edit', ['row' => $row]);
+    }
+
+    public function modalEdit($id)
+    {
+        $model = new StatusProsesModel();
+        $row = $model->find($id);
+        if (!$row) {
+            throw new PageNotFoundException('Status tidak ditemukan');
+        }
+
+        return view('status/modal-edit', ['row' => $row]);
     }
 
     public function update($id)

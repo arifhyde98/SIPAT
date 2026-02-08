@@ -10,10 +10,21 @@ use App\Models\PemohonModel;
 
 class SuratTanah extends BaseController
 {
+    private function fetchRecentSkpt(): array
+    {
+        $db = \Config\Database::connect();
+        return $db->table('surat_skpt s')
+            ->select('s.id, s.nomor_surat, s.tanggal_surat, p.nama as pemohon_nama')
+            ->join('pemohon p', 'p.id = s.pemohon_id', 'left')
+            ->orderBy('s.id', 'DESC')
+            ->limit(10)
+            ->get()
+            ->getResultArray();
+    }
+
     public function skpt()
     {
-        $model = new SuratSkptModel();
-        $recent = $model->orderBy('id', 'DESC')->findAll(10);
+        $recent = $this->fetchRecentSkpt();
         $desaModel = new DesaModel();
         $kepalaModel = new KepalaDesaModel();
         $camatModel = new CamatModel();
@@ -32,14 +43,22 @@ class SuratTanah extends BaseController
 
     public function showSkpt(int $id)
     {
-        $model = new SuratSkptModel();
-        $skpt = $model->find($id);
+        $db = \Config\Database::connect();
+        $skpt = $db->table('surat_skpt s')
+            ->select('s.*, d.nama as desa_nama, p.nama as pemohon_nama, p.nik as pemohon_nik, p.ttl as pemohon_ttl, p.jenis_kelamin as pemohon_jk, p.warga_negara as pemohon_wn, p.agama as pemohon_agama, p.pekerjaan as pemohon_pekerjaan, p.alamat as pemohon_alamat, k.nama as kepala_desa_nama, k.nip as kepala_desa_nip, c.nama as camat_nama, c.nip as camat_nip')
+            ->join('desa d', 'd.id = s.desa_id', 'left')
+            ->join('pemohon p', 'p.id = s.pemohon_id', 'left')
+            ->join('kepala_desa k', 'k.id = s.kepala_desa_id', 'left')
+            ->join('camat c', 'c.id = s.camat_id', 'left')
+            ->where('s.id', $id)
+            ->get()
+            ->getRowArray();
 
         if (! $skpt) {
             return redirect()->to('/surat/skpt')->with('errors', ['Data SKPT tidak ditemukan.']);
         }
 
-        $recent = $model->orderBy('id', 'DESC')->findAll(10);
+        $recent = $this->fetchRecentSkpt();
         $desaModel = new DesaModel();
         $kepalaModel = new KepalaDesaModel();
         $camatModel = new CamatModel();
@@ -75,14 +94,6 @@ class SuratTanah extends BaseController
             'kepala_desa_id' => $post['kepala_desa_id'] ?? null,
             'camat_id' => $post['camat_id'] ?? null,
             'pemohon_id' => $post['pemohon_id'] ?? null,
-            'nama_pemohon' => $post['nama_pemohon'] ?? '',
-            'nik' => $post['nik'] ?? null,
-            'ttl' => $post['ttl'] ?? null,
-            'jenis_kelamin' => $post['jenis_kelamin'] ?? null,
-            'warga_negara' => $post['warga_negara'] ?? null,
-            'agama' => $post['agama'] ?? null,
-            'pekerjaan' => $post['pekerjaan'] ?? null,
-            'alamat_pemohon' => $post['alamat_pemohon'] ?? null,
             'lokasi_tanah' => $post['lokasi_tanah'] ?? null,
             'luas_tanah' => $post['luas_tanah'] ?? null,
             'dasar_perolehan' => $post['dasar_perolehan'] ?? null,
@@ -92,28 +103,10 @@ class SuratTanah extends BaseController
             'batas_barat' => $post['batas_barat'] ?? null,
             'keterangan' => $post['keterangan'] ?? null,
             'tanggal_surat' => $post['tanggal_surat'] ?? null,
-            'kepala_desa_nama' => $post['kepala_desa_nama'] ?? null,
-            'kepala_desa_nip' => $post['kepala_desa_nip'] ?? null,
-            'camat_nama' => $post['camat_nama'] ?? null,
-            'camat_nip' => $post['camat_nip'] ?? null,
         ];
 
-        if (!empty($data['pemohon_id'])) {
-            $pemohon = $pemohonModel->find($data['pemohon_id']);
-            if ($pemohon) {
-                $data['nama_pemohon'] = $pemohon['nama'];
-                $data['nik'] = $pemohon['nik'] ?? null;
-                $data['ttl'] = $pemohon['ttl'] ?? null;
-                $data['jenis_kelamin'] = $pemohon['jenis_kelamin'] ?? null;
-                $data['warga_negara'] = $pemohon['warga_negara'] ?? null;
-                $data['agama'] = $pemohon['agama'] ?? null;
-                $data['pekerjaan'] = $pemohon['pekerjaan'] ?? null;
-                $data['alamat_pemohon'] = $pemohon['alamat'] ?? null;
-            }
-        }
-
-        if (trim((string) $data['nama_pemohon']) === '') {
-            return redirect()->back()->withInput()->with('errors', ['Nama pemohon wajib diisi.']);
+        if (empty($data['pemohon_id'])) {
+            return redirect()->back()->withInput()->with('errors', ['Pemohon wajib dipilih.']);
         }
         if (empty($data['tanggal_surat'])) {
             return redirect()->back()->withInput()->with('errors', ['Tanggal surat wajib diisi.']);
@@ -135,19 +128,22 @@ class SuratTanah extends BaseController
             }
         }
 
+        $pemohon = $pemohonModel->find($data['pemohon_id']);
+        if (! $pemohon) {
+            return redirect()->back()->withInput()->with('errors', ['Pemohon tidak ditemukan.']);
+        }
+
         if (!empty($data['kepala_desa_id'])) {
             $kepala = $kepalaModel->find($data['kepala_desa_id']);
-            if ($kepala) {
-                $data['kepala_desa_nama'] = $kepala['nama'];
-                $data['kepala_desa_nip'] = $kepala['nip'] ?? null;
+            if (! $kepala) {
+                return redirect()->back()->withInput()->with('errors', ['Kepala desa tidak ditemukan.']);
             }
         }
 
         if (!empty($data['camat_id'])) {
             $camat = $camatModel->find($data['camat_id']);
-            if ($camat) {
-                $data['camat_nama'] = $camat['nama'];
-                $data['camat_nip'] = $camat['nip'] ?? null;
+            if (! $camat) {
+                return redirect()->back()->withInput()->with('errors', ['Camat tidak ditemukan.']);
             }
         }
 

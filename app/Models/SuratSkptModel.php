@@ -14,14 +14,6 @@ class SuratSkptModel extends Model
         'kepala_desa_id',
         'camat_id',
         'pemohon_id',
-        'nama_pemohon',
-        'nik',
-        'ttl',
-        'jenis_kelamin',
-        'warga_negara',
-        'agama',
-        'pekerjaan',
-        'alamat_pemohon',
         'lokasi_tanah',
         'luas_tanah',
         'dasar_perolehan',
@@ -31,10 +23,6 @@ class SuratSkptModel extends Model
         'batas_barat',
         'keterangan',
         'tanggal_surat',
-        'kepala_desa_nama',
-        'kepala_desa_nip',
-        'camat_nama',
-        'camat_nip',
     ];
     protected $useTimestamps = true;
 }

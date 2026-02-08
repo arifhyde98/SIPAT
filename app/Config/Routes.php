@@ -15,6 +15,7 @@ $routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
 
 $routes->group('aset', ['filter' => 'auth'], static function ($routes) {
     $routes->get('/', 'Aset::index');
+    $routes->get('(:num)/modal', 'Aset::modal/$1');
     $routes->get('(:num)', 'Aset::show/$1');
 });
 
@@ -59,8 +60,10 @@ $routes->group('surat', ['filter' => 'role:Admin,Pengelola Aset'], static functi
 
 $routes->group('users', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('/', 'Users::index');
+    $routes->get('create/modal', 'Users::modalCreate');
     $routes->get('create', 'Users::create');
     $routes->post('/', 'Users::store');
+    $routes->get('(:num)/edit/modal', 'Users::modalEdit/$1');
     $routes->get('(:num)/edit', 'Users::edit/$1');
     $routes->put('(:num)', 'Users::update/$1');
     $routes->delete('(:num)', 'Users::delete/$1');
@@ -68,8 +71,10 @@ $routes->group('users', ['filter' => 'role:Admin'], static function ($routes) {
 
 $routes->group('status', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('/', 'Status::index');
+    $routes->get('create/modal', 'Status::modalCreate');
     $routes->get('create', 'Status::create');
     $routes->post('/', 'Status::store');
+    $routes->get('(:num)/edit/modal', 'Status::modalEdit/$1');
     $routes->get('(:num)/edit', 'Status::edit/$1');
     $routes->put('(:num)', 'Status::update/$1');
     $routes->delete('(:num)', 'Status::delete/$1');

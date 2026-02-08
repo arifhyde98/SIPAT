@@ -20,6 +20,11 @@ class Users extends BaseController
         return view('users/create');
     }
 
+    public function modalCreate()
+    {
+        return view('users/modal-create');
+    }
+
     public function store()
     {
         $rules = [
@@ -58,6 +63,17 @@ class Users extends BaseController
         }
 
         return view('users/edit', ['user' => $user]);
+    }
+
+    public function modalEdit($id)
+    {
+        $model = new UserModel();
+        $user = $model->find($id);
+        if (!$user) {
+            throw new PageNotFoundException('User tidak ditemukan');
+        }
+
+        return view('users/modal-edit', ['user' => $user]);
     }
 
     public function update($id)

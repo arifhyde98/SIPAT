@@ -6,7 +6,12 @@
         <h1 class="h4 fw-semibold mb-1">Manajemen User</h1>
         <small class="text-muted">Kelola akun dan peran</small>
     </div>
-    <a href="<?= base_url('users/create') ?>" class="btn btn-primary">Tambah User</a>
+    <a
+        href="<?= base_url('users/create') ?>"
+        data-modal-user
+        data-modal-url="<?= base_url('users/create/modal') ?>"
+        class="btn btn-primary"
+    >Tambah User</a>
 </div>
 
 <div class="card">
@@ -34,7 +39,12 @@
                             <td><?= esc($user['opd'] ?? '-') ?></td>
                             <td class="text-end">
                                 <div class="btn-group gap-1" role="group">
-                                    <a href="<?= base_url('users/' . $user['id_user'] . '/edit') ?>" class="btn btn-xs btn-warning">
+                                    <a
+                                        href="<?= base_url('users/' . $user['id_user'] . '/edit') ?>"
+                                        data-modal-user
+                                        data-modal-url="<?= base_url('users/' . $user['id_user'] . '/edit/modal') ?>"
+                                        class="btn btn-xs btn-warning"
+                                    >
                                         <i class="bi bi-pencil-square me-1"></i>Edit
                                     </a>
                                     <form action="<?= base_url('users/' . $user['id_user']) ?>" method="post" class="d-inline">
@@ -54,4 +64,41 @@
         <?php endif; ?>
     </div>
 </div>
+<div class="modal fade modal-modern" id="modalUser" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalEl = document.getElementById('modalUser');
+        if (!modalEl || typeof bootstrap === 'undefined') return;
+        const modal = new bootstrap.Modal(modalEl);
+
+        document.querySelectorAll('[data-modal-user]').forEach(function (link) {
+            link.addEventListener('click', async function (e) {
+                e.preventDefault();
+                const url = link.getAttribute('data-modal-url') || link.getAttribute('href');
+                const fallback = link.getAttribute('href');
+                const content = modalEl.querySelector('.modal-content');
+                content.innerHTML = '<div class="modal-body p-4">Memuat...</div>';
+                try {
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) {
+                        window.location.href = fallback;
+                        return;
+                    }
+                    const html = await res.text();
+                    content.innerHTML = html;
+                    modal.show();
+                } catch (err) {
+                    window.location.href = fallback;
+                }
+            });
+        });
+    });
+</script>
 <?= $this->endSection() ?>

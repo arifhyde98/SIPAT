@@ -149,7 +149,12 @@
                             <td><?= esc($row['durasi_hari']) ?></td>
                             <td class="text-end">
                                 <div class="btn-group gap-1" role="group">
-                                    <a href="<?= base_url('aset/' . $row['id_aset']) ?>" class="btn btn-xs btn-primary">
+                                    <a
+                                        href="<?= base_url('aset/' . $row['id_aset']) ?>"
+                                        data-modal-aset
+                                        data-modal-url="<?= base_url('aset/' . $row['id_aset'] . '/modal') ?>"
+                                        class="btn btn-xs btn-primary"
+                                    >
                                         <i class="bi bi-eye me-1"></i>Detail
                                     </a>
                                     <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
@@ -179,4 +184,42 @@
         <?php endif; ?>
     </div>
 </div>
+
+<div class="modal fade modal-modern" id="modalRemote" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modalEl = document.getElementById('modalRemote');
+        if (!modalEl || typeof bootstrap === 'undefined') return;
+        const modal = new bootstrap.Modal(modalEl);
+
+        document.querySelectorAll('[data-modal-aset]').forEach(function (link) {
+            link.addEventListener('click', async function (e) {
+                e.preventDefault();
+                const url = link.getAttribute('data-modal-url') || link.getAttribute('href');
+                const fallback = link.getAttribute('href');
+                const content = modalEl.querySelector('.modal-content');
+                content.innerHTML = '<div class="modal-body p-4">Memuat...</div>';
+                try {
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) {
+                        window.location.href = fallback;
+                        return;
+                    }
+                    const html = await res.text();
+                    content.innerHTML = html;
+                    modal.show();
+                } catch (err) {
+                    window.location.href = fallback;
+                }
+            });
+        });
+    });
+</script>
 <?= $this->endSection() ?>
