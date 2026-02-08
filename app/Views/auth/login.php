@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="id">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,26 +14,31 @@
             --pill: #e9eef3;
             --green: #58b33f;
         }
+
         body {
             background: var(--blue);
             min-height: 100vh;
             font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
         }
+
         .brand-title {
             font-weight: 800;
             letter-spacing: 2px;
             font-size: 56px;
         }
+
         .sub-title {
             letter-spacing: 2px;
             font-size: 14px;
         }
+
         .login-panel {
             background: var(--light);
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
         }
+
         .logo-box {
             width: 140px;
             height: 140px;
@@ -43,15 +49,18 @@
             justify-content: center;
             box-shadow: inset 0 0 0 1px #c5d2de;
         }
+
         .pill-input {
             background: var(--pill);
             border: none;
             border-radius: 999px;
             padding: 12px 16px 12px 44px;
         }
+
         .pill-input:focus {
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
         }
+
         .pill-icon {
             position: absolute;
             left: 14px;
@@ -59,6 +68,7 @@
             transform: translateY(-50%);
             color: #6b7a89;
         }
+
         .btn-login {
             background: var(--green);
             border: none;
@@ -67,19 +77,25 @@
             font-weight: 700;
             color: #fff;
         }
+
         .btn-login:hover {
             opacity: 0.92;
             color: #fff;
         }
+
         .footer-text {
             font-size: 12px;
             letter-spacing: 1px;
         }
+
         @media (max-width: 992px) {
-            .brand-title { font-size: 42px; }
+            .brand-title {
+                font-size: 42px;
+            }
         }
     </style>
 </head>
+
 <body class="d-flex align-items-center">
     <div class="container py-5">
         <div class="text-center text-white mb-4">
@@ -105,8 +121,7 @@
                         <img
                             src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png/196px-Lambang_Kabupaten_Donggala_%282015-sekarang%29.png"
                             alt="Logo Kabupaten Donggala"
-                            style="max-width: 110px;"
-                        >
+                            style="max-width: 110px;">
                     </div>
                 </div>
                 <div class="col-md-8">
@@ -129,7 +144,7 @@
                 </div>
             </div>
             <div class="text-center mt-4 footer-text text-muted">
-                All Right Reserved — KEMENTERIAN DALAM NEGERI
+                All Right Reserved —
             </div>
         </div>
     </div>
@@ -144,4 +159,5 @@
         }
     </script>
 </body>
+
 </html>
