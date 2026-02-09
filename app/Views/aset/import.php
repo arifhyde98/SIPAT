@@ -9,17 +9,6 @@
     <a href="<?= base_url('aset') ?>" class="btn btn-outline-secondary">Kembali</a>
 </div>
 
-<?php $errors = session('errors') ?? []; ?>
-<?php if (!empty($errors)) : ?>
-    <div class="alert alert-danger">
-        <ul class="mb-0">
-            <?php foreach ($errors as $error) : ?>
-                <li><?= esc($error) ?></li>
-            <?php endforeach; ?>
-        </ul>
-    </div>
-<?php endif; ?>
-
 <div class="card">
     <div class="card-body">
         <p class="mb-2">Unduh template (CSV):</p>

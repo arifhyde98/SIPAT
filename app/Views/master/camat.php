@@ -89,7 +89,7 @@
                                     </td>
                                     <td class="text-end">
                                         <a href="<?= base_url('master/camat/' . $row['id'] . '/edit') ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form method="post" action="<?= base_url('master/camat/delete/' . $row['id']) ?>" onsubmit="return confirm('Hapus data ini?')">
+                                        <form method="post" action="<?= base_url('master/camat/delete/' . $row['id']) ?>" data-confirm="Hapus data ini?">
                                             <?= csrf_field() ?>
                                             <button class="btn btn-sm btn-outline-danger">Hapus</button>
                                         </form>

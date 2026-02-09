@@ -8,12 +8,46 @@ class KecamatanSeeder extends Seeder
 {
     public function run()
     {
-        $data = [
-            ['nama' => 'Banawa', 'created_at' => date('Y-m-d H:i:s')],
-            ['nama' => 'Banawa Selatan', 'created_at' => date('Y-m-d H:i:s')],
-            ['nama' => 'Banawa Tengah', 'created_at' => date('Y-m-d H:i:s')],
+        $names = [
+            'Balaesang',
+            'Balaesang Tanjung',
+            'Banawa',
+            'Banawa Selatan',
+            'Banawa Tengah',
+            'Dampelas',
+            'Labuan',
+            'Pinembani',
+            'Rio Pakava',
+            'Sindue',
+            'Sindue Tobata',
+            'Sindue Tombusabora',
+            'Sirenja',
+            'Sojol',
+            'Sojol Utara',
+            'Tanantovea',
         ];
 
-        $this->db->table('kecamatan')->insertBatch($data);
+        $existingRows = $this->db->table('kecamatan')->select('nama')->get()->getResultArray();
+        $existing = [];
+        foreach ($existingRows as $row) {
+            $existing[strtolower((string) $row['nama'])] = true;
+        }
+
+        $now = date('Y-m-d H:i:s');
+        $data = [];
+        foreach ($names as $name) {
+            $key = strtolower($name);
+            if (isset($existing[$key])) {
+                continue;
+            }
+            $data[] = [
+                'nama' => $name,
+                'created_at' => $now,
+            ];
+        }
+
+        if ($data) {
+            $this->db->table('kecamatan')->insertBatch($data);
+        }
     }
 }

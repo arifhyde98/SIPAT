@@ -70,14 +70,36 @@ class MasterData extends BaseController
     {
         $model = new DesaModel();
         $kecamatanModel = new KecamatanModel();
-        $rows = $model->select('desa.*, kecamatan.nama as kecamatan_nama')
-            ->join('kecamatan', 'kecamatan.id = desa.kecamatan_id', 'left')
-            ->orderBy('desa.nama', 'ASC')
-            ->findAll();
+        $filterKecamatan = $this->request->getGet('kecamatan_id');
+        $filterJenis = $this->request->getGet('jenis');
+        $filterQ = trim((string) $this->request->getGet('q'));
+
+        $builder = $model->select('desa.*, kecamatan.nama as kecamatan_nama')
+            ->join('kecamatan', 'kecamatan.id = desa.kecamatan_id', 'left');
+
+        if (!empty($filterKecamatan)) {
+            $builder->where('desa.kecamatan_id', $filterKecamatan);
+        }
+        if (!empty($filterJenis)) {
+            $builder->where('desa.jenis', $filterJenis);
+        }
+        if ($filterQ !== '') {
+            $builder->groupStart()
+                ->like('desa.nama', $filterQ)
+                ->orLike('kecamatan.nama', $filterQ)
+                ->groupEnd();
+        }
+
+        $rows = $builder->orderBy('desa.nama', 'ASC')->findAll();
         return view('master/desa', [
             'title' => 'Master Desa',
             'rows' => $rows,
             'kecamatanList' => $kecamatanModel->orderBy('nama', 'ASC')->findAll(),
+            'filters' => [
+                'kecamatan_id' => $filterKecamatan,
+                'jenis' => $filterJenis,
+                'q' => $filterQ,
+            ],
         ]);
     }
 
@@ -85,14 +107,16 @@ class MasterData extends BaseController
     {
         $nama = trim((string) $this->request->getPost('nama'));
         $kecamatanId = $this->request->getPost('kecamatan_id');
-        if ($nama === '' || empty($kecamatanId)) {
-            return redirect()->back()->withInput()->with('errors', ['Nama desa dan kecamatan wajib diisi.']);
+        $jenis = $this->request->getPost('jenis');
+        if ($nama === '' || empty($kecamatanId) || empty($jenis)) {
+            return redirect()->back()->withInput()->with('errors', ['Nama, kecamatan, dan jenis wajib diisi.']);
         }
 
         $model = new DesaModel();
         $model->insert([
             'nama' => $nama,
             'kecamatan_id' => $kecamatanId,
+            'jenis' => $jenis,
         ]);
 
         return redirect()->to('/master/desa')->with('success', 'Desa disimpan.');
@@ -118,14 +142,16 @@ class MasterData extends BaseController
     {
         $nama = trim((string) $this->request->getPost('nama'));
         $kecamatanId = $this->request->getPost('kecamatan_id');
-        if ($nama === '' || empty($kecamatanId)) {
-            return redirect()->back()->withInput()->with('errors', ['Nama desa dan kecamatan wajib diisi.']);
+        $jenis = $this->request->getPost('jenis');
+        if ($nama === '' || empty($kecamatanId) || empty($jenis)) {
+            return redirect()->back()->withInput()->with('errors', ['Nama, kecamatan, dan jenis wajib diisi.']);
         }
 
         $model = new DesaModel();
         $model->update($id, [
             'nama' => $nama,
             'kecamatan_id' => $kecamatanId,
+            'jenis' => $jenis,
         ]);
 
         return redirect()->to('/master/desa')->with('success', 'Desa diperbarui.');
@@ -133,6 +159,22 @@ class MasterData extends BaseController
 
     public function deleteDesa(int $id)
     {
+        $db = \Config\Database::connect();
+        $kepalaCount = (int) $db->table('kepala_desa')->where('desa_id', $id)->countAllResults();
+        $skptCount = (int) $db->table('surat_skpt')->where('desa_id', $id)->countAllResults();
+
+        if ($kepalaCount > 0 || $skptCount > 0) {
+            $messages = [];
+            if ($kepalaCount > 0) {
+                $messages[] = "Desa tidak bisa dihapus karena masih dipakai {$kepalaCount} data Kepala Desa/Lurah.";
+            }
+            if ($skptCount > 0) {
+                $messages[] = "Desa tidak bisa dihapus karena masih dipakai {$skptCount} data SKPT.";
+            }
+            $messages[] = 'Hapus atau pindahkan relasi terlebih dahulu.';
+            return redirect()->to('/master/desa')->with('errors', $messages);
+        }
+
         $model = new DesaModel();
         $model->delete($id);
         return redirect()->to('/master/desa')->with('success', 'Desa dihapus.');
@@ -147,7 +189,7 @@ class MasterData extends BaseController
         }));
 
         if (empty($kecamatanId) || empty($ids)) {
-            return redirect()->back()->with('errors', ['Pilih desa dan kecamatan untuk diperbarui.']);
+            return redirect()->back()->with('errors', ['Pilih kecamatan tujuan dan centang minimal 1 desa untuk diperbarui.']);
         }
 
         $kecamatanModel = new KecamatanModel();
@@ -331,7 +373,7 @@ class MasterData extends BaseController
         }));
 
         if (empty($kecamatanId) || empty($ids)) {
-            return redirect()->back()->with('errors', ['Pilih camat dan kecamatan untuk diperbarui.']);
+            return redirect()->back()->with('errors', ['Pilih kecamatan tujuan dan centang minimal 1 camat untuk diperbarui.']);
         }
 
         $kecamatanModel = new KecamatanModel();
@@ -367,10 +409,12 @@ class MasterData extends BaseController
             'nama' => $nama,
             'nik' => $post['nik'] ?? null,
             'ttl' => $post['ttl'] ?? null,
+            'umur' => $post['umur'] ?? null,
             'jenis_kelamin' => $post['jenis_kelamin'] ?? null,
             'warga_negara' => $post['warga_negara'] ?? null,
             'agama' => $post['agama'] ?? null,
             'pekerjaan' => $post['pekerjaan'] ?? null,
+            'jabatan' => $post['jabatan'] ?? null,
             'alamat' => $post['alamat'] ?? null,
         ]);
 
@@ -404,10 +448,12 @@ class MasterData extends BaseController
             'nama' => $nama,
             'nik' => $post['nik'] ?? null,
             'ttl' => $post['ttl'] ?? null,
+            'umur' => $post['umur'] ?? null,
             'jenis_kelamin' => $post['jenis_kelamin'] ?? null,
             'warga_negara' => $post['warga_negara'] ?? null,
             'agama' => $post['agama'] ?? null,
             'pekerjaan' => $post['pekerjaan'] ?? null,
+            'jabatan' => $post['jabatan'] ?? null,
             'alamat' => $post['alamat'] ?? null,
         ]);
 

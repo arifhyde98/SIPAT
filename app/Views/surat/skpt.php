@@ -24,6 +24,10 @@
                             <input type="date" name="tanggal_surat" class="form-control" required>
                         </div>
                         <div class="col-12">
+                            <label class="form-label">Alamat Kantor (Kop Surat)</label>
+                            <input type="text" name="alamat_kantor" class="form-control" placeholder="Contoh: Jl. Poros Palu – Mamuju Kel. Kabonga Kecil Kec. Banawa">
+                        </div>
+                        <div class="col-12">
                             <h6 class="text-primary">Data Pemohon</h6>
                         </div>
                         <div class="col-md-6">
@@ -36,10 +40,12 @@
                                         data-nama="<?= esc($pemohon['nama']) ?>"
                                         data-nik="<?= esc($pemohon['nik'] ?? '') ?>"
                                         data-ttl="<?= esc($pemohon['ttl'] ?? '') ?>"
+                                        data-umur="<?= esc($pemohon['umur'] ?? '') ?>"
                                         data-jk="<?= esc($pemohon['jenis_kelamin'] ?? '') ?>"
                                         data-wn="<?= esc($pemohon['warga_negara'] ?? '') ?>"
                                         data-agama="<?= esc($pemohon['agama'] ?? '') ?>"
                                         data-pekerjaan="<?= esc($pemohon['pekerjaan'] ?? '') ?>"
+                                        data-jabatan="<?= esc($pemohon['jabatan'] ?? '') ?>"
                                         data-alamat="<?= esc($pemohon['alamat'] ?? '') ?>"
                                     >
                                         <?= esc($pemohon['nama']) ?>
@@ -61,6 +67,10 @@
                             <input type="text" id="pemohonTtl" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
+                            <label class="form-label">Umur</label>
+                            <input type="text" id="pemohonUmur" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-6">
                             <label class="form-label">Jenis Kelamin</label>
                             <select id="pemohonJk" class="form-select" disabled>
                                 <option value="">- pilih -</option>
@@ -79,6 +89,10 @@
                         <div class="col-md-4">
                             <label class="form-label">Pekerjaan</label>
                             <input type="text" id="pemohonPekerjaan" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Jabatan</label>
+                            <input type="text" id="pemohonJabatan" class="form-control" readonly>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Alamat Pemohon</label>
@@ -111,6 +125,14 @@
                             <label class="form-label">Lokasi Tanah</label>
                             <textarea name="lokasi_tanah" class="form-control" rows="2"></textarea>
                         </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Jenis Tanah</label>
+                            <input type="text" name="jenis_tanah" class="form-control" placeholder="Pekarangan dan Bangunan">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Status Tanah</label>
+                            <input type="text" name="status_tanah" class="form-control" placeholder="Tanah negara (bekas tanah Swapraja)">
+                        </div>
                         <div class="col-md-4">
                             <label class="form-label">Luas (m2)</label>
                             <input type="number" step="0.01" name="luas_tanah" class="form-control">
@@ -136,6 +158,14 @@
                             <input type="text" name="batas_barat" class="form-control">
                         </div>
                         <div class="col-12">
+                            <label class="form-label">Asal / Riwayat Tanah</label>
+                            <textarea name="asal_tanah" class="form-control" rows="2" placeholder="Selanjutnya diterangkan bahwa bidang tanah tersebut berasal dari ..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Pernyataan Tanah</label>
+                            <textarea name="pernyataan_tanah" class="form-control" rows="2" placeholder="Bahwa tanah tersebut merupakan tanah Non Pertanian ..."></textarea>
+                        </div>
+                        <div class="col-12">
                             <label class="form-label">Keterangan</label>
                             <textarea name="keterangan" class="form-control" rows="2"></textarea>
                         </div>
@@ -143,7 +173,7 @@
                             <h6 class="text-primary">Pejabat</h6>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Pilih Kepala Desa</label>
+                            <label class="form-label">Pilih Kepala Desa / Lurah</label>
                             <select name="kepala_desa_id" id="kepalaDesaSelect" class="form-select" required>
                                 <option value="">- pilih kepala desa -</option>
                                 <?php foreach ($kepalaList ?? [] as $kepala) : ?>
@@ -160,11 +190,11 @@
                             <small class="text-muted">Jika dipilih, nama & NIP otomatis terisi.</small>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">Nama Kepala Desa</label>
+                            <label class="form-label">Nama Kepala Desa / Lurah</label>
                             <input type="text" id="kepalaDesaNama" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">NIP Kepala Desa</label>
+                            <label class="form-label">NIP Kepala Desa / Lurah</label>
                             <input type="text" id="kepalaDesaNip" class="form-control" readonly>
                         </div>
                         <div class="col-md-6">
@@ -245,6 +275,11 @@
                                                 <a href="<?= base_url('surat/skpt/' . $r['id']) ?>" class="btn btn-sm btn-outline-primary">Preview</a>
                                                 <a href="<?= base_url('surat/skpt/' . $r['id'] . '/pdf') ?>" class="btn btn-sm btn-outline-danger">PDF</a>
                                                 <a href="<?= base_url('surat/skpt/' . $r['id'] . '/word') ?>" class="btn btn-sm btn-outline-primary">Word</a>
+                                                <form action="<?= base_url('surat/skpt/' . $r['id']) ?>" method="post" data-confirm="Hapus SKPT ini?">
+                                                    <?= csrf_field() ?>
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger">Hapus</button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
@@ -273,57 +308,133 @@
                         </a>
                     </div>
                     <div class="border p-3" style="background: #fff;">
+                        <?php
+                            $alamatKantor = trim((string) ($skpt['alamat_kantor'] ?? ''));
+                            $desaJenisRaw = strtolower(trim((string) ($skpt['desa_jenis'] ?? '')));
+                            $desaLabel = $desaJenisRaw === 'kelurahan' ? 'Kelurahan' : 'Desa';
+                            $desaLabelUpper = strtoupper($desaLabel);
+                            $pejabatLabel = $desaLabel === 'Kelurahan' ? 'Lurah' : 'Kepala Desa';
+                            $jenisTanah = trim((string) ($skpt['jenis_tanah'] ?? ''));
+                            if ($jenisTanah === '') {
+                                $jenisTanah = 'Pekarangan dan Bangunan';
+                            }
+                            $statusTanah = trim((string) ($skpt['status_tanah'] ?? ''));
+                            if ($statusTanah === '') {
+                                $statusTanah = 'tanah yang dikuasai oleh negara (bekas tanah Swapraja)';
+                            }
+                            $lokasiTanah = trim((string) ($skpt['lokasi_tanah'] ?? ''));
+                            $lokasiText = $lokasiTanah !== '' ? $lokasiTanah . ' ' : '';
+                            $asalTanah = trim((string) ($skpt['asal_tanah'] ?? ''));
+                            if ($asalTanah === '') {
+                                $asalTanah = 'Selanjutnya diterangkan bahwa bidang tanah tersebut berasal dari tanah negara yang dibuka langsung dan dikuasai oleh …………………………... pada tahun ………... kemudian tanah tersebut diserahkan/beralih kepada Pemerintah Kabupaten Donggala secara ' . ($skpt['dasar_perolehan'] ?? 'Jual Beli tanpa surat-surat') . ' pada tahun ………';
+                            }
+                            $pernyataanTanah = trim((string) ($skpt['pernyataan_tanah'] ?? ''));
+                            if ($pernyataanTanah === '') {
+                                $pernyataanTanah = 'Bahwa tanah tersebut merupakan tanah Non Pertanian milik Pemerintah Kabupaten Donggala serta pihak lain tidak ada yang keberatan/tidak dalam sengketa.';
+                            }
+                        ?>
                         <div class="text-center" style="font-size: 12px; line-height: 1.4;">
                             <div class="fw-semibold">PEMERINTAH KABUPATEN DONGGALA</div>
                             <div class="fw-semibold">KECAMATAN <?= esc($skpt['kecamatan_nama'] ?? '-') ?></div>
-                            <div class="text-danger fw-semibold">DESA/KELURAHAN <?= esc($skpt['desa_nama'] ?? '-') ?></div>
+                            <div class="text-danger fw-semibold"><?= esc($desaLabelUpper) ?> <?= esc($skpt['desa_nama'] ?? '-') ?></div>
+                            <?php if ($alamatKantor !== '') : ?>
+                                <div>Alamat : <?= esc($alamatKantor) ?></div>
+                            <?php endif; ?>
                             <div class="fw-semibold">SURAT KETERANGAN PENGUASAAN TANAH</div>
                             <div class="mt-2">NOMOR : <?= esc($skpt['nomor_surat']) ?></div>
                         </div>
                         <hr>
                         <div style="font-size: 12px; line-height: 1.5;">
-                            Yang bertanda tangan di bawah ini Kepala Desa/Lurah <?= esc($skpt['desa_nama'] ?? '-') ?> Kecamatan <?= esc($skpt['kecamatan_nama'] ?? '-') ?> Kabupaten Donggala
-                            menerangkan bahwa yang bersangkutan:
-                            <div class="mt-2">
-                                <div>Nama: <?= esc($skpt['pemohon_nama'] ?? '-') ?></div>
-                                <div>NIK: <?= esc($skpt['pemohon_nik'] ?? '-') ?></div>
-                                <div>TTL: <?= esc($skpt['pemohon_ttl'] ?? '-') ?></div>
-                                <div>Jenis Kelamin: <?= esc($skpt['pemohon_jk'] ?? '-') ?></div>
-                                <div>Warga Negara: <?= esc($skpt['pemohon_wn'] ?? '-') ?></div>
-                                <div>Agama: <?= esc($skpt['pemohon_agama'] ?? '-') ?></div>
-                                <div>Pekerjaan: <?= esc($skpt['pemohon_pekerjaan'] ?? '-') ?></div>
-                                <div>Alamat: <?= esc($skpt['pemohon_alamat'] ?? '-') ?></div>
-                            </div>
-                            <div class="mt-3">
-                                Menguasai sebidang tanah yang terletak di:
-                                <div><?= esc($skpt['lokasi_tanah'] ?? '-') ?></div>
-                                <div>Luas: <?= esc($skpt['luas_tanah'] ?? '-') ?> m2</div>
-                                <div>Dasar Perolehan: <?= esc($skpt['dasar_perolehan'] ?? '-') ?></div>
-                            </div>
-                            <div class="mt-3">
-                                Dengan batas-batas:
-                                <div>Sebelah Utara: <?= esc($skpt['batas_utara'] ?? '-') ?></div>
-                                <div>Sebelah Timur: <?= esc($skpt['batas_timur'] ?? '-') ?></div>
-                                <div>Sebelah Selatan: <?= esc($skpt['batas_selatan'] ?? '-') ?></div>
-                                <div>Sebelah Barat: <?= esc($skpt['batas_barat'] ?? '-') ?></div>
-                            </div>
-                            <div class="mt-3">
-                                Keterangan: <?= esc($skpt['keterangan'] ?? '-') ?>
-                            </div>
+                            Yang bertanda tangan di Bawah ini <?= esc($pejabatLabel) ?> <?= esc($skpt['desa_nama'] ?? '-') ?> Kecamatan <?= esc($skpt['kecamatan_nama'] ?? '-') ?> Kabupaten Donggala Provinsi Sulawesi Tengah menerangkan dengan sebenarnya bahwa:
+                            <table class="table table-borderless mt-2 mb-3" style="font-size: 12px;">
+                                <tr>
+                                    <td style="width: 150px;">Nama</td>
+                                    <td style="width: 8px;">:</td>
+                                    <td><?= esc($skpt['pemohon_nama'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>NIK</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['pemohon_nik'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>TTL</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['pemohon_ttl'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Umur</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['pemohon_umur'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Warga Negara</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['pemohon_wn'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Pekerjaan</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['pemohon_pekerjaan'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Jabatan</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['pemohon_jabatan'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Alamat</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['pemohon_alamat'] ?? '-') ?></td>
+                                </tr>
+                            </table>
+                            Benar mengusahakan / Menggarap / Menggunakan dan atau menguasai sebidang tanah <?= esc($jenisTanah) ?> dengan status tanah <?= esc($statusTanah) ?> seluas <?= esc($skpt['luas_tanah'] ?? '-') ?> M2 yang terletak di <?= esc($lokasiText) . esc($desaLabel) ?> <?= esc($skpt['desa_nama'] ?? '-') ?> Kecamatan <?= esc($skpt['kecamatan_nama'] ?? '-') ?> dengan batas-batas sebagai berikut:
+                            <table class="table table-borderless mt-2 mb-3" style="font-size: 12px;">
+                                <tr>
+                                    <td style="width: 150px;">Sebelah Utara</td>
+                                    <td style="width: 8px;">:</td>
+                                    <td><?= esc($skpt['batas_utara'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Sebelah Timur</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['batas_timur'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Sebelah Selatan</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['batas_selatan'] ?? '-') ?></td>
+                                </tr>
+                                <tr>
+                                    <td>Sebelah Barat</td>
+                                    <td>:</td>
+                                    <td><?= esc($skpt['batas_barat'] ?? '-') ?></td>
+                                </tr>
+                            </table>
+                            <div class="mt-2"><?= nl2br(esc($asalTanah)) ?></div>
+                            <div class="mt-2"><?= nl2br(esc($pernyataanTanah)) ?></div>
+                            <div class="mt-2">Demikian surat keterangan penguasaan tanah ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya dan mengingat sumpah jabatan.</div>
+                            <?php if (!empty($skpt['keterangan'])) : ?>
+                                <div class="mt-2">Keterangan: <?= esc($skpt['keterangan']) ?></div>
+                            <?php endif; ?>
                             <div class="mt-4 text-end">
-                                <?= esc($skpt['desa_nama'] ?? '-') ?>, <?= esc($skpt['tanggal_surat'] ?? '-') ?>
+                                Tanggal, <?= esc($skpt['tanggal_surat'] ?? '-') ?>
                             </div>
                             <div class="mt-4 d-flex justify-content-between">
                                 <div class="text-center">
                                     Mengetahui,<br>
                                     Camat <?= esc($skpt['kecamatan_nama'] ?? '-') ?><br><br><br>
                                     <strong><?= esc($skpt['camat_nama'] ?? '-') ?></strong><br>
-                                    <?= esc($skpt['camat_nip'] ?? '') ?>
+                                    <?php if (!empty($skpt['camat_nip'])) : ?>
+                                        NIP. <?= esc($skpt['camat_nip']) ?>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="text-center">
-                                    Kepala Desa <?= esc($skpt['desa_nama'] ?? '-') ?><br><br><br>
+                                    <?= esc($pejabatLabel) ?> <?= esc($skpt['desa_nama'] ?? '-') ?><br><br><br>
                                     <strong><?= esc($skpt['kepala_desa_nama'] ?? '-') ?></strong><br>
-                                    <?= esc($skpt['kepala_desa_nip'] ?? '') ?>
+                                    <?php if (!empty($skpt['kepala_desa_nip'])) : ?>
+                                        NIP. <?= esc($skpt['kepala_desa_nip']) ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -348,8 +459,9 @@
         const allKepalaOptions = Array.from(kepalaSelect.options);
         const allDesaOptions = Array.from(desaSelect.options);
         const allCamatOptions = camatSelect ? Array.from(camatSelect.options) : [];
-        const filterKepala = () => {
+        const filterKepala = (selectedValue) => {
             const desaId = desaSelect.value;
+            const keepValue = selectedValue || kepalaSelect.value;
             kepalaSelect.innerHTML = '';
             allKepalaOptions.forEach(opt => {
                 if (opt.value === '') {
@@ -360,10 +472,15 @@
                     kepalaSelect.appendChild(opt.cloneNode(true));
                 }
             });
+            if (keepValue) {
+                const exists = Array.from(kepalaSelect.options).some(o => o.value === keepValue);
+                if (exists) kepalaSelect.value = keepValue;
+            }
         };
 
-        const filterDesa = () => {
+        const filterDesa = (selectedValue) => {
             const kecId = kecamatanSelect.value;
+            const keepValue = selectedValue || desaSelect.value;
             desaSelect.innerHTML = '';
             allDesaOptions.forEach(opt => {
                 if (opt.value === '') {
@@ -374,11 +491,16 @@
                     desaSelect.appendChild(opt.cloneNode(true));
                 }
             });
+            if (keepValue) {
+                const exists = Array.from(desaSelect.options).some(o => o.value === keepValue);
+                if (exists) desaSelect.value = keepValue;
+            }
         };
 
-        const filterCamat = () => {
+        const filterCamat = (selectedValue) => {
             if (!camatSelect) return;
             const kecId = kecamatanSelect.value;
+            const keepValue = selectedValue || camatSelect.value;
             camatSelect.innerHTML = '';
             allCamatOptions.forEach(opt => {
                 if (opt.value === '') {
@@ -389,6 +511,10 @@
                     camatSelect.appendChild(opt.cloneNode(true));
                 }
             });
+            if (keepValue) {
+                const exists = Array.from(camatSelect.options).some(o => o.value === keepValue);
+                if (exists) camatSelect.value = keepValue;
+            }
         };
 
         const kepalaNama = document.getElementById('kepalaDesaNama');
@@ -424,30 +550,36 @@
             const nama = document.getElementById('pemohonNama');
             const nik = document.getElementById('pemohonNik');
             const ttl = document.getElementById('pemohonTtl');
+            const umur = document.getElementById('pemohonUmur');
             const jk = document.getElementById('pemohonJk');
             const wn = document.getElementById('pemohonWn');
             const agama = document.getElementById('pemohonAgama');
             const pekerjaan = document.getElementById('pemohonPekerjaan');
+            const jabatan = document.getElementById('pemohonJabatan');
             const alamat = document.getElementById('pemohonAlamat');
 
             if (!opt || opt.value === '') {
                 if (nama) nama.value = '';
                 if (nik) nik.value = '';
                 if (ttl) ttl.value = '';
+                if (umur) umur.value = '';
                 if (jk) jk.value = '';
                 if (wn) wn.value = '';
                 if (agama) agama.value = '';
                 if (pekerjaan) pekerjaan.value = '';
+                if (jabatan) jabatan.value = '';
                 if (alamat) alamat.value = '';
                 return;
             }
             if (nama) nama.value = opt.dataset.nama || '';
             if (nik) nik.value = opt.dataset.nik || '';
             if (ttl) ttl.value = opt.dataset.ttl || '';
+            if (umur) umur.value = opt.dataset.umur || '';
             if (jk) jk.value = opt.dataset.jk || '';
             if (wn) wn.value = opt.dataset.wn || '';
             if (agama) agama.value = opt.dataset.agama || '';
             if (pekerjaan) pekerjaan.value = opt.dataset.pekerjaan || '';
+            if (jabatan) jabatan.value = opt.dataset.jabatan || '';
             if (alamat) alamat.value = opt.dataset.alamat || '';
         };
 
@@ -462,10 +594,10 @@
             const opt = desaSelect.selectedOptions[0];
             if (opt && opt.dataset.kec) {
                 kecamatanSelect.value = opt.dataset.kec;
-                filterDesa();
-                filterCamat();
+                filterDesa(desaSelect.value);
+                filterCamat(camatSelect ? camatSelect.value : '');
             }
-            filterKepala();
+            filterKepala(kepalaSelect.value);
             updateKepalaInfo();
         });
         kepalaSelect.addEventListener('change', updateKepalaInfo);

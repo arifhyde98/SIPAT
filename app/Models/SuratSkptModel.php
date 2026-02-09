@@ -10,11 +10,16 @@ class SuratSkptModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = [
         'nomor_surat',
+        'alamat_kantor',
         'desa_id',
         'kepala_desa_id',
         'camat_id',
         'pemohon_id',
         'lokasi_tanah',
+        'jenis_tanah',
+        'status_tanah',
+        'asal_tanah',
+        'pernyataan_tanah',
         'luas_tanah',
         'dasar_perolehan',
         'batas_utara',

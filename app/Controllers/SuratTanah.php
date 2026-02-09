@@ -15,7 +15,7 @@ class SuratTanah extends BaseController
     {
         $db = \Config\Database::connect();
         $row = $db->table('surat_skpt s')
-            ->select('s.*, d.nama as desa_nama, kec.nama as kecamatan_nama, p.nama as pemohon_nama, p.nik as pemohon_nik, p.ttl as pemohon_ttl, p.jenis_kelamin as pemohon_jk, p.warga_negara as pemohon_wn, p.agama as pemohon_agama, p.pekerjaan as pemohon_pekerjaan, p.alamat as pemohon_alamat, k.nama as kepala_desa_nama, k.nip as kepala_desa_nip, c.nama as camat_nama, c.nip as camat_nip')
+            ->select('s.*, d.nama as desa_nama, d.jenis as desa_jenis, kec.nama as kecamatan_nama, p.nama as pemohon_nama, p.nik as pemohon_nik, p.ttl as pemohon_ttl, p.umur as pemohon_umur, p.jenis_kelamin as pemohon_jk, p.warga_negara as pemohon_wn, p.agama as pemohon_agama, p.pekerjaan as pemohon_pekerjaan, p.jabatan as pemohon_jabatan, p.alamat as pemohon_alamat, k.nama as kepala_desa_nama, k.nip as kepala_desa_nip, c.nama as camat_nama, c.nip as camat_nip')
             ->join('desa d', 'd.id = s.desa_id', 'left')
             ->join('kecamatan kec', 'kec.id = d.kecamatan_id', 'left')
             ->join('pemohon p', 'p.id = s.pemohon_id', 'left')
@@ -100,6 +100,18 @@ class SuratTanah extends BaseController
         ]);
     }
 
+    public function deleteSkpt(int $id)
+    {
+        $model = new SuratSkptModel();
+        $row = $model->find($id);
+        if (! $row) {
+            return redirect()->to('/surat/skpt')->with('errors', ['Data SKPT tidak ditemukan.']);
+        }
+
+        $model->delete($id);
+        return redirect()->to('/surat/skpt')->with('success', 'Data SKPT berhasil dihapus.');
+    }
+
     public function printSkpt(int $id)
     {
         $skpt = $this->fetchSkptDetail($id);
@@ -170,53 +182,108 @@ class SuratTanah extends BaseController
 
         $bold = ['bold' => true];
         $center = ['alignment' => 'center'];
+        $alamatKantor = trim((string) ($skpt['alamat_kantor'] ?? ''));
+        $jenisTanah = trim((string) ($skpt['jenis_tanah'] ?? ''));
+        if ($jenisTanah === '') {
+            $jenisTanah = 'Pekarangan dan Bangunan';
+        }
+        $statusTanah = trim((string) ($skpt['status_tanah'] ?? ''));
+        if ($statusTanah === '') {
+            $statusTanah = 'tanah yang dikuasai oleh negara (bekas tanah Swapraja)';
+        }
+        $lokasiTanah = trim((string) ($skpt['lokasi_tanah'] ?? ''));
+        $lokasiText = $lokasiTanah !== '' ? $lokasiTanah . ' ' : '';
+        $asalTanah = trim((string) ($skpt['asal_tanah'] ?? ''));
+        if ($asalTanah === '') {
+            $asalTanah = 'Selanjutnya diterangkan bahwa bidang tanah tersebut berasal dari tanah negara yang dibuka langsung dan dikuasai oleh …………………………... pada tahun ………... kemudian tanah tersebut diserahkan/beralih kepada Pemerintah Kabupaten Donggala secara ' . ($skpt['dasar_perolehan'] ?? 'Jual Beli tanpa surat-surat') . ' pada tahun ………';
+        }
+        $pernyataanTanah = trim((string) ($skpt['pernyataan_tanah'] ?? ''));
+        if ($pernyataanTanah === '') {
+            $pernyataanTanah = 'Bahwa tanah tersebut merupakan tanah Non Pertanian milik Pemerintah Kabupaten Donggala serta pihak lain tidak ada yang keberatan/tidak dalam sengketa.';
+        }
 
         $section->addText('PEMERINTAH KABUPATEN DONGGALA', $bold, $center);
+        $desaJenisRaw = strtolower(trim((string) ($skpt['desa_jenis'] ?? '')));
+        $desaLabel = $desaJenisRaw === 'kelurahan' ? 'Kelurahan' : 'Desa';
+        $desaLabelUpper = strtoupper($desaLabel);
+        $pejabatLabel = $desaLabel === 'Kelurahan' ? 'Lurah' : 'Kepala Desa';
+
         $section->addText('KECAMATAN ' . ($skpt['kecamatan_nama'] ?? '-'), $bold, $center);
-        $section->addText('DESA/KELURAHAN ' . ($skpt['desa_nama'] ?? '-'), $bold, $center);
+        $section->addText($desaLabelUpper . ' ' . ($skpt['desa_nama'] ?? '-'), $bold, $center);
+        if ($alamatKantor !== '') {
+            $section->addText('Alamat : ' . $alamatKantor, null, $center);
+        }
         $section->addText('SURAT KETERANGAN PENGUASAAN TANAH', $bold, $center);
         $section->addText('NOMOR : ' . ($skpt['nomor_surat'] ?? '-'), null, $center);
 
         $section->addTextBreak(1);
         $section->addText(
-            'Yang bertanda tangan di bawah ini Kepala Desa/Lurah ' .
+            'Yang bertanda tangan di Bawah ini ' . $pejabatLabel . ' ' .
             ($skpt['desa_nama'] ?? '-') .
             ' Kecamatan ' . ($skpt['kecamatan_nama'] ?? '-') .
-            ' Kabupaten Donggala menerangkan bahwa yang bersangkutan:'
+            ' Kabupaten Donggala Provinsi Sulawesi Tengah menerangkan dengan sebenarnya bahwa:'
         );
 
-        $section->addText('Nama: ' . ($skpt['pemohon_nama'] ?? '-'));
-        $section->addText('NIK: ' . ($skpt['pemohon_nik'] ?? '-'));
-        $section->addText('TTL: ' . ($skpt['pemohon_ttl'] ?? '-'));
-        $section->addText('Jenis Kelamin: ' . ($skpt['pemohon_jk'] ?? '-'));
-        $section->addText('Warga Negara: ' . ($skpt['pemohon_wn'] ?? '-'));
-        $section->addText('Agama: ' . ($skpt['pemohon_agama'] ?? '-'));
-        $section->addText('Pekerjaan: ' . ($skpt['pemohon_pekerjaan'] ?? '-'));
-        $section->addText('Alamat: ' . ($skpt['pemohon_alamat'] ?? '-'));
+        $identity = $section->addTable();
+        $rows = [
+            ['Nama', $skpt['pemohon_nama'] ?? '-'],
+            ['NIK', $skpt['pemohon_nik'] ?? '-'],
+            ['TTL', $skpt['pemohon_ttl'] ?? '-'],
+            ['Umur', $skpt['pemohon_umur'] ?? '-'],
+            ['Warga Negara', $skpt['pemohon_wn'] ?? '-'],
+            ['Pekerjaan', $skpt['pemohon_pekerjaan'] ?? '-'],
+            ['Jabatan', $skpt['pemohon_jabatan'] ?? '-'],
+            ['Alamat', $skpt['pemohon_alamat'] ?? '-'],
+        ];
+        foreach ($rows as $row) {
+            $identity->addRow();
+            $identity->addCell(2500)->addText($row[0]);
+            $identity->addCell(300)->addText(':');
+            $identity->addCell(6000)->addText($row[1]);
+        }
 
         $section->addTextBreak(1);
-        $section->addText('Menguasai sebidang tanah yang terletak di:');
-        $section->addText($skpt['lokasi_tanah'] ?? '-');
-        $section->addText('Luas: ' . ($skpt['luas_tanah'] ?? '-') . ' m2');
-        $section->addText('Dasar Perolehan: ' . ($skpt['dasar_perolehan'] ?? '-'));
+        $section->addText(
+            'Benar mengusahakan / Menggarap / Menggunakan dan atau menguasai sebidang tanah ' .
+            $jenisTanah .
+            ' dengan status tanah ' . $statusTanah .
+            ' seluas ' . ($skpt['luas_tanah'] ?? '-') . ' M2 yang terletak di ' . $lokasiText . $desaLabel . ' ' .
+            ($skpt['desa_nama'] ?? '-') . ' Kecamatan ' . ($skpt['kecamatan_nama'] ?? '-') .
+            ' dengan batas-batas sebagai berikut :'
+        );
 
         $section->addTextBreak(1);
-        $section->addText('Dengan batas-batas:');
-        $section->addText('Sebelah Utara: ' . ($skpt['batas_utara'] ?? '-'));
-        $section->addText('Sebelah Timur: ' . ($skpt['batas_timur'] ?? '-'));
-        $section->addText('Sebelah Selatan: ' . ($skpt['batas_selatan'] ?? '-'));
-        $section->addText('Sebelah Barat: ' . ($skpt['batas_barat'] ?? '-'));
+        $borders = $section->addTable();
+        $batasRows = [
+            ['Sebelah Utara', $skpt['batas_utara'] ?? '-'],
+            ['Sebelah Timur', $skpt['batas_timur'] ?? '-'],
+            ['Sebelah Selatan', $skpt['batas_selatan'] ?? '-'],
+            ['Sebelah Barat', $skpt['batas_barat'] ?? '-'],
+        ];
+        foreach ($batasRows as $row) {
+            $borders->addRow();
+            $borders->addCell(2500)->addText($row[0]);
+            $borders->addCell(300)->addText(':');
+            $borders->addCell(6000)->addText($row[1]);
+        }
 
         $section->addTextBreak(1);
-        $section->addText('Keterangan: ' . ($skpt['keterangan'] ?? '-'));
+        $section->addText($asalTanah);
         $section->addTextBreak(1);
-        $section->addText(($skpt['desa_nama'] ?? '-') . ', ' . ($skpt['tanggal_surat'] ?? '-'));
+        $section->addText($pernyataanTanah);
+        $section->addTextBreak(1);
+        $section->addText('Demikian surat keterangan penguasaan tanah ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya dan mengingat sumpah jabatan.');
+        if (!empty($skpt['keterangan'])) {
+            $section->addText('Keterangan: ' . $skpt['keterangan']);
+        }
+        $section->addTextBreak(1);
+        $section->addText('Tanggal, ' . ($skpt['tanggal_surat'] ?? '-'));
 
         $section->addTextBreak(2);
         $table = $section->addTable();
         $table->addRow();
         $table->addCell(4500)->addText('Mengetahui,');
-        $table->addCell(4500)->addText('Kepala Desa ' . ($skpt['desa_nama'] ?? '-'));
+        $table->addCell(4500)->addText($pejabatLabel . ' ' . ($skpt['desa_nama'] ?? '-'));
         $table->addRow();
         $table->addCell(4500)->addText('Camat ' . ($skpt['kecamatan_nama'] ?? '-'));
         $table->addCell(4500)->addText('');
@@ -224,8 +291,10 @@ class SuratTanah extends BaseController
         $table->addCell(4500)->addText('');
         $table->addCell(4500)->addText('');
         $table->addRow();
-        $table->addCell(4500)->addText(($skpt['camat_nama'] ?? '-') . PHP_EOL . ($skpt['camat_nip'] ?? ''));
-        $table->addCell(4500)->addText(($skpt['kepala_desa_nama'] ?? '-') . PHP_EOL . ($skpt['kepala_desa_nip'] ?? ''));
+        $camatNip = !empty($skpt['camat_nip']) ? 'NIP. ' . $skpt['camat_nip'] : '';
+        $kepalaNip = !empty($skpt['kepala_desa_nip']) ? 'NIP. ' . $skpt['kepala_desa_nip'] : '';
+        $table->addCell(4500)->addText(trim(($skpt['camat_nama'] ?? '-') . PHP_EOL . $camatNip));
+        $table->addCell(4500)->addText(trim(($skpt['kepala_desa_nama'] ?? '-') . PHP_EOL . $kepalaNip));
 
         $filename = 'SKPT_' . preg_replace('/[^A-Za-z0-9_-]/', '_', (string) ($skpt['nomor_surat'] ?? $id)) . '.docx';
 
@@ -257,11 +326,16 @@ class SuratTanah extends BaseController
         $kecamatanId = $post['kecamatan_id'] ?? null;
         $data = [
             'nomor_surat' => $nomor,
+            'alamat_kantor' => $post['alamat_kantor'] ?? null,
             'desa_id' => $post['desa_id'] ?? null,
             'kepala_desa_id' => $post['kepala_desa_id'] ?? null,
             'camat_id' => $post['camat_id'] ?? null,
             'pemohon_id' => $post['pemohon_id'] ?? null,
             'lokasi_tanah' => $post['lokasi_tanah'] ?? null,
+            'jenis_tanah' => $post['jenis_tanah'] ?? null,
+            'status_tanah' => $post['status_tanah'] ?? null,
+            'asal_tanah' => $post['asal_tanah'] ?? null,
+            'pernyataan_tanah' => $post['pernyataan_tanah'] ?? null,
             'luas_tanah' => $post['luas_tanah'] ?? null,
             'dasar_perolehan' => $post['dasar_perolehan'] ?? null,
             'batas_utara' => $post['batas_utara'] ?? null,

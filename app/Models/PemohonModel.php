@@ -12,10 +12,12 @@ class PemohonModel extends Model
         'nama',
         'nik',
         'ttl',
+        'umur',
         'jenis_kelamin',
         'warga_negara',
         'agama',
         'pekerjaan',
+        'jabatan',
         'alamat',
     ];
     protected $useTimestamps = true;

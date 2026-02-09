@@ -90,10 +90,10 @@
                                                 </div>
                                                 <div class="text-muted small">Durasi: <?= esc($proses['durasi_hari'] ?? '-') ?> hari</div>
                                                 <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
-                                                    <form action="<?= base_url('proses/' . $proses['id_proses']) ?>" method="post" class="mt-2">
+                                                    <form action="<?= base_url('proses/' . $proses['id_proses']) ?>" method="post" class="mt-2" data-confirm="Hapus proses ini?">
                                                         <?= csrf_field() ?>
                                                         <input type="hidden" name="_method" value="DELETE">
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Hapus proses ini?')">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
                                                             <i class="bi bi-trash3 me-1"></i>Hapus
                                                         </button>
                                                     </form>
@@ -240,10 +240,10 @@
                                                         <a href="<?= base_url('dokumen/download/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-secondary rounded-pill">
                                                             <i class="bi bi-download me-1"></i>Unduh
                                                         </a>
-                                                        <form action="<?= base_url('dokumen/' . $dok['id_dokumen']) ?>" method="post">
+                                                        <form action="<?= base_url('dokumen/' . $dok['id_dokumen']) ?>" method="post" data-confirm="Hapus dokumen ini?">
                                                             <?= csrf_field() ?>
                                                             <input type="hidden" name="_method" value="DELETE">
-                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('Hapus dokumen ini?')">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill">
                                                                 <i class="bi bi-trash3 me-1"></i>Hapus
                                                             </button>
                                                         </form>

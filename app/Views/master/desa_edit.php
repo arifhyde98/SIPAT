@@ -24,6 +24,14 @@
                 </select>
             </div>
             <div class="mb-3">
+                <label class="form-label">Jenis</label>
+                <?php $jenis = $row['jenis'] ?? 'Kelurahan'; ?>
+                <select name="jenis" class="form-select" required>
+                    <option value="Desa" <?= $jenis === 'Desa' ? 'selected' : '' ?>>Desa</option>
+                    <option value="Kelurahan" <?= $jenis === 'Kelurahan' ? 'selected' : '' ?>>Kelurahan</option>
+                </select>
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Nama Desa/Kelurahan</label>
                 <input type="text" name="nama" class="form-control" value="<?= esc($row['nama']) ?>" required>
             </div>

@@ -11,6 +11,7 @@ class DesaModel extends Model
     protected $allowedFields = [
         'kecamatan_id',
         'nama',
+        'jenis',
     ];
     protected $useTimestamps = true;
 }

@@ -6,16 +6,6 @@
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
 </div>
 <div class="modal-body">
-    <?php $errors = session('errors') ?? []; ?>
-    <?php if (!empty($errors)) : ?>
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                <?php foreach ($errors as $error) : ?>
-                    <li><?= esc($error) ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
     <form action="<?= base_url('users/' . $user['id_user']) ?>" method="post">
         <?= csrf_field() ?>
         <input type="hidden" name="_method" value="PUT">

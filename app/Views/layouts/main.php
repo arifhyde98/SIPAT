@@ -276,19 +276,6 @@
         <main class="app-main">
             <div class="app-content">
                 <div class="container-fluid py-3">
-                    <?php if (session()->getFlashdata('success')) : ?>
-                        <div class="alert alert-success"><?= esc(session()->getFlashdata('success')) ?></div>
-                    <?php endif; ?>
-                    <?php if (session()->getFlashdata('errors')) : ?>
-                        <div class="alert alert-danger">
-                            <ul class="mb-0">
-                                <?php foreach ((array) session()->getFlashdata('errors') as $error) : ?>
-                                    <li><?= esc($error) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
-
                     <?= $this->renderSection('content') ?>
                 </div>
             </div>
@@ -307,6 +294,71 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.13.8/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const sipatEscape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        })[c]);
+
+        const sipatToast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+
+        <?php $successMessage = session()->getFlashdata('success'); ?>
+        <?php if (!empty($successMessage)) : ?>
+        sipatToast.fire({
+            icon: 'success',
+            title: sipatEscape(<?= json_encode($successMessage, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>),
+        });
+        <?php endif; ?>
+
+        <?php
+        $errorList = session()->getFlashdata('errors');
+        if (empty($errorList)) {
+            $errorList = session('errors');
+        }
+        $errorList = is_array($errorList) ? array_values($errorList) : [];
+        ?>
+        <?php if (!empty($errorList)) : ?>
+        (function () {
+            const errors = <?= json_encode($errorList, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+            const items = errors.map(err => `<li>${sipatEscape(err)}</li>`).join('');
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                html: `<ul style="text-align:left;margin:0;padding-left:18px;">${items}</ul>`,
+            });
+        })();
+        <?php endif; ?>
+
+        document.addEventListener('submit', function (event) {
+            const form = event.target;
+            const submitter = event.submitter;
+            const message = (submitter && submitter.dataset.confirm) || form.dataset.confirm;
+            if (!message) return;
+            event.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Konfirmasi',
+                text: message,
+                showCancelButton: true,
+                confirmButtonText: 'Ya, lanjut',
+                cancelButtonText: 'Batal',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
     <script>
         $(function() {
             $('.js-datatable').each(function() {

@@ -161,10 +161,10 @@
                                         <a href="<?= base_url('aset/' . $row['id_aset'] . '/edit') ?>" class="btn btn-xs btn-warning">
                                             <i class="bi bi-pencil-square me-1"></i>Edit
                                         </a>
-                                        <form action="<?= base_url('aset/' . $row['id_aset']) ?>" method="post" class="d-inline">
+                                        <form action="<?= base_url('aset/' . $row['id_aset']) ?>" method="post" class="d-inline" data-confirm="Hapus aset ini?">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="_method" value="DELETE">
-                                            <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Hapus aset ini?')">
+                                            <button type="submit" class="btn btn-xs btn-danger">
                                                 <i class="bi bi-trash3 me-1"></i>Hapus
                                             </button>
                                         </form>

@@ -25,6 +25,10 @@
                 <input type="text" name="ttl" class="form-control" value="<?= esc($row['ttl'] ?? '') ?>">
             </div>
             <div class="mb-3">
+                <label class="form-label">Umur</label>
+                <input type="text" name="umur" class="form-control" value="<?= esc($row['umur'] ?? '') ?>" placeholder="Contoh: 58 Tahun">
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Jenis Kelamin</label>
                 <select name="jenis_kelamin" class="form-select">
                     <option value="">- pilih -</option>
@@ -43,6 +47,10 @@
             <div class="mb-3">
                 <label class="form-label">Pekerjaan</label>
                 <input type="text" name="pekerjaan" class="form-control" value="<?= esc($row['pekerjaan'] ?? '') ?>">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Jabatan</label>
+                <input type="text" name="jabatan" class="form-control" value="<?= esc($row['jabatan'] ?? '') ?>">
             </div>
             <div class="mb-3">
                 <label class="form-label">Alamat</label>

@@ -103,17 +103,6 @@
             <div class="sub-title">Sistem Informasi Monitoring Pensertifikatan Tanah</div>
         </div>
 
-        <?php $errors = session('errors') ?? []; ?>
-        <?php if (!empty($errors)) : ?>
-            <div class="alert alert-danger">
-                <ul class="mb-0">
-                    <?php foreach ($errors as $error) : ?>
-                        <li><?= esc($error) ?></li>
-                    <?php endforeach; ?>
-                </ul>
-            </div>
-        <?php endif; ?>
-
         <div class="login-panel mx-auto" style="max-width: 900px;">
             <div class="row g-4 align-items-center">
                 <div class="col-md-4 text-center">
@@ -150,7 +139,32 @@ All Right Reserved - PEMERINTAH KABUPATEN DONGGALA 2026
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        const sipatEscape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+        })[c]);
+
+        <?php
+        $errorList = session('errors');
+        $errorList = is_array($errorList) ? array_values($errorList) : [];
+        ?>
+        <?php if (!empty($errorList)) : ?>
+        (function () {
+            const errors = <?= json_encode($errorList, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
+            const items = errors.map(err => `<li>${sipatEscape(err)}</li>`).join('');
+            Swal.fire({
+                icon: 'error',
+                title: 'Terjadi Kesalahan',
+                html: `<ul style="text-align:left;margin:0;padding-left:18px;">${items}</ul>`,
+            });
+        })();
+        <?php endif; ?>
+
         const showPass = document.getElementById('showPass');
         const passInput = document.querySelector('input[name="password"]');
         if (showPass && passInput) {

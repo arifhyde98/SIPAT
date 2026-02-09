@@ -45,10 +45,10 @@
                                     >
                                         <i class="bi bi-pencil-square me-1"></i>Edit
                                     </a>
-                                    <form action="<?= base_url('status/' . $row['id_status']) ?>" method="post" class="d-inline">
+                                    <form action="<?= base_url('status/' . $row['id_status']) ?>" method="post" class="d-inline" data-confirm="Hapus status ini?">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-xs btn-danger" onclick="return confirm('Hapus status ini?')">
+                                        <button type="submit" class="btn btn-xs btn-danger">
                                             <i class="bi bi-trash3 me-1"></i>Hapus
                                         </button>
                                     </form>

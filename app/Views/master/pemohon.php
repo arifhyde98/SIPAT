@@ -27,6 +27,10 @@
                         <input type="text" name="ttl" class="form-control">
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Umur</label>
+                        <input type="text" name="umur" class="form-control" placeholder="Contoh: 58 Tahun">
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Jenis Kelamin</label>
                         <select name="jenis_kelamin" class="form-select">
                             <option value="">- pilih -</option>
@@ -47,6 +51,10 @@
                         <input type="text" name="pekerjaan" class="form-control">
                     </div>
                     <div class="mb-3">
+                        <label class="form-label">Jabatan</label>
+                        <input type="text" name="jabatan" class="form-control">
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label">Alamat</label>
                         <textarea name="alamat" class="form-control" rows="2"></textarea>
                     </div>
@@ -65,6 +73,8 @@
                                 <th>ID</th>
                                 <th>Nama</th>
                                 <th>NIK</th>
+                                <th>Jabatan</th>
+                                <th>Umur</th>
                                 <th></th>
                             </tr>
                         </thead>
@@ -74,9 +84,11 @@
                                     <td><?= esc($row['id']) ?></td>
                                     <td><?= esc($row['nama']) ?></td>
                                     <td><?= esc($row['nik'] ?? '-') ?></td>
+                                    <td><?= esc($row['jabatan'] ?? '-') ?></td>
+                                    <td><?= esc($row['umur'] ?? '-') ?></td>
                                     <td class="text-end">
                                         <a href="<?= base_url('master/pemohon/' . $row['id'] . '/edit') ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form method="post" action="<?= base_url('master/pemohon/delete/' . $row['id']) ?>" onsubmit="return confirm('Hapus pemohon ini?')">
+                                        <form method="post" action="<?= base_url('master/pemohon/delete/' . $row['id']) ?>" data-confirm="Hapus pemohon ini?">
                                             <?= csrf_field() ?>
                                             <button class="btn btn-sm btn-outline-danger">Hapus</button>
                                         </form>

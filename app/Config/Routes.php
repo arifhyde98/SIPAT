@@ -55,6 +55,7 @@ $routes->group('surat', ['filter' => 'role:Admin,Pengelola Aset'], static functi
     $routes->get('skpt', 'SuratTanah::skpt');
     $routes->post('skpt', 'SuratTanah::storeSkpt');
     $routes->get('skpt/(:num)', 'SuratTanah::showSkpt/$1');
+    $routes->delete('skpt/(:num)', 'SuratTanah::deleteSkpt/$1');
     $routes->get('skpt/(:num)/print', 'SuratTanah::printSkpt/$1');
     $routes->get('skpt/(:num)/pdf', 'SuratTanah::pdfSkpt/$1');
     $routes->get('skpt/(:num)/word', 'SuratTanah::exportWordSkpt/$1');

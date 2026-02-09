@@ -20,10 +20,39 @@
         <button onclick="window.print()">Print / Save PDF</button>
     </div>
 
+    <?php
+        $alamatKantor = trim((string) ($skpt['alamat_kantor'] ?? ''));
+        $desaJenisRaw = strtolower(trim((string) ($skpt['desa_jenis'] ?? '')));
+        $desaLabel = $desaJenisRaw === 'kelurahan' ? 'Kelurahan' : 'Desa';
+        $desaLabelUpper = strtoupper($desaLabel);
+        $pejabatLabel = $desaLabel === 'Kelurahan' ? 'Lurah' : 'Kepala Desa';
+        $jenisTanah = trim((string) ($skpt['jenis_tanah'] ?? ''));
+        if ($jenisTanah === '') {
+            $jenisTanah = 'Pekarangan dan Bangunan';
+        }
+        $statusTanah = trim((string) ($skpt['status_tanah'] ?? ''));
+        if ($statusTanah === '') {
+            $statusTanah = 'tanah yang dikuasai oleh negara (bekas tanah Swapraja)';
+        }
+        $lokasiTanah = trim((string) ($skpt['lokasi_tanah'] ?? ''));
+        $lokasiText = $lokasiTanah !== '' ? $lokasiTanah . ' ' : '';
+        $asalTanah = trim((string) ($skpt['asal_tanah'] ?? ''));
+        if ($asalTanah === '') {
+            $asalTanah = 'Selanjutnya diterangkan bahwa bidang tanah tersebut berasal dari tanah negara yang dibuka langsung dan dikuasai oleh …………………………... pada tahun ………... kemudian tanah tersebut diserahkan/beralih kepada Pemerintah Kabupaten Donggala secara ' . ($skpt['dasar_perolehan'] ?? 'Jual Beli tanpa surat-surat') . ' pada tahun ………';
+        }
+        $pernyataanTanah = trim((string) ($skpt['pernyataan_tanah'] ?? ''));
+        if ($pernyataanTanah === '') {
+            $pernyataanTanah = 'Bahwa tanah tersebut merupakan tanah Non Pertanian milik Pemerintah Kabupaten Donggala serta pihak lain tidak ada yang keberatan/tidak dalam sengketa.';
+        }
+    ?>
+
     <div class="center">
         <div class="title">PEMERINTAH KABUPATEN DONGGALA</div>
         <div class="title">KECAMATAN <?= esc($skpt['kecamatan_nama'] ?? '-') ?></div>
-        <div class="title">DESA/KELURAHAN <?= esc($skpt['desa_nama'] ?? '-') ?></div>
+        <div class="title"><?= esc($desaLabelUpper) ?> <?= esc($skpt['desa_nama'] ?? '-') ?></div>
+        <?php if ($alamatKantor !== '') : ?>
+            <div>Alamat : <?= esc($alamatKantor) ?></div>
+        <?php endif; ?>
         <div class="title">SURAT KETERANGAN PENGUASAAN TANAH</div>
         <div class="title">NOMOR : <?= esc($skpt['nomor_surat'] ?? '-') ?></div>
     </div>
@@ -31,51 +60,59 @@
     <hr>
 
     <div class="section">
-        Yang bertanda tangan di bawah ini Kepala Desa/Lurah <?= esc($skpt['desa_nama'] ?? '-') ?> Kecamatan <?= esc($skpt['kecamatan_nama'] ?? '-') ?> Kabupaten Donggala menerangkan bahwa yang bersangkutan:
-        <div>Nama: <?= esc($skpt['pemohon_nama'] ?? '-') ?></div>
-        <div>NIK: <?= esc($skpt['pemohon_nik'] ?? '-') ?></div>
-        <div>TTL: <?= esc($skpt['pemohon_ttl'] ?? '-') ?></div>
-        <div>Jenis Kelamin: <?= esc($skpt['pemohon_jk'] ?? '-') ?></div>
-        <div>Warga Negara: <?= esc($skpt['pemohon_wn'] ?? '-') ?></div>
-        <div>Agama: <?= esc($skpt['pemohon_agama'] ?? '-') ?></div>
-        <div>Pekerjaan: <?= esc($skpt['pemohon_pekerjaan'] ?? '-') ?></div>
-        <div>Alamat: <?= esc($skpt['pemohon_alamat'] ?? '-') ?></div>
+        Yang bertanda tangan di Bawah ini <?= esc($pejabatLabel) ?> <?= esc($skpt['desa_nama'] ?? '-') ?> Kecamatan <?= esc($skpt['kecamatan_nama'] ?? '-') ?> Kabupaten Donggala Provinsi Sulawesi Tengah menerangkan dengan sebenarnya bahwa:
+        <table style="margin-top: 8px; margin-bottom: 12px;">
+            <tr><td style="width: 150px;">Nama</td><td style="width: 8px;">:</td><td><?= esc($skpt['pemohon_nama'] ?? '-') ?></td></tr>
+            <tr><td>NIK</td><td>:</td><td><?= esc($skpt['pemohon_nik'] ?? '-') ?></td></tr>
+            <tr><td>TTL</td><td>:</td><td><?= esc($skpt['pemohon_ttl'] ?? '-') ?></td></tr>
+            <tr><td>Umur</td><td>:</td><td><?= esc($skpt['pemohon_umur'] ?? '-') ?></td></tr>
+            <tr><td>Warga Negara</td><td>:</td><td><?= esc($skpt['pemohon_wn'] ?? '-') ?></td></tr>
+            <tr><td>Pekerjaan</td><td>:</td><td><?= esc($skpt['pemohon_pekerjaan'] ?? '-') ?></td></tr>
+            <tr><td>Jabatan</td><td>:</td><td><?= esc($skpt['pemohon_jabatan'] ?? '-') ?></td></tr>
+            <tr><td>Alamat</td><td>:</td><td><?= esc($skpt['pemohon_alamat'] ?? '-') ?></td></tr>
+        </table>
 
-        <div style="margin-top: 12px;">
-            Menguasai sebidang tanah yang terletak di:
-            <div><?= esc($skpt['lokasi_tanah'] ?? '-') ?></div>
-            <div>Luas: <?= esc($skpt['luas_tanah'] ?? '-') ?> m2</div>
-            <div>Dasar Perolehan: <?= esc($skpt['dasar_perolehan'] ?? '-') ?></div>
-        </div>
+        Benar mengusahakan / Menggarap / Menggunakan dan atau menguasai sebidang tanah <?= esc($jenisTanah) ?> dengan status tanah <?= esc($statusTanah) ?> seluas <?= esc($skpt['luas_tanah'] ?? '-') ?> M2 yang terletak di <?= esc($lokasiText) . esc($desaLabel) ?> <?= esc($skpt['desa_nama'] ?? '-') ?> Kecamatan <?= esc($skpt['kecamatan_nama'] ?? '-') ?> dengan batas-batas sebagai berikut :
+        <table style="margin-top: 8px; margin-bottom: 12px;">
+            <tr><td style="width: 150px;">Sebelah Utara</td><td style="width: 8px;">:</td><td><?= esc($skpt['batas_utara'] ?? '-') ?></td></tr>
+            <tr><td>Sebelah Timur</td><td>:</td><td><?= esc($skpt['batas_timur'] ?? '-') ?></td></tr>
+            <tr><td>Sebelah Selatan</td><td>:</td><td><?= esc($skpt['batas_selatan'] ?? '-') ?></td></tr>
+            <tr><td>Sebelah Barat</td><td>:</td><td><?= esc($skpt['batas_barat'] ?? '-') ?></td></tr>
+        </table>
 
-        <div style="margin-top: 12px;">
-            Dengan batas-batas:
-            <div>Sebelah Utara: <?= esc($skpt['batas_utara'] ?? '-') ?></div>
-            <div>Sebelah Timur: <?= esc($skpt['batas_timur'] ?? '-') ?></div>
-            <div>Sebelah Selatan: <?= esc($skpt['batas_selatan'] ?? '-') ?></div>
-            <div>Sebelah Barat: <?= esc($skpt['batas_barat'] ?? '-') ?></div>
-        </div>
-
-        <div style="margin-top: 12px;">
-            Keterangan: <?= esc($skpt['keterangan'] ?? '-') ?>
-        </div>
+        <div><?= nl2br(esc($asalTanah)) ?></div>
+        <div style="margin-top: 8px;"><?= nl2br(esc($pernyataanTanah)) ?></div>
+        <div style="margin-top: 8px;">Demikian surat keterangan penguasaan tanah ini dibuat dengan sebenarnya untuk dipergunakan sebagaimana mestinya dan mengingat sumpah jabatan.</div>
+        <?php if (!empty($skpt['keterangan'])) : ?>
+            <div style="margin-top: 8px;">Keterangan: <?= esc($skpt['keterangan']) ?></div>
+        <?php endif; ?>
 
         <div style="margin-top: 16px; text-align: right;">
-            <?= esc($skpt['desa_nama'] ?? '-') ?>, <?= esc($skpt['tanggal_surat'] ?? '-') ?>
+            Tanggal, <?= esc($skpt['tanggal_surat'] ?? '-') ?>
         </div>
 
         <table style="margin-top: 24px;">
             <tr>
                 <td>Mengetahui,<br>Camat <?= esc($skpt['kecamatan_nama'] ?? '-') ?></td>
-                <td style="text-align:right;">Kepala Desa <?= esc($skpt['desa_nama'] ?? '-') ?></td>
+                <td style="text-align:right;"><?= esc($pejabatLabel) ?> <?= esc($skpt['desa_nama'] ?? '-') ?></td>
             </tr>
             <tr>
                 <td style="height: 60px;"></td>
                 <td></td>
             </tr>
             <tr>
-                <td><?= esc($skpt['camat_nama'] ?? '-') ?><br><?= esc($skpt['camat_nip'] ?? '') ?></td>
-                <td style="text-align:right;"><?= esc($skpt['kepala_desa_nama'] ?? '-') ?><br><?= esc($skpt['kepala_desa_nip'] ?? '') ?></td>
+                <td>
+                    <?= esc($skpt['camat_nama'] ?? '-') ?><br>
+                    <?php if (!empty($skpt['camat_nip'])) : ?>
+                        NIP. <?= esc($skpt['camat_nip']) ?>
+                    <?php endif; ?>
+                </td>
+                <td style="text-align:right;">
+                    <?= esc($skpt['kepala_desa_nama'] ?? '-') ?><br>
+                    <?php if (!empty($skpt['kepala_desa_nip'])) : ?>
+                        NIP. <?= esc($skpt['kepala_desa_nip']) ?>
+                    <?php endif; ?>
+                </td>
             </tr>
         </table>
     </div>

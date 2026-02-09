@@ -42,7 +42,7 @@
                                     <td><?= esc($row['nama']) ?></td>
                                     <td class="text-end">
                                         <a href="<?= base_url('master/kecamatan/' . $row['id'] . '/edit') ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                                        <form method="post" action="<?= base_url('master/kecamatan/delete/' . $row['id']) ?>" onsubmit="return confirm('Hapus kecamatan ini?')">
+                                        <form method="post" action="<?= base_url('master/kecamatan/delete/' . $row['id']) ?>" data-confirm="Hapus kecamatan ini?">
                                             <?= csrf_field() ?>
                                             <button class="btn btn-sm btn-outline-danger">Hapus</button>
                                         </form>
