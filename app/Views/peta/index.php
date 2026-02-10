@@ -8,32 +8,53 @@
     </div>
 </div>
 
+<style>
+    #map {
+        height: 60vh;
+        min-height: 420px;
+        width: 100%;
+        border-radius: 12px;
+    }
+</style>
+
 <div class="card">
     <div class="card-body">
-        <div id="map" style="height: 540px; border-radius: 12px;"></div>
+        <div id="map"></div>
     </div>
 </div>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-    const map = L.map('map').setView([-2.5, 117.5], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof L === 'undefined') {
+            console.error('Leaflet gagal dimuat.');
+            return;
+        }
 
-    const markers = <?= json_encode($markers) ?>;
-    const bounds = [];
-    markers.forEach(item => {
-        const marker = L.marker([item.lat, item.lng]).addTo(map);
-        marker.bindPopup(
-            `<strong>${item.kode}</strong><br>${item.nama}<br>Status: ${item.status}<br><a href="<?= base_url('aset') ?>/${item.id}">Detail</a>`
-        );
-        bounds.push([item.lat, item.lng]);
+        const map = L.map('map').setView([-2.5, 117.5], 5);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        const markers = <?= json_encode($markers) ?> || [];
+        const bounds = [];
+        markers.forEach(item => {
+            const lat = parseFloat(item.lat);
+            const lng = parseFloat(item.lng);
+            if (Number.isNaN(lat) || Number.isNaN(lng)) return;
+            const marker = L.marker([lat, lng]).addTo(map);
+            marker.bindPopup(
+                `<strong>${item.kode}</strong><br>${item.nama}<br>Status: ${item.status}<br><a href="<?= base_url('aset') ?>/${item.id}">Detail</a>`
+            );
+            bounds.push([lat, lng]);
+        });
+        if (bounds.length) {
+            map.fitBounds(bounds, { padding: [40, 40] });
+        }
+
+        setTimeout(() => map.invalidateSize(), 300);
     });
-    if (bounds.length) {
-        map.fitBounds(bounds, { padding: [40, 40] });
-    }
 </script>
 <?= $this->endSection() ?>

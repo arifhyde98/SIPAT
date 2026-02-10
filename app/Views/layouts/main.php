@@ -501,9 +501,15 @@
         const sipatCleanupOverlays = () => {
             const hasOpenModal = document.querySelector('.modal.show');
             if (hasOpenModal) return;
-            document.querySelectorAll('.modal-backdrop, .swal2-container, .sidebar-overlay').forEach((el) => {
+            const swalContainer = document.querySelector('.swal2-container');
+            const swalPopup = swalContainer ? swalContainer.querySelector('.swal2-popup') : null;
+            const hasActiveSwal = swalPopup && (swalPopup.classList.contains('swal2-toast') || swalPopup.classList.contains('swal2-show'));
+            document.querySelectorAll('.modal-backdrop, .sidebar-overlay').forEach((el) => {
                 el.remove();
             });
+            if (!hasActiveSwal && swalContainer) {
+                swalContainer.remove();
+            }
             document.body.classList.remove('modal-open');
             document.body.style.removeProperty('padding-right');
         };
