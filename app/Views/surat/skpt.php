@@ -307,7 +307,7 @@
                             <i class="bi bi-file-earmark-word"></i> Export Word
                         </a>
                     </div>
-                    <div class="border p-3" style="background: #fff;">
+                    <div class="paper-sheet">
                         <?php
                             $alamatKantor = trim((string) ($skpt['alamat_kantor'] ?? ''));
                             $desaJenisRaw = strtolower(trim((string) ($skpt['desa_jenis'] ?? '')));

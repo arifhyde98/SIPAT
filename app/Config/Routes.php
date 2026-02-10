@@ -101,6 +101,7 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->post('desa', 'MasterData::storeDesa');
     $routes->post('desa/bulk-kecamatan', 'MasterData::bulkUpdateDesaKecamatan');
     $routes->post('desa/(:num)', 'MasterData::updateDesa/$1');
+    $routes->put('desa/(:num)', 'MasterData::updateDesa/$1');
     $routes->post('desa/delete/(:num)', 'MasterData::deleteDesa/$1');
 
     $routes->get('kepala-desa', 'MasterData::kepalaDesa');

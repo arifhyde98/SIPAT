@@ -3,10 +3,10 @@
 <?= $this->section('content') ?>
 <style>
     .card-stat {
-        border: 1px solid #e9ecef;
-        border-radius: 0.75rem;
+        border: 0;
+        border-radius: 1rem;
         transition: all 0.3s ease;
-        box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.04);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         background: #fff;
     }
     .card-stat:hover {
@@ -46,93 +46,93 @@
     }
 </style>
 
-<!-- Header Dashboard -->
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-    <div>
-        <h1 class="h3 fw-semibold mb-0">Dashboard</h1>
-        <small class="text-muted">Selamat datang kembali, <?= esc(session()->get('user_name') ?? 'Admin') ?>!</small>
+    <!-- Header Dashboard -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="h3 fw-semibold mb-0">Dashboard</h1>
+            <small class="text-muted">Selamat datang kembali, <?= esc(session()->get('user_name') ?? 'Admin') ?>!</small>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="#" class="btn btn-outline-gov">
+                <i class="bi bi-download me-1"></i> Laporan
+            </a>
+            <a href="<?= base_url('aset/new') ?>" class="btn btn-gov">
+                <i class="bi bi-plus-lg me-1"></i> Aset Baru
+            </a>
+        </div>
     </div>
-    <div class="d-flex gap-2">
-        <a href="#" class="btn btn-outline-gov">
-            <i class="bi bi-download me-1"></i> Laporan
-        </a>
-        <a href="<?= base_url('aset/new') ?>" class="btn btn-gov">
-            <i class="bi bi-plus-lg me-1"></i> Aset Baru
-        </a>
-    </div>
-</div>
 
-<!-- Baris Kartu Statistik -->
-<div class="row g-4 mb-4">
-    <div class="col-md-6 col-xl-3">
-        <div class="card card-stat h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="stat-icon bg-primary-gradient">
-                            <i class="bi bi-archive"></i>
+    <!-- Baris Kartu Statistik -->
+    <div class="row g-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card card-stat h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="stat-icon bg-primary-gradient">
+                                <i class="bi bi-archive"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="stat-value"><?= number_format($totalAset ?? 0) ?></h5>
+                            <p class="stat-label mb-0">Total Aset</p>
                         </div>
                     </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5 class="stat-value"><?= number_format($totalAset ?? 0) ?></h5>
-                        <p class="stat-label mb-0">Total Aset</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card card-stat h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="stat-icon bg-success-gradient">
+                                <i class="bi bi-patch-check-fill"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="stat-value"><?= number_format($asetBersertifikat ?? 0) ?></h5>
+                            <p class="stat-label mb-0">Sudah Bersertifikat</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card card-stat h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="stat-icon bg-warning-gradient">
+                                <i class="bi bi-hourglass-split"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="stat-value"><?= number_format($asetProses ?? 0) ?></h5>
+                            <p class="stat-label mb-0">Dalam Proses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <div class="card card-stat h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-shrink-0">
+                            <div class="stat-icon bg-danger-gradient">
+                                <i class="bi bi-exclamation-triangle-fill"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1 ms-3">
+                            <h5 class="stat-value"><?= number_format($asetKendala ?? 0) ?></h5>
+                            <p class="stat-label mb-0">Ada Kendala</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card card-stat h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="stat-icon bg-success-gradient">
-                            <i class="bi bi-patch-check-fill"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5 class="stat-value"><?= number_format($asetBersertifikat ?? 0) ?></h5>
-                        <p class="stat-label mb-0">Sudah Bersertifikat</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card card-stat h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="stat-icon bg-warning-gradient">
-                            <i class="bi bi-hourglass-split"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5 class="stat-value"><?= number_format($asetProses ?? 0) ?></h5>
-                        <p class="stat-label mb-0">Dalam Proses</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6 col-xl-3">
-        <div class="card card-stat h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="stat-icon bg-danger-gradient">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                        </div>
-                    </div>
-                    <div class="flex-grow-1 ms-3">
-                        <h5 class="stat-value"><?= number_format($asetKendala ?? 0) ?></h5>
-                        <p class="stat-label mb-0">Ada Kendala</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Baris Grafik dan Tabel -->
 <div class="row g-4">

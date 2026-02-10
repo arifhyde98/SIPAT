@@ -202,6 +202,41 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const params = new URLSearchParams(window.location.search);
+        const created = params.get('created');
+        const updated = params.get('updated');
+        const deleted = params.get('deleted');
+        const showAlert = (text) => {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text,
+                    timer: 1800,
+                    showConfirmButton: false,
+                });
+            }
+        };
+        if (created === '1') {
+            showAlert('Aset tanah berhasil ditambahkan.');
+            params.delete('created');
+        }
+        if (updated === '1') {
+            showAlert('Aset tanah berhasil diperbarui.');
+            params.delete('updated');
+        }
+        if (deleted === '1') {
+            showAlert('Aset tanah berhasil dihapus.');
+            params.delete('deleted');
+        }
+        if (created === '1' || updated === '1' || deleted === '1') {
+            const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
+            window.history.replaceState({}, document.title, newUrl);
+        }
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
         const modalEl = document.getElementById('modalRemote');
         if (!modalEl || typeof bootstrap === 'undefined') return;
         const modal = new bootstrap.Modal(modalEl);

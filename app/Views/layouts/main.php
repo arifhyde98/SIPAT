@@ -232,6 +232,14 @@
             margin-right: 0.4rem;
         }
 
+        .swal2-container {
+            z-index: 2000 !important;
+        }
+        .swal2-container,
+        .swal2-popup {
+            pointer-events: auto;
+        }
+
         .empty-state {
             padding: 24px;
             text-align: center;
@@ -547,13 +555,6 @@
             const form = event.target;
             const submitter = event.submitter;
             const message = (submitter && submitter.dataset.confirm) || form.dataset.confirm;
-            if (submitter && submitter.tagName === 'BUTTON') {
-                const originalHtml = submitter.innerHTML;
-                submitter.dataset.originalHtml = originalHtml;
-                submitter.classList.add('btn-loading');
-                submitter.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
-                submitter.disabled = true;
-            }
             if (!message) return;
             event.preventDefault();
             Swal.fire({
@@ -565,13 +566,14 @@
                 cancelButtonText: 'Batal',
             }).then((result) => {
                 if (result.isConfirmed) {
-                    form.submit();
-                } else if (submitter && submitter.tagName === 'BUTTON') {
-                    submitter.classList.remove('btn-loading');
-                    if (submitter.dataset.originalHtml) {
-                        submitter.innerHTML = submitter.dataset.originalHtml;
+                    if (submitter && submitter.tagName === 'BUTTON') {
+                        const originalHtml = submitter.innerHTML;
+                        submitter.dataset.originalHtml = originalHtml;
+                        submitter.classList.add('btn-loading');
+                        submitter.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+                        submitter.disabled = true;
                     }
-                    submitter.disabled = false;
+                    form.submit();
                 }
             });
         });

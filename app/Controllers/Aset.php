@@ -510,7 +510,7 @@ class Aset extends BaseController
         $asetModel->insert($payload);
         $this->logAudit('create', 'aset_tanah', (int) $asetModel->getInsertID(), [], $payload);
 
-        return redirect()->to('/aset')->with('success', 'Aset berhasil dibuat.');
+        return redirect()->to('/aset?created=1')->with('success', 'Aset berhasil dibuat.');
     }
 
     public function edit($id)
@@ -553,7 +553,7 @@ class Aset extends BaseController
         $asetModel->update($id, $payload);
         $this->logAudit('update', 'aset_tanah', (int) $id, $old, $payload);
 
-        return redirect()->to('/aset')->with('success', 'Aset berhasil diperbarui.');
+        return redirect()->to('/aset?updated=1')->with('success', 'Aset berhasil diperbarui.');
     }
 
     public function delete($id)
@@ -563,6 +563,6 @@ class Aset extends BaseController
         $asetModel->delete($id);
         $this->logAudit('delete', 'aset_tanah', (int) $id, $old, []);
 
-        return redirect()->to('/aset')->with('success', 'Aset berhasil dihapus.');
+        return redirect()->to('/aset?deleted=1')->with('success', 'Aset berhasil dihapus.');
     }
 }
