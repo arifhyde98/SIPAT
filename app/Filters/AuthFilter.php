@@ -13,6 +13,7 @@ class AuthFilter implements FilterInterface
         if (!session()->get('is_login')) {
             return redirect()->to('/')->with('errors', ['Silakan login terlebih dahulu.']);
         }
+        return null;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

@@ -12,6 +12,138 @@
     <style>
         :root {
             --lte-sidebar-width: 230px;
+            --admin-blue: #0b4f84;
+            --admin-blue-dark: #083d67;
+            --admin-gold: #f0b429;
+        }
+
+        body.admin-skin {
+            background: #eef2f6;
+        }
+
+        .admin-header {
+            background: var(--admin-blue);
+            border-bottom: 3px solid var(--admin-gold);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1035;
+        }
+        @media (min-width: 992px) {
+            .admin-header {
+                left: var(--lte-sidebar-width);
+            }
+        }
+        @media (min-width: 992px) {
+            body.sidebar-collapse .admin-header {
+                left: 0;
+            }
+        }
+        .admin-header .nav-link,
+        .admin-header .navbar-text,
+        .admin-header .btn,
+        .admin-header .badge {
+            color: #fff;
+        }
+
+        .admin-header .btn.btn-light {
+            color: var(--admin-blue-dark);
+        }
+
+        .admin-header .header-title {
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-left: 12px;
+            margin-right: auto;
+        }
+
+        .app-sidebar.admin-sidebar {
+            background: var(--admin-blue-dark);
+        }
+
+        .admin-sidebar .brand-link {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .admin-sidebar .brand-text {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .admin-sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .admin-sidebar .nav-link .nav-icon {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .admin-sidebar .nav-link.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .admin-sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .app-footer.admin-footer {
+            background: var(--admin-blue-dark);
+            color: #fff;
+            border-top: 3px solid var(--admin-gold);
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1035;
+        }
+        @media (min-width: 992px) {
+            .app-footer.admin-footer {
+                left: var(--lte-sidebar-width);
+            }
+        }
+        @media (min-width: 992px) {
+            body.sidebar-collapse .app-footer.admin-footer {
+                left: 0;
+            }
+        }
+
+        .app-footer.admin-footer strong,
+        .app-footer.admin-footer .float-end {
+            color: #fff;
+        }
+
+        .admin-content {
+            width: 100%;
+            max-width: none;
+            margin: 0;
+            padding: 0 24px;
+        }
+
+        .admin-content > :first-child {
+            margin-top: 0;
+        }
+
+        .app-content {
+            padding-top: 1rem;
+        }
+
+        .app-main {
+            padding-top: 64px;
+            padding-bottom: 52px;
+        }
+        .app-sidebar.admin-sidebar {
+            top: 0;
+        }
+
+        @media (max-width: 991.98px) {
+            .admin-content {
+                padding: 0 16px;
+            }
         }
 
         .modal-modern .modal-content {
@@ -108,9 +240,9 @@
     </style>
 </head>
 
-<body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary admin-skin">
     <div class="app-wrapper">
-        <nav class="app-header navbar navbar-expand bg-primary">
+        <nav class="app-header navbar navbar-expand admin-header">
             <div class="container-fluid">
                 <ul class="navbar-nav">
                     <li class="nav-item">
@@ -119,6 +251,7 @@
                         </a>
                     </li>
                 </ul>
+                <div class="header-title d-none d-md-block">ANDA SEDANG LOGIN SIPAT DONGGALA 2026</div>
                 <ul class="navbar-nav ms-auto text-white">
                     <li class="nav-item me-2">
                         <span class="badge text-bg-light text-primary"><?= esc(session()->get('user_role') ?? 'Guest') ?></span>
@@ -133,7 +266,7 @@
             </div>
         </nav>
 
-        <aside class="app-sidebar shadow" data-bs-theme="dark" style="background: rgba(13, 64, 124, 0.88);">
+        <aside class="app-sidebar shadow admin-sidebar" data-bs-theme="dark">
             <div class="sidebar-brand">
                 <a href="<?= base_url('dashboard') ?>" class="brand-link">
                     <img
@@ -275,13 +408,13 @@
 
         <main class="app-main">
             <div class="app-content">
-                <div class="container-fluid py-3">
+                <div class="container-fluid admin-content pb-3">
                     <?= $this->renderSection('content') ?>
                 </div>
             </div>
         </main>
 
-        <footer class="app-footer">
+        <footer class="app-footer admin-footer">
             <div class="float-end d-none d-sm-inline">SIPAT</div>
             <strong>Monitoring Pensertifikatan Tanah</strong>
         </footer>

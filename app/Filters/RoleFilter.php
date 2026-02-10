@@ -20,6 +20,7 @@ class RoleFilter implements FilterInterface
         if (!empty($allowed) && !in_array($role, $allowed, true)) {
             return redirect()->to('/dashboard')->with('errors', ['Akses ditolak untuk peran ini.']);
         }
+        return null;
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
