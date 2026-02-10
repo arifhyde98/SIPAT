@@ -6,7 +6,7 @@
         background: linear-gradient(135deg, rgba(13, 110, 253, 0.22), rgba(13, 110, 253, 0.06));
         border: 1px solid rgba(13, 110, 253, 0.2);
         border-radius: 16px;
-        padding: 16px 18px;
+        padding: 12px 16px;
     }
     .aset-card {
         border: 0;
@@ -14,16 +14,17 @@
         border-radius: 16px;
     }
     .aset-card .card-body {
-        padding: 18px;
+        padding: 14px;
     }
     .aset-table thead th {
-        background: rgba(13, 110, 253, 0.06);
-        border-bottom: 1px solid rgba(13, 110, 253, 0.15);
-        color: #0f2a4f;
+        background: #3b7fa3;
+        border-bottom: 1px solid #2f6f91;
+        color: #f8fbff;
         font-weight: 700;
         font-size: 0.78rem;
         text-transform: uppercase;
         letter-spacing: 0.04em;
+        text-align: center;
     }
     .aset-table tbody tr:hover {
         background: rgba(13, 110, 253, 0.03);
@@ -34,6 +35,12 @@
     .aset-filter .form-control,
     .aset-filter .form-select {
         border-radius: 10px;
+    }
+    .aset-filter .form-label {
+        margin-bottom: 0.25rem;
+    }
+    .aset-filter .row.g-2 {
+        --bs-gutter-y: 0.5rem;
     }
     .aset-badge-soft {
         display: inline-flex;
@@ -48,9 +55,9 @@
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
     <div class="aset-hero">
-        <div class="d-flex align-items-center gap-2 mb-1">
+        <div class="d-flex align-items-center gap-1 mb-1">
             <span class="aset-badge-soft">
                 <i class="bi bi-buildings"></i>
                 SIPAT
@@ -69,7 +76,7 @@
     <?php endif; ?>
 </div>
 
-<div class="card aset-card mb-4">
+<div class="card aset-card mb-3">
     <div class="card-body">
         <form method="get" class="row g-2 align-items-end aset-filter">
         <div class="col-md-3">

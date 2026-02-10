@@ -5,12 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SIPAT - Sistem Informasi Pensertifikatan Tanah</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
         :root {
             --gov-primary: #1f3a5f;
             --gov-primary-2: #162c49;
             --gov-accent: #c8a13a;
+            --gov-accent-dark: #a88528;
+            --gov-success: #10b981;
+            --gov-warning: #f59e0b;
+            --gov-info: #3b82f6;
+            --gov-danger: #ef4444;
             --gov-ink: #111827;
             --gov-muted: #6b7280;
             --gov-bg: #f5f7fb;
@@ -20,14 +27,18 @@
             font-family: "Source Sans 3", "Segoe UI", sans-serif;
             color: var(--gov-ink);
             background:
-                radial-gradient(900px 420px at 10% -10%, rgba(31, 58, 95, 0.14), transparent 60%),
-                radial-gradient(900px 420px at 90% 0%, rgba(200, 161, 58, 0.12), transparent 60%),
+                radial-gradient(circle at 10% -10%, rgba(31, 58, 95, 0.2), transparent 50%),
+                radial-gradient(circle at 90% 10%, rgba(200, 161, 58, 0.25), transparent 50%),
+                radial-gradient(circle at 50% 100%, rgba(31, 58, 95, 0.1), transparent 70%),
                 var(--gov-bg);
         }
         h1, h2, h3, .display-5 {
             font-family: "Source Serif 4", "Georgia", serif;
             color: var(--gov-primary);
             letter-spacing: 0.2px;
+        }
+        .text-secondary {
+            color: var(--gov-muted) !important;
         }
         .gov-container {
             max-width: 1320px;
@@ -64,17 +75,20 @@
             letter-spacing: 0.12em;
         }
         .btn-gov {
-            background: var(--gov-primary);
+            background: linear-gradient(135deg, var(--gov-primary), var(--gov-primary-2));
             color: #fff;
             border-radius: 8px;
             padding: 10px 18px;
             font-weight: 600;
             border: 1px solid transparent;
             box-shadow: 0 10px 20px rgba(31, 58, 95, 0.2);
+            transition: all 0.3s ease;
         }
         .btn-gov:hover {
-            background: var(--gov-primary-2);
+            background: linear-gradient(135deg, var(--gov-primary-2), var(--gov-primary));
             color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(31, 58, 95, 0.25);
         }
         .btn-outline-gov {
             color: var(--gov-primary);
@@ -87,6 +101,22 @@
         .btn-outline-gov:hover {
             background: rgba(31, 58, 95, 0.06);
             color: var(--gov-primary);
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, var(--gov-accent), var(--gov-accent-dark));
+            color: var(--gov-primary);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-weight: 600;
+            border: 1px solid transparent;
+            box-shadow: 0 10px 20px rgba(200, 161, 58, 0.25);
+            transition: all 0.3s ease;
+        }
+        .btn-accent:hover {
+            background: linear-gradient(135deg, var(--gov-accent-dark), var(--gov-accent));
+            color: var(--gov-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(200, 161, 58, 0.3);
         }
         .hero-card {
             background: var(--gov-card);
@@ -143,9 +173,39 @@
             background: var(--gov-card);
             border-radius: 16px;
             border: 1px solid rgba(31, 58, 95, 0.1);
-            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.06);
-            padding: 18px;
+            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07);
+            padding: 24px;
             height: 100%;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .card-elegant:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
+            border-color: rgba(31, 58, 95, 0.15);
+        }
+        .card-elegant .badge-gov,
+        .card-elegant h5,
+        .card-elegant p,
+        .card-elegant .accent-line {
+            position: relative;
+            z-index: 2;
+        }
+        .card-icon-wrapper {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 80px;
+            color: var(--gov-primary);
+            opacity: 0.06;
+            transform: rotate(-15deg);
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+        .card-elegant:hover .card-icon-wrapper {
+            opacity: 0.1;
+            transform: rotate(-10deg) scale(1.1);
         }
         .accent-line {
             width: 36px;
@@ -154,6 +214,14 @@
             border-radius: 999px;
             margin: 10px 0 12px;
         }
+        .card-elegant--monitoring .accent-line { background: var(--gov-info); }
+        .card-elegant--monitoring .card-icon-wrapper { color: var(--gov-info); }
+        .card-elegant--dokumen .accent-line { background: var(--gov-success); }
+        .card-elegant--dokumen .card-icon-wrapper { color: var(--gov-success); }
+        .card-elegant--peringatan .accent-line { background: var(--gov-warning); }
+        .card-elegant--peringatan .card-icon-wrapper { color: var(--gov-warning); }
+        .card-elegant--pimpinan .accent-line { background: var(--gov-danger); }
+        .card-elegant--pimpinan .card-icon-wrapper { color: var(--gov-danger); }
         .pill {
             display: inline-flex;
             align-items: center;
@@ -183,11 +251,19 @@
         }
         .flow-step {
             background: var(--gov-card);
-            border-radius: 12px;
-            border: 1px dashed rgba(31, 58, 95, 0.35);
+            border-radius: 14px;
+            border: 1px solid rgba(31, 58, 95, 0.15);
             padding: 14px 10px;
             font-weight: 600;
             color: var(--gov-primary);
+            background: linear-gradient(145deg, #ffffff, #f8faff);
+            box-shadow: 0 4px 8px rgba(15, 23, 42, 0.04);
+            transition: all 0.3s ease;
+        }
+        .flow-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+            border-color: var(--gov-accent);
         }
         .cta-band {
             background: linear-gradient(135deg, #1f3a5f, #253f66);
@@ -195,6 +271,18 @@
             border-radius: 18px;
             padding: 22px 26px;
             box-shadow: 0 18px 34px rgba(15, 23, 42, 0.14);
+        }
+        .btn-light-solid {
+            background: #fff;
+            color: var(--gov-primary);
+            border-radius: 8px;
+            padding: 10px 18px;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+        .btn-light-solid:hover {
+            background: #f1f5f9;
+            color: var(--gov-primary);
         }
         .gallery-shot {
             background: #fff;
@@ -215,10 +303,31 @@
             color: var(--gov-muted);
             font-size: 14px;
         }
+        /* New Styles for Modern Feel */
+        .navbar-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: transparent;
+        }
+        .navbar-scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(31, 58, 95, 0.08);
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+            padding-top: 12px !important;
+            padding-bottom: 12px !important;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+        .hero-image-animate {
+            animation: float 6s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
-    <header class="bg-white border-bottom py-3 shadow-sm">
+    <header id="mainNav" class="fixed-top py-4 navbar-transition">
         <div class="container gov-container d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="nav-brand">
                 <?php
@@ -233,16 +342,16 @@
             </div>
             <div class="d-flex gap-2">
                 <a class="btn btn-outline-gov" href="<?= base_url('login') ?>">Masuk</a>
-                <a class="btn btn-gov" href="<?= base_url('dashboard') ?>">Dashboard</a>
+                <a class="btn btn-accent" href="<?= base_url('dashboard') ?>">Dashboard</a>
             </div>
         </div>
     </header>
 
-    <main>
+    <main style="padding-top: 100px;">
         <section class="py-5">
             <div class="container gov-container">
                 <div class="row align-items-center g-5">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" data-aos="fade-right">
                         <span class="badge-gov">Sistem Informasi Pensertifikatan Tanah</span>
                         <?php
                             $heroTitle = trim((string) ($landing['landing_hero_title'] ?? ''));
@@ -265,14 +374,14 @@
                             <?= esc($ctaText !== '' ? $ctaText : 'Data real-time langsung dari database SIPAT') ?>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" data-aos="fade-left" data-aos-delay="100">
                         <div class="hero-card">
                             <?php
                                 $heroImage = $landing['landing_hero_image'] ?? null;
                                 $heroImageUrl = $heroImage ? base_url('landing/media/' . $heroImage) : null;
                             ?>
                             <?php if ($heroImageUrl) : ?>
-                                <img class="hero-image" src="<?= esc($heroImageUrl) ?>" alt="Hero SIPAT">
+                                <img class="hero-image hero-image-animate" src="<?= esc($heroImageUrl) ?>" alt="Hero SIPAT">
                             <?php endif; ?>
                             <div class="mt-4">
                                 <div class="badge-gov">Ringkasan Cepat</div>
@@ -281,25 +390,25 @@
                                 <div class="row g-3">
                                     <div class="col-6">
                                         <div class="stat-card">
-                                            <div class="stat-value"><?= number_format((int) ($asetProses ?? 0)) ?></div>
+                                            <div class="stat-value" data-count="<?= (int) ($asetProses ?? 0) ?>">0</div>
                                             <div class="stat-label">Dalam Proses</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="stat-card">
-                                            <div class="stat-value"><?= number_format((int) ($asetBersertifikat ?? 0)) ?></div>
+                                            <div class="stat-value" data-count="<?= (int) ($asetBersertifikat ?? 0) ?>">0</div>
                                             <div class="stat-label">Bersertifikat</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="stat-card">
-                                            <div class="stat-value"><?= number_format((int) ($asetKendala ?? 0)) ?></div>
+                                            <div class="stat-value" data-count="<?= (int) ($asetKendala ?? 0) ?>">0</div>
                                             <div class="stat-label">Kendala</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
                                         <div class="stat-card">
-                                            <div class="stat-value"><?= number_format((int) ($totalAset ?? 0)) ?></div>
+                                            <div class="stat-value" data-count="<?= (int) ($totalAset ?? 0) ?>">0</div>
                                             <div class="stat-label">Total Aset</div>
                                         </div>
                                     </div>
@@ -313,35 +422,41 @@
 
         <section id="fitur" class="py-5">
             <div class="container gov-container">
-                <h2 class="section-title">Manfaat Utama</h2>
-                <p class="section-desc">Dirancang untuk alur kerja Pemda yang cepat dan transparan.</p>
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h2 class="section-title">Manfaat Utama</h2>
+                    <p class="section-desc">Dirancang untuk alur kerja Pemda yang cepat dan transparan.</p>
+                </div>
                 <div class="row g-4">
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card-elegant">
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
+                        <div class="card-elegant card-elegant--monitoring">
+                            <div class="card-icon-wrapper"><i class="bi bi-display"></i></div>
                             <div class="badge-gov">Monitoring</div>
                             <div class="accent-line"></div>
                             <h5>Progres Real-Time</h5>
                             <p class="text-secondary mb-0">Lacak status aset dari pengukuran hingga sertifikat terbit.</p>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card-elegant">
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
+                        <div class="card-elegant card-elegant--dokumen">
+                            <div class="card-icon-wrapper"><i class="bi bi-folder2-open"></i></div>
                             <div class="badge-gov">Dokumen</div>
                             <div class="accent-line"></div>
                             <h5>Arsip Digital</h5>
                             <p class="text-secondary mb-0">Simpan berkas penting per tahap dengan rapi dan mudah dicari.</p>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card-elegant">
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card-elegant card-elegant--peringatan">
+                            <div class="card-icon-wrapper"><i class="bi bi-stopwatch"></i></div>
                             <div class="badge-gov">Peringatan</div>
                             <div class="accent-line"></div>
                             <h5>Durasi & Kendala</h5>
                             <p class="text-secondary mb-0">Tampilkan durasi proses dan identifikasi kendala lebih cepat.</p>
                         </div>
                     </div>
-                    <div class="col-md-6 col-lg-3">
-                        <div class="card-elegant">
+                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card-elegant card-elegant--pimpinan">
+                            <div class="card-icon-wrapper"><i class="bi bi-person-workspace"></i></div>
                             <div class="badge-gov">Pimpinan</div>
                             <div class="accent-line"></div>
                             <h5>Dashboard Strategis</h5>
@@ -354,10 +469,12 @@
 
         <section class="py-5">
             <div class="container gov-container">
-                <h2 class="section-title">Rekap Real-Time</h2>
-                <p class="section-desc">Ringkasan status proses dan OPD dengan aset terbanyak.</p>
+                <div class="mb-4" data-aos="fade-right">
+                    <h2 class="section-title">Rekap Real-Time</h2>
+                    <p class="section-desc">Ringkasan status proses dan OPD dengan aset terbanyak.</p>
+                </div>
                 <div class="row g-4">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" data-aos="fade-up">
                         <div class="card-elegant">
                             <div class="badge-gov">Status Proses</div>
                             <ul class="list-clean mt-3">
@@ -383,7 +500,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="col-lg-6">
+                    <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="card-elegant">
                             <div class="badge-gov">OPD Terbanyak</div>
                             <ul class="list-clean mt-3">
@@ -414,29 +531,33 @@
 
         <section class="py-5">
             <div class="container gov-container">
-                <h2 class="section-title">Alur Kerja SIPAT</h2>
-                <p class="section-desc">Sederhana dan terukur dari awal hingga selesai.</p>
-                <div class="row row-cols-2 row-cols-md-5 g-3">
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h2 class="section-title">Alur Kerja SIPAT</h2>
+                    <p class="section-desc">Sederhana dan terukur dari awal hingga selesai.</p>
+                </div>
+                <div class="row row-cols-2 row-cols-md-5 g-3" data-aos="fade-up">
                     <div class="col"><div class="flow-step text-center">Input Aset</div></div>
                     <div class="col"><div class="flow-step text-center">Update Status</div></div>
                     <div class="col"><div class="flow-step text-center">Upload Dokumen</div></div>
                     <div class="col"><div class="flow-step text-center">Monitoring</div></div>
                     <div class="col"><div class="flow-step text-center">Laporan</div></div>
                 </div>
-                <div class="cta-band mt-4 d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <div class="cta-band mt-5 d-flex flex-wrap align-items-center justify-content-between gap-3" data-aos="zoom-in">
                     <div>
                         <div class="fw-semibold">Jangan sampai aset terlambat diproses</div>
                         <div class="text-white-50">Mulai monitoring status tanah sekarang juga.</div>
                     </div>
-                    <a class="btn btn-outline-gov" style="background: #fff;" href="<?= base_url('login') ?>">Masuk SIPAT</a>
+                    <a class="btn btn-light-solid" href="<?= base_url('login') ?>">Masuk SIPAT</a>
                 </div>
             </div>
         </section>
 
         <section class="py-5">
             <div class="container gov-container">
-                <h2 class="section-title">Dokumentasi Lapangan</h2>
-                <p class="section-desc">Contoh visual proses lapangan dan arsip digital.</p>
+                <div class="mb-4" data-aos="fade-right">
+                    <h2 class="section-title">Dokumentasi Lapangan</h2>
+                    <p class="section-desc">Contoh visual proses lapangan dan arsip digital.</p>
+                </div>
                 <div class="row g-3">
                     <?php
                         $galleryDefaults = [
@@ -451,7 +572,7 @@
                             $file = $landing[$key] ?? null;
                             $url = $file ? base_url('landing/media/' . $file) : $galleryDefaults[$i];
                         ?>
-                        <div class="col-md-4">
+                        <div class="col-md-4" data-aos="fade-up" data-aos-delay="<?= $i * 100 ?>">
                             <div class="gallery-shot">
                                 <img src="<?= esc($url) ?>" alt="Dokumentasi lapangan">
                             </div>
@@ -475,5 +596,64 @@
             <div><?= esc($landing['landing_footer_text'] ?? 'Monitoring Pensertifikatan Tanah') ?></div>
         </div>
     </footer>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            once: true,
+            duration: 800,
+            offset: 60
+        });
+
+        // Navbar Scroll Effect
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                nav.classList.remove('navbar-transition', 'py-4');
+                nav.classList.add('navbar-scrolled');
+            } else {
+                nav.classList.add('navbar-transition', 'py-4');
+                nav.classList.remove('navbar-scrolled');
+            }
+        });
+
+        // Simple Counter Animation
+        const counters = document.querySelectorAll('.stat-value[data-count]');
+        const speed = 200;
+
+        const animateCounters = () => {
+            counters.forEach(counter => {
+                const updateCount = () => {
+                    const target = +counter.getAttribute('data-count');
+                    const count = +counter.innerText.replace(/,/g, '');
+                    const inc = target / speed;
+
+                    if (count < target) {
+                        counter.innerText = Math.ceil(count + inc).toLocaleString();
+                        setTimeout(updateCount, 20);
+                    } else {
+                        counter.innerText = target.toLocaleString();
+                    }
+                };
+                updateCount();
+            });
+        };
+
+        // Trigger counter when stats section is visible
+        let animated = false;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !animated) {
+                    animateCounters();
+                    animated = true;
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const statSection = document.querySelector('.stat-card');
+        if (statSection) {
+            observer.observe(statSection);
+        }
+    </script>
 </body>
 </html>

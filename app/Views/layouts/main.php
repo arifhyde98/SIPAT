@@ -1,6 +1,5 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="id">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,6 +14,8 @@
             --admin-blue: #0b4f84;
             --admin-blue-dark: #083d67;
             --admin-gold: #f0b429;
+            --admin-header-height: 56px;
+            --admin-footer-height: 44px;
         }
 
         body.admin-skin {
@@ -30,12 +31,13 @@
             right: 0;
             z-index: 1035;
         }
+        .admin-header .container-fluid {
+            min-height: var(--admin-header-height);
+        }
         @media (min-width: 992px) {
             .admin-header {
                 left: var(--lte-sidebar-width);
             }
-        }
-        @media (min-width: 992px) {
             body.sidebar-collapse .admin-header {
                 left: 0;
             }
@@ -46,11 +48,9 @@
         .admin-header .badge {
             color: #fff;
         }
-
         .admin-header .btn.btn-light {
             color: var(--admin-blue-dark);
         }
-
         .admin-header .header-title {
             font-weight: 700;
             letter-spacing: 0.3px;
@@ -63,30 +63,25 @@
 
         .app-sidebar.admin-sidebar {
             background: var(--admin-blue-dark);
+            top: 0;
         }
-
         .admin-sidebar .brand-link {
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
-
         .admin-sidebar .brand-text {
             color: #fff;
             font-weight: 600;
         }
-
         .admin-sidebar .nav-link {
             color: rgba(255, 255, 255, 0.9);
         }
-
         .admin-sidebar .nav-link .nav-icon {
             color: rgba(255, 255, 255, 0.9);
         }
-
         .admin-sidebar .nav-link.active {
             background: rgba(255, 255, 255, 0.15);
             color: #fff;
         }
-
         .admin-sidebar .nav-link:hover {
             background: rgba(255, 255, 255, 0.08);
         }
@@ -105,13 +100,10 @@
             .app-footer.admin-footer {
                 left: var(--lte-sidebar-width);
             }
-        }
-        @media (min-width: 992px) {
             body.sidebar-collapse .app-footer.admin-footer {
                 left: 0;
             }
         }
-
         .app-footer.admin-footer strong,
         .app-footer.admin-footer .float-end {
             color: #fff;
@@ -123,26 +115,29 @@
             margin: 0;
             padding: 0 24px;
         }
-
         .admin-content > :first-child {
             margin-top: 0;
         }
-
         .app-content {
             padding-top: 1rem;
         }
-
         .app-main {
-            padding-top: 64px;
-            padding-bottom: 52px;
+            padding-top: calc(var(--admin-header-height) + 8px);
+            padding-bottom: calc(var(--admin-footer-height) + 8px);
+            height: calc(100vh - var(--admin-header-height) - var(--admin-footer-height));
+            overflow: hidden;
         }
-        .app-sidebar.admin-sidebar {
-            top: 0;
-        }
-
         @media (max-width: 991.98px) {
+            :root {
+                --lte-sidebar-width: 200px;
+            }
             .admin-content {
                 padding: 0 16px;
+            }
+        }
+        @media (max-width: 767.98px) {
+            :root {
+                --lte-sidebar-width: 0px;
             }
         }
 
@@ -151,59 +146,39 @@
             border-radius: 18px;
             box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18);
         }
-
         .modal-modern .modal-header {
             border-bottom: 0;
             background: linear-gradient(135deg, rgba(13, 110, 253, 0.12), rgba(255, 255, 255, 0.9));
             padding: 18px 22px;
         }
-
         .modal-modern .modal-title {
             font-weight: 700;
         }
-
         .modal-modern .modal-body {
             padding: 18px 22px 6px;
         }
-
         .modal-modern .modal-footer {
             border-top: 0;
             padding: 10px 22px 18px;
-        }
-
-        @media (max-width: 991.98px) {
-            :root {
-                --lte-sidebar-width: 200px;
-            }
-        }
-
-        @media (max-width: 767.98px) {
-            :root {
-                --lte-sidebar-width: 0px;
-            }
         }
 
         .card.fancy-card {
             transition: transform .2s ease, box-shadow .2s ease;
             box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
         }
-
         .card.fancy-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
         }
-
         .table-premium thead th {
             text-transform: uppercase;
             letter-spacing: .04em;
             font-size: .72rem;
             color: #64748b;
         }
-
         .table-premium tbody tr:hover {
             background: rgba(59, 130, 246, 0.05);
         }
-
         .chip-soft {
             display: inline-flex;
             align-items: center;
@@ -215,7 +190,6 @@
             font-weight: 600;
             font-size: .75rem;
         }
-
         .btn-xs {
             --bs-btn-padding-y: 0.15rem;
             --bs-btn-padding-x: 0.45rem;
@@ -227,15 +201,17 @@
             font-weight: 700;
             letter-spacing: 0.2px;
         }
-
         .app-sidebar .nav-link.active {
             background: rgba(255, 255, 255, 0.18);
             border-radius: 0.5rem;
         }
-
         .app-sidebar .nav-link.active .nav-icon,
         .app-sidebar .nav-link.active p {
             color: #fff;
+        }
+
+        body:not(.sidebar-open) .sidebar-overlay {
+            display: none !important;
         }
 
         .nav-link,
@@ -243,16 +219,13 @@
         .card {
             transition: all .2s ease;
         }
-
         .btn:active {
             transform: translateY(1px);
         }
-
         .btn-loading {
             pointer-events: none;
             opacity: 0.85;
         }
-
         .btn-loading .spinner-border {
             width: 1rem;
             height: 1rem;
@@ -272,7 +245,6 @@
             animation: rowFlash 2.4s ease-out 1;
             background-color: rgba(255, 193, 7, 0.2) !important;
         }
-
         @keyframes rowFlash {
             0% { background-color: rgba(255, 193, 7, 0.35); }
             100% { background-color: transparent; }
@@ -282,7 +254,6 @@
             position: relative;
             color: transparent;
         }
-
         .table-loading tbody td::after {
             content: "";
             position: absolute;
@@ -296,10 +267,24 @@
             background-size: 400% 100%;
             animation: shimmer 1.2s ease-in-out infinite;
         }
-
         @keyframes shimmer {
             0% { background-position: 100% 0; }
             100% { background-position: -100% 0; }
+        }
+
+        .table-responsive {
+            max-height: calc(100vh - var(--admin-header-height) - var(--admin-footer-height) - 220px);
+            overflow: auto;
+        }
+
+        .table-responsive thead th,
+        .table-premium thead th,
+        .aset-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: #ffffff;
+            background-clip: padding-box;
         }
     </style>
 </head>
@@ -333,11 +318,7 @@
         <aside class="app-sidebar shadow admin-sidebar" data-bs-theme="dark">
             <div class="sidebar-brand">
                 <a href="<?= base_url('dashboard') ?>" class="brand-link">
-                    <img
-                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png/196px-Lambang_Kabupaten_Donggala_%282015-sekarang%29.png"
-                        alt="Logo Kabupaten Donggala"
-                        class="brand-image img-circle elevation-3"
-                        style="opacity: .9">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png/196px-Lambang_Kabupaten_Donggala_%282015-sekarang%29.png" alt="Logo Kabupaten Donggala" class="brand-image img-circle elevation-3" style="opacity: .9">
                     <span class="brand-text fw-light">SIPAT Admin</span>
                 </a>
             </div>
@@ -509,12 +490,22 @@
             return params.get('highlight') || '';
         };
 
+        const sipatCleanupOverlays = () => {
+            const hasOpenModal = document.querySelector('.modal.show');
+            if (hasOpenModal) return;
+            document.querySelectorAll('.modal-backdrop, .swal2-container, .sidebar-overlay').forEach((el) => {
+                el.remove();
+            });
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('padding-right');
+        };
+
         const sipatEscape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
             '&': '&amp;',
             '<': '&lt;',
             '>': '&gt;',
             '"': '&quot;',
-            "'": '&#39;',
+            "'": '&#39;'
         })[c]);
 
         const sipatToast = Swal.mixin({
@@ -584,6 +575,8 @@
                 }
             });
         });
+
+        document.addEventListener('DOMContentLoaded', sipatCleanupOverlays);
     </script>
     <script>
         $(function() {
@@ -605,31 +598,20 @@
                     const trimmed = columnsAttr.trim();
                     if (trimmed.startsWith('[')) {
                         try {
-                            columns = JSON.parse(trimmed).map(c => ({
-                                data: c
-                            }));
+                            columns = JSON.parse(trimmed).map(c => ({ data: c }));
                         } catch (e) {
                             console.error('Invalid data-columns JSON:', columnsAttr, e);
                         }
                     } else {
-                        columns = trimmed.split(',').map(c => c.trim()).filter(Boolean).map(c => ({
-                            data: c
-                        }));
+                        columns = trimmed.split(',').map(c => c.trim()).filter(Boolean).map(c => ({ data: c }));
                     }
                 }
                 const colDefs = [];
                 if (hideCols.length) {
-                    colDefs.push({
-                        targets: hideCols,
-                        visible: false,
-                        searchable: true
-                    });
+                    colDefs.push({ targets: hideCols, visible: false, searchable: true });
                 }
                 if (columns && columns.length) {
-                    colDefs.push({
-                        targets: columns.length - 1,
-                        orderable: false
-                    });
+                    colDefs.push({ targets: columns.length - 1, orderable: false });
                 }
 
                 if ($.fn.dataTable.isDataTable($table)) {
@@ -655,20 +637,22 @@
                         info: "Menampilkan _START_ - _END_ dari _TOTAL_ data",
                         infoEmpty: "Tidak ada data",
                         zeroRecords: "Data tidak ditemukan",
-                        paginate: {
-                            previous: "Sebelumnya",
-                            next: "Berikutnya"
-                        }
+                        paginate: { previous: "Sebelumnya", next: "Berikutnya" }
                     }
                 };
                 if (serverSide && columns) {
                     dtOptions.columns = columns;
                 }
                 const dt = $table.DataTable(dtOptions);
-                $table.addClass('table-loading');
+                const setLoading = (isLoading) => $table.toggleClass('table-loading', !!isLoading);
+                setLoading(false);
                 $table.on('processing.dt', function (e, settings, processing) {
-                    $table.toggleClass('table-loading', !!processing);
+                    setLoading(processing);
                 });
+                if (serverSide) {
+                    setLoading(true);
+                    dt.one('draw.dt', function () { setLoading(false); });
+                }
                 $table.on('draw.dt', function () {
                     if (highlightValue && sipatHighlightRow(highlightValue)) {
                         $table.off('draw.dt');
@@ -679,5 +663,4 @@
     </script>
     <?= $this->renderSection('scripts') ?>
 </body>
-
 </html>
