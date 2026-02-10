@@ -479,7 +479,7 @@ class Aset extends BaseController
             return redirect()->back()->with('errors', ['Import gagal: ' . $e->getMessage()]);
         }
 
-        return redirect()->to('/aset')->with('success', "Import selesai. Berhasil: {$inserted}, Dilewati: {$skipped}.");
+        return redirect()->to('/aset?imported=1')->with('success', "Import selesai. Berhasil: {$inserted}, Dilewati: {$skipped}.");
     }
 
     public function store()

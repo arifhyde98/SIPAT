@@ -206,6 +206,7 @@
         const created = params.get('created');
         const updated = params.get('updated');
         const deleted = params.get('deleted');
+        const imported = params.get('imported');
         const showAlert = (text) => {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
@@ -229,7 +230,11 @@
             showAlert('Aset tanah berhasil dihapus.');
             params.delete('deleted');
         }
-        if (created === '1' || updated === '1' || deleted === '1') {
+        if (imported === '1') {
+            showAlert('Import aset selesai.');
+            params.delete('imported');
+        }
+        if (created === '1' || updated === '1' || deleted === '1' || imported === '1') {
             const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
             window.history.replaceState({}, document.title, newUrl);
         }
