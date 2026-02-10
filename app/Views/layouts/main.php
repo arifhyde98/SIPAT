@@ -237,6 +237,70 @@
         .app-sidebar .nav-link.active p {
             color: #fff;
         }
+
+        .nav-link,
+        .btn,
+        .card {
+            transition: all .2s ease;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-loading {
+            pointer-events: none;
+            opacity: 0.85;
+        }
+
+        .btn-loading .spinner-border {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.4rem;
+        }
+
+        .empty-state {
+            padding: 24px;
+            text-align: center;
+            color: #64748b;
+            border: 1px dashed rgba(15, 23, 42, 0.15);
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .row-highlight {
+            animation: rowFlash 2.4s ease-out 1;
+            background-color: rgba(255, 193, 7, 0.2) !important;
+        }
+
+        @keyframes rowFlash {
+            0% { background-color: rgba(255, 193, 7, 0.35); }
+            100% { background-color: transparent; }
+        }
+
+        .table-loading tbody td {
+            position: relative;
+            color: transparent;
+        }
+
+        .table-loading tbody td::after {
+            content: "";
+            position: absolute;
+            left: 8px;
+            right: 8px;
+            top: 50%;
+            height: 12px;
+            transform: translateY(-50%);
+            border-radius: 6px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 37%, #f1f5f9 63%);
+            background-size: 400% 100%;
+            animation: shimmer 1.2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
     </style>
 </head>
 
@@ -429,6 +493,22 @@
     <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        const sipatHighlightRow = (highlight) => {
+            if (!highlight) return false;
+            const selector = `[data-row-id="${highlight}"], [data-id="${highlight}"], #row-${highlight}`;
+            const row = document.querySelector(selector);
+            if (row) {
+                row.classList.add('row-highlight');
+                return true;
+            }
+            return false;
+        };
+
+        const sipatGetHighlightParam = () => {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('highlight') || '';
+        };
+
         const sipatEscape = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({
             '&': '&amp;',
             '<': '&lt;',
@@ -476,6 +556,13 @@
             const form = event.target;
             const submitter = event.submitter;
             const message = (submitter && submitter.dataset.confirm) || form.dataset.confirm;
+            if (submitter && submitter.tagName === 'BUTTON') {
+                const originalHtml = submitter.innerHTML;
+                submitter.dataset.originalHtml = originalHtml;
+                submitter.classList.add('btn-loading');
+                submitter.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+                submitter.disabled = true;
+            }
             if (!message) return;
             event.preventDefault();
             Swal.fire({
@@ -488,12 +575,22 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     form.submit();
+                } else if (submitter && submitter.tagName === 'BUTTON') {
+                    submitter.classList.remove('btn-loading');
+                    if (submitter.dataset.originalHtml) {
+                        submitter.innerHTML = submitter.dataset.originalHtml;
+                    }
+                    submitter.disabled = false;
                 }
             });
         });
     </script>
     <script>
         $(function() {
+            const highlightValue = sipatGetHighlightParam();
+            if (highlightValue) {
+                sipatHighlightRow(highlightValue);
+            }
             $('.js-datatable').each(function() {
                 const $table = $(this);
                 const hideColsAttr = $table.data('hide-cols');
@@ -567,7 +664,16 @@
                 if (serverSide && columns) {
                     dtOptions.columns = columns;
                 }
-                $table.DataTable(dtOptions);
+                const dt = $table.DataTable(dtOptions);
+                $table.addClass('table-loading');
+                $table.on('processing.dt', function (e, settings, processing) {
+                    $table.toggleClass('table-loading', !!processing);
+                });
+                $table.on('draw.dt', function () {
+                    if (highlightValue && sipatHighlightRow(highlightValue)) {
+                        $table.off('draw.dt');
+                    }
+                });
             });
         });
     </script>
