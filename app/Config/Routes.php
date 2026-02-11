@@ -103,6 +103,7 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->post('desa/(:num)', 'MasterData::updateDesa/$1');
     $routes->put('desa/(:num)', 'MasterData::updateDesa/$1');
     $routes->post('desa/delete/(:num)', 'MasterData::deleteDesa/$1');
+    $routes->delete('desa/delete/(:num)', 'MasterData::deleteDesa/$1');
 
     $routes->get('kepala-desa', 'MasterData::kepalaDesa');
     $routes->get('kepala-desa/(:num)/edit', 'MasterData::editKepalaDesa/$1');

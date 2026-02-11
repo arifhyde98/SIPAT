@@ -120,12 +120,14 @@
         }
         .app-content {
             padding-top: 1rem;
+            padding-bottom: calc(var(--admin-footer-height) + 12px);
         }
         .app-main {
             padding-top: calc(var(--admin-header-height) + 8px);
             padding-bottom: calc(var(--admin-footer-height) + 8px);
-            height: calc(100vh - var(--admin-header-height) - var(--admin-footer-height));
-            overflow: hidden;
+            min-height: calc(100vh - var(--admin-header-height) - var(--admin-footer-height));
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         @media (max-width: 991.98px) {
             :root {
@@ -134,10 +136,41 @@
             .admin-content {
                 padding: 0 16px;
             }
+            .app-main {
+                min-height: auto;
+                height: auto;
+                overflow-y: visible;
+            }
         }
         @media (max-width: 767.98px) {
             :root {
-                --lte-sidebar-width: 0px;
+                --lte-sidebar-width: 230px;
+            }
+            .admin-content {
+                padding: 0 12px;
+            }
+        }
+        @media (max-width: 575.98px) {
+            .admin-header .container-fluid {
+                flex-wrap: wrap;
+                gap: 0.35rem 0.6rem;
+            }
+            .admin-header .navbar-nav.ms-auto {
+                width: 100%;
+                justify-content: flex-end;
+                flex-wrap: wrap;
+                gap: 0.35rem 0.6rem;
+            }
+            .admin-header .badge,
+            .admin-header .btn,
+            .admin-header .navbar-text {
+                font-size: 0.75rem;
+            }
+            .app-footer.admin-footer {
+                position: static;
+            }
+            .app-content {
+                padding-bottom: 1rem;
             }
         }
 

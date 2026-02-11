@@ -1,134 +1,176 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    .card-stat {
-        border: 0;
-        border-radius: 1rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        background: #fff;
+    :root {
+        --gov-primary: #1e3a8a; /* Navy Blue */
+        --gov-primary-hover: #172554;
+        --gov-secondary: #64748b;
+        --gov-success: #10b981;
+        --gov-warning: #f59e0b;
+        --gov-danger: #ef4444;
+        --gov-bg: #f8fafc;
+        --gov-card-bg: #ffffff;
     }
-    .card-stat:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,.1);
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--gov-bg);
+        color: #0f172a;
     }
-    .stat-icon {
-        width: 52px;
-        height: 52px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        font-size: 24px;
-    }
-    .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--gov-ink); }
-    .stat-label { color: var(--gov-muted); font-size: 0.875rem; }
-    .bg-primary-gradient { background: linear-gradient(135deg, #1f3a5f 0%, #3b82f6 100%); color: #fff; box-shadow: 0 4px 10px rgba(31, 58, 95, 0.2); }
-    .bg-success-gradient { background: linear-gradient(135deg, #059669 0%, #34d399 100%); color: #fff; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
-    .bg-warning-gradient { background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%); color: #fff; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); }
-    .bg-danger-gradient { background: linear-gradient(135deg, #dc2626 0%, #f87171 100%); color: #fff; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
     
+    /* Buttons */
     .btn-gov {
-        background: linear-gradient(135deg, var(--gov-primary), var(--gov-primary-2));
+        background-color: var(--gov-primary);
         color: #fff;
-        border: none;
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: 600;
+        border: 1px solid transparent;
+        transition: all 0.2s ease;
     }
-    .btn-gov:hover { color: #fff; opacity: 0.9; }
+    .btn-gov:hover {
+        background-color: var(--gov-primary-hover);
+        color: #fff;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2);
+    }
     .btn-outline-gov {
+        background-color: transparent;
         color: var(--gov-primary);
-        border: 1px solid var(--gov-primary);
-        background: transparent;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        padding: 10px 24px;
+        font-weight: 600;
+        transition: all 0.2s ease;
     }
     .btn-outline-gov:hover {
-        background: rgba(31, 58, 95, 0.05);
+        border-color: var(--gov-primary);
+        background-color: #eff6ff;
         color: var(--gov-primary);
+    }
+
+    /* Cards */
+    .card {
+        border: none;
+        border-radius: 16px;
+        background: var(--gov-card-bg);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card-stat {
+        padding: 24px;
+    }
+    .card-stat:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+    }
+    
+    /* Stat Icons & Text */
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        margin-bottom: 16px;
+    }
+    .icon-primary { background-color: #eff6ff; color: var(--gov-primary); }
+    .icon-success { background-color: #ecfdf5; color: var(--gov-success); }
+    .icon-warning { background-color: #fffbeb; color: var(--gov-warning); }
+    .icon-danger { background-color: #fef2f2; color: var(--gov-danger); }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.2;
+        margin-bottom: 4px;
+    }
+    .stat-label {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--gov-secondary);
+    }
+
+    /* Charts */
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 24px;
+    }
+    .card-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+    .chart-container {
+        position: relative;
+        width: 100%;
     }
 </style>
 
     <!-- Header Dashboard -->
-    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <div class="d-flex justify-content-between align-items-end flex-wrap gap-3 mb-5">
         <div>
-            <h1 class="h3 fw-semibold mb-0">Dashboard</h1>
-            <small class="text-muted">Selamat datang kembali, <?= esc(session()->get('user_name') ?? 'Admin') ?>!</small>
+            <h1 class="h3 fw-bold mb-1">Dashboard</h1>
+            <p class="text-muted mb-0">Selamat datang kembali, <?= esc(session()->get('user_name') ?? 'Admin') ?>!</p>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-3">
             <a href="#" class="btn btn-outline-gov">
-                <i class="bi bi-download me-1"></i> Laporan
+                <i class="bi bi-file-earmark-text me-2"></i>Laporan
             </a>
             <a href="<?= base_url('aset/new') ?>" class="btn btn-gov">
-                <i class="bi bi-plus-lg me-1"></i> Aset Baru
+                <i class="bi bi-plus-lg me-2"></i>Aset Baru
             </a>
         </div>
     </div>
 
     <!-- Baris Kartu Statistik -->
-    <div class="row g-4">
+    <div class="row g-4 mb-5">
         <div class="col-md-6 col-xl-3">
             <div class="card card-stat h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="stat-icon bg-primary-gradient">
-                                <i class="bi bi-archive"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="stat-value"><?= number_format($totalAset ?? 0) ?></h5>
-                            <p class="stat-label mb-0">Total Aset</p>
-                        </div>
+                <div class="d-flex flex-column align-items-start">
+                    <div class="stat-icon icon-primary">
+                        <i class="bi bi-building"></i>
                     </div>
+                    <div class="stat-value"><?= number_format($totalAset ?? 0) ?></div>
+                    <div class="stat-label">Total Aset</div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
             <div class="card card-stat h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="stat-icon bg-success-gradient">
-                                <i class="bi bi-patch-check-fill"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="stat-value"><?= number_format($asetBersertifikat ?? 0) ?></h5>
-                            <p class="stat-label mb-0">Sudah Bersertifikat</p>
-                        </div>
+                <div class="d-flex flex-column align-items-start">
+                    <div class="stat-icon icon-success">
+                        <i class="bi bi-patch-check-fill"></i>
                     </div>
+                    <div class="stat-value"><?= number_format($asetBersertifikat ?? 0) ?></div>
+                    <div class="stat-label">Sudah Bersertifikat</div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
             <div class="card card-stat h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="stat-icon bg-warning-gradient">
-                                <i class="bi bi-hourglass-split"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="stat-value"><?= number_format($asetProses ?? 0) ?></h5>
-                            <p class="stat-label mb-0">Dalam Proses</p>
-                        </div>
+                <div class="d-flex flex-column align-items-start">
+                    <div class="stat-icon icon-warning">
+                        <i class="bi bi-hourglass-split"></i>
                     </div>
+                    <div class="stat-value"><?= number_format($asetProses ?? 0) ?></div>
+                    <div class="stat-label">Dalam Proses</div>
                 </div>
             </div>
         </div>
         <div class="col-md-6 col-xl-3">
             <div class="card card-stat h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <div class="stat-icon bg-danger-gradient">
-                                <i class="bi bi-exclamation-triangle-fill"></i>
-                            </div>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <h5 class="stat-value"><?= number_format($asetKendala ?? 0) ?></h5>
-                            <p class="stat-label mb-0">Ada Kendala</p>
-                        </div>
+                <div class="d-flex flex-column align-items-start">
+                    <div class="stat-icon icon-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
                     </div>
+                    <div class="stat-value"><?= number_format($asetKendala ?? 0) ?></div>
+                    <div class="stat-label">Ada Kendala</div>
                 </div>
             </div>
         </div>
@@ -137,22 +179,26 @@
 <!-- Baris Grafik dan Tabel -->
 <div class="row g-4">
     <div class="col-xl-8">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="card-title mb-0 fw-semibold">Progres Aset per Bulan</h5>
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Progres Aset Bulanan</h5>
             </div>
             <div class="card-body">
-                <canvas id="progressChart" style="height: 300px; width: 100%;"></canvas>
+                <div class="chart-container" style="height: 320px;">
+                    <canvas id="progressChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-xl-4">
-        <div class="card border-0 shadow-sm h-100">
-            <div class="card-header bg-white border-0 py-3">
-                <h5 class="card-title mb-0 fw-semibold">Aset per OPD</h5>
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Distribusi per OPD</h5>
             </div>
             <div class="card-body">
-                <canvas id="opdChart" style="height: 300px; width: 100%;"></canvas>
+                <div class="chart-container" style="height: 320px; position: relative;">
+                    <canvas id="opdChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -165,7 +211,13 @@
     document.addEventListener("DOMContentLoaded", function() {
         // Progress Chart (Dummy Data for now)
         const progressCtx = document.getElementById('progressChart');
+        
         if (progressCtx) {
+            const ctx = progressCtx.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(30, 58, 138, 0.15)');
+            gradient.addColorStop(1, 'rgba(30, 58, 138, 0)');
+
             new Chart(progressCtx, {
                 type: 'line',
                 data: {
@@ -173,13 +225,44 @@
                     datasets: [{
                         label: 'Aset Selesai',
                         data: [12, 19, 3, 5, 2, 3],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderColor: '#1e3a8a',
+                        backgroundColor: gradient,
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#1e3a8a',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
                         fill: true,
                         tension: 0.3
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e3a8a',
+                            padding: 12,
+                            titleFont: { family: 'Plus Jakarta Sans', size: 13 },
+                            bodyFont: { family: 'Plus Jakarta Sans', size: 13 },
+                            displayColors: false,
+                            cornerRadius: 8
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9', drawBorder: false },
+                            ticks: { font: { family: 'Plus Jakarta Sans' }, color: '#64748b' }
+                        },
+                        x: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: { font: { family: 'Plus Jakarta Sans' }, color: '#64748b' }
+                        }
+                    }
+                }
             });
         }
 
@@ -195,24 +278,35 @@
                 data: {
                     labels: <?= json_encode($opdLabels) ?>,
                     datasets: [{
-                        label: 'Jumlah Aset',
                         data: <?= json_encode($opdValues) ?>,
                         backgroundColor: [
-                            '#3b82f6', // Blue
+                            '#1e3a8a', // Navy
                             '#10b981', // Green
                             '#f59e0b', // Amber
-                            '#6366f1', // Indigo
                             '#ef4444', // Red
-                            '#8b5cf6'  // Violet
+                            '#3b82f6', // Blue
+                            '#6366f1'  // Indigo
                         ],
-                        borderWidth: 0
+                        borderWidth: 0,
+                        hoverOffset: 4
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    cutout: '75%',
                     plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12 } }
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                boxWidth: 10,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: { family: 'Plus Jakarta Sans', size: 12 },
+                                color: '#64748b',
+                                padding: 20
+                            } 
+                        }
                     }
                 }
             });

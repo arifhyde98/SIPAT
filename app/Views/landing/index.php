@@ -10,32 +10,31 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
         :root {
-            --gov-primary: #1f3a5f;
-            --gov-primary-2: #162c49;
-            --gov-accent: #c8a13a;
-            --gov-accent-dark: #a88528;
+            --gov-primary: #0c3658;
+            --gov-primary-light: #164e7c;
+            --gov-accent: #eab308;
+            --gov-accent-dark: #ca8a04;
             --gov-success: #10b981;
             --gov-warning: #f59e0b;
             --gov-info: #3b82f6;
             --gov-danger: #ef4444;
             --gov-ink: #111827;
             --gov-muted: #6b7280;
-            --gov-bg: #f5f7fb;
+            --gov-bg: #f8fafc;
             --gov-card: #ffffff;
         }
         body {
             font-family: "Source Sans 3", "Segoe UI", sans-serif;
             color: var(--gov-ink);
             background:
-                radial-gradient(circle at 10% -10%, rgba(31, 58, 95, 0.2), transparent 50%),
-                radial-gradient(circle at 90% 10%, rgba(200, 161, 58, 0.25), transparent 50%),
-                radial-gradient(circle at 50% 100%, rgba(31, 58, 95, 0.1), transparent 70%),
+                radial-gradient(circle at 0% 0%, rgba(12, 54, 88, 0.05), transparent 40%),
+                radial-gradient(circle at 100% 0%, rgba(234, 179, 8, 0.1), transparent 40%),
                 var(--gov-bg);
         }
         h1, h2, h3, .display-5 {
             font-family: "Source Serif 4", "Georgia", serif;
             color: var(--gov-primary);
-            letter-spacing: 0.2px;
+            font-weight: 700;
         }
         .text-secondary {
             color: var(--gov-muted) !important;
@@ -58,78 +57,78 @@
         .nav-brand img {
             width: 56px;
             height: 56px;
-            border-radius: 50%;
-            background: #fff;
-            border: 1px solid rgba(31, 58, 95, 0.15);
-            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
         }
         .nav-title {
             font-weight: 700;
-            letter-spacing: 0.2px;
-            font-size: 18px;
+            font-size: 20px;
+            line-height: 1.2;
+            color: var(--gov-primary);
         }
         .nav-subtitle {
             font-size: 13px;
             color: var(--gov-muted);
             text-transform: uppercase;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
         .btn-gov {
-            background: linear-gradient(135deg, var(--gov-primary), var(--gov-primary-2));
+            background: var(--gov-primary);
             color: #fff;
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 10px 18px;
             font-weight: 600;
             border: 1px solid transparent;
-            box-shadow: 0 10px 20px rgba(31, 58, 95, 0.2);
+            box-shadow: 0 4px 12px rgba(12, 54, 88, 0.2);
             transition: all 0.3s ease;
         }
         .btn-gov:hover {
-            background: linear-gradient(135deg, var(--gov-primary-2), var(--gov-primary));
+            background: var(--gov-primary-light);
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(31, 58, 95, 0.25);
+            box-shadow: 0 6px 16px rgba(12, 54, 88, 0.3);
         }
         .btn-outline-gov {
             color: var(--gov-primary);
-            border: 1px solid rgba(31, 58, 95, 0.35);
-            border-radius: 8px;
+            border: 2px solid var(--gov-primary);
+            border-radius: 6px;
             padding: 10px 18px;
             font-weight: 600;
-            background: #fff;
+            background: transparent;
         }
         .btn-outline-gov:hover {
-            background: rgba(31, 58, 95, 0.06);
-            color: var(--gov-primary);
+            background: var(--gov-primary);
+            color: #fff;
         }
         .btn-accent {
-            background: linear-gradient(135deg, var(--gov-accent), var(--gov-accent-dark));
-            color: var(--gov-primary);
-            border-radius: 8px;
+            background: var(--gov-accent);
+            color: #fff;
+            border-radius: 6px;
             padding: 10px 18px;
             font-weight: 600;
             border: 1px solid transparent;
-            box-shadow: 0 10px 20px rgba(200, 161, 58, 0.25);
+            box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3);
             transition: all 0.3s ease;
         }
         .btn-accent:hover {
-            background: linear-gradient(135deg, var(--gov-accent-dark), var(--gov-accent));
-            color: var(--gov-primary);
+            background: var(--gov-accent-dark);
+            color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(200, 161, 58, 0.3);
+            box-shadow: 0 6px 16px rgba(234, 179, 8, 0.4);
         }
         .hero-card {
             background: var(--gov-card);
-            border-radius: 18px;
-            border: 1px solid rgba(31, 58, 95, 0.12);
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-            padding: 28px;
+            border-radius: 12px;
+            border: 0;
+            border-top: 4px solid var(--gov-accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            padding: 24px;
         }
         .hero-image {
             width: 100%;
-            border-radius: 14px;
-            border: 1px solid rgba(31, 58, 95, 0.12);
-            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             object-fit: cover;
             height: 260px;
         }
@@ -138,42 +137,58 @@
             align-items: center;
             gap: 8px;
             padding: 6px 12px;
-            border-radius: 999px;
-            background: rgba(31, 58, 95, 0.12);
+            border-radius: 4px;
+            background: rgba(12, 54, 88, 0.1);
             color: var(--gov-primary);
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         .stat-card {
-            background: var(--gov-card);
-            border-radius: 14px;
-            border: 1px solid rgba(31, 58, 95, 0.1);
-            box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
-            padding: 18px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            padding: 16px;
             height: 100%;
+            text-align: center;
         }
         .stat-value {
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--gov-primary);
+            line-height: 1.2;
         }
         .stat-label {
             font-size: 13px;
             color: var(--gov-muted);
+            font-weight: 600;
         }
         .section-title {
-            font-size: 28px;
-            margin-bottom: 6px;
+            font-size: 32px;
+            margin-bottom: 12px;
+            position: relative;
+            display: inline-block;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: var(--gov-accent);
+            margin: 8px auto 0;
+            border-radius: 2px;
         }
         .section-desc {
             color: var(--gov-muted);
-            margin-bottom: 24px;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
         }
         .card-elegant {
             background: var(--gov-card);
-            border-radius: 16px;
-            border: 1px solid rgba(31, 58, 95, 0.1);
-            box-shadow: 0 14px 28px rgba(15, 23, 42, 0.07);
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
             padding: 24px;
             height: 100%;
             position: relative;
@@ -182,8 +197,8 @@
         }
         .card-elegant:hover {
             transform: translateY(-5px);
-            box-shadow: 0 18px 36px rgba(15, 23, 42, 0.1);
-            border-color: rgba(31, 58, 95, 0.15);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
+            border-color: var(--gov-accent);
         }
         .card-elegant .badge-gov,
         .card-elegant h5,
@@ -196,7 +211,7 @@
             position: absolute;
             top: -20px;
             right: -20px;
-            font-size: 80px;
+            font-size: 100px;
             color: var(--gov-primary);
             opacity: 0.06;
             transform: rotate(-15deg);
@@ -209,7 +224,7 @@
         }
         .accent-line {
             width: 36px;
-            height: 3px;
+            height: 4px;
             background: var(--gov-accent);
             border-radius: 999px;
             margin: 10px 0 12px;
@@ -226,11 +241,11 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            min-width: 36px;
+            min-width: 32px;
             padding: 4px 10px;
-            border-radius: 999px;
-            background: rgba(31, 58, 95, 0.1);
-            color: var(--gov-primary);
+            border-radius: 4px;
+            background: #f1f5f9;
+            color: var(--gov-ink);
             font-weight: 700;
             font-size: 12px;
         }
@@ -243,76 +258,96 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: 1px solid rgba(31, 58, 95, 0.08);
-            background: rgba(255, 255, 255, 0.7);
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
             margin-bottom: 8px;
+        }
+        .list-clean li:last-child {
+            border-bottom: 0;
         }
         .flow-step {
             background: var(--gov-card);
-            border-radius: 14px;
-            border: 1px solid rgba(31, 58, 95, 0.15);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
             padding: 14px 10px;
             font-weight: 600;
             color: var(--gov-primary);
-            background: linear-gradient(145deg, #ffffff, #f8faff);
-            box-shadow: 0 4px 8px rgba(15, 23, 42, 0.04);
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
         .flow-step:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
             border-color: var(--gov-accent);
+            background: var(--gov-primary);
+            color: #fff;
         }
         .cta-band {
-            background: linear-gradient(135deg, #1f3a5f, #253f66);
+            background: var(--gov-primary);
             color: #fff;
-            border-radius: 18px;
-            padding: 22px 26px;
-            box-shadow: 0 18px 34px rgba(15, 23, 42, 0.14);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 10px 25px rgba(12, 54, 88, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-band::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; bottom: 0; left: 0;
+            background: radial-gradient(circle at 90% 50%, rgba(255,255,255,0.1), transparent 60%);
         }
         .btn-light-solid {
             background: #fff;
             color: var(--gov-primary);
-            border-radius: 8px;
+            border-radius: 6px;
             padding: 10px 18px;
             font-weight: 600;
             border: 1px solid transparent;
+            position: relative;
+            z-index: 2;
         }
         .btn-light-solid:hover {
-            background: #f1f5f9;
-            color: var(--gov-primary);
+            background: var(--gov-accent);
+            color: #fff;
         }
         .gallery-shot {
             background: #fff;
-            border-radius: 12px;
-            border: 1px solid rgba(31, 58, 95, 0.1);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
             padding: 8px;
-            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.06);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+            transition: transform 0.3s ease;
+        }
+        .gallery-shot:hover {
+            transform: scale(1.02);
         }
         .gallery-shot img {
             width: 100%;
             height: 170px;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 4px;
         }
         .footer-note {
-            border-top: 1px solid rgba(31, 58, 95, 0.12);
-            padding-top: 18px;
-            color: var(--gov-muted);
+            border-top: 1px solid #e2e8f0;
+            padding-top: 24px;
+            color: var(--gov-ink);
             font-size: 14px;
         }
         /* New Styles for Modern Feel */
         .navbar-transition {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: transparent;
+            background: #fff;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
         }
         .navbar-scrolled {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(31, 58, 95, 0.08);
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
             padding-top: 12px !important;
             padding-bottom: 12px !important;
         }
@@ -341,30 +376,33 @@
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-gov" href="<?= base_url('login') ?>">Masuk</a>
-                <a class="btn btn-accent" href="<?= base_url('dashboard') ?>">Dashboard</a>
+                <a class="btn btn-outline-gov" href="<?= base_url('login') ?>">Login Pegawai</a>
+                <a class="btn btn-gov" href="<?= base_url('dashboard') ?>">Dashboard</a>
             </div>
         </div>
     </header>
 
-    <main style="padding-top: 100px;">
-        <section class="py-5">
+    <main style="padding-top: 110px;">
+        <section class="py-5 position-relative">
+            <!-- Background decoration -->
+            <div style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(234, 179, 8, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: -1;"></div>
+            
             <div class="container gov-container">
                 <div class="row align-items-center g-5">
                     <div class="col-lg-6" data-aos="fade-right">
-                        <span class="badge-gov">Sistem Informasi Pensertifikatan Tanah</span>
+                        <span class="badge-gov mb-2"><i class="bi bi-building-check me-1"></i> Sistem Informasi Pensertifikatan Tanah</span>
                         <?php
                             $heroTitle = trim((string) ($landing['landing_hero_title'] ?? ''));
                             $heroSubtitle = trim((string) ($landing['landing_hero_subtitle'] ?? ''));
                         ?>
-                        <h1 class="display-5 mt-3">
+                        <h1 class="display-5 mt-2 fw-bold text-dark">
                             <?= esc($heroTitle !== '' ? $heroTitle : 'Monitoring aset tanah Pemda secara real-time, rapi, dan akuntabel.') ?>
                         </h1>
-                        <p class="mt-3 text-secondary">
+                        <p class="mt-3 text-secondary lead">
                             <?= esc($heroSubtitle !== '' ? $heroSubtitle : 'SIPAT membantu pengelola aset memantau proses pensertifikatan dari awal hingga sertifikat terbit, lengkap dengan dokumen digital, durasi proses, dan dashboard pimpinan yang mudah dipahami.') ?>
                         </p>
                         <div class="d-flex flex-wrap gap-2 mt-4">
-                            <a class="btn btn-gov" href="<?= base_url('login') ?>">Masuk Sistem</a>
+                            <a class="btn btn-gov" href="<?= base_url('login') ?>">Akses Sistem</a>
                             <a class="btn btn-outline-gov" href="#fitur">Lihat Fitur</a>
                         </div>
                         <div class="mt-3 text-secondary small">
@@ -384,7 +422,7 @@
                                 <img class="hero-image hero-image-animate" src="<?= esc($heroImageUrl) ?>" alt="Hero SIPAT">
                             <?php endif; ?>
                             <div class="mt-4">
-                                <div class="badge-gov">Ringkasan Cepat</div>
+                                <div class="badge-gov mb-2">Ringkasan Cepat</div>
                                 <h3 class="mt-2">Status Proses Terkini</h3>
                                 <p class="text-secondary mb-3">Data real-time dari database SIPAT.</p>
                                 <div class="row g-3">
@@ -424,7 +462,7 @@
             <div class="container gov-container">
                 <div class="text-center mb-5" data-aos="fade-up">
                     <h2 class="section-title">Manfaat Utama</h2>
-                    <p class="section-desc">Dirancang untuk alur kerja Pemda yang cepat dan transparan.</p>
+                    <p class="section-desc mx-auto" style="max-width: 600px;">Dirancang khusus untuk mendukung akuntabilitas dan transparansi pengelolaan aset daerah.</p>
                 </div>
                 <div class="row g-4">
                     <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
@@ -471,7 +509,7 @@
             <div class="container gov-container">
                 <div class="mb-4" data-aos="fade-right">
                     <h2 class="section-title">Rekap Real-Time</h2>
-                    <p class="section-desc">Ringkasan status proses dan OPD dengan aset terbanyak.</p>
+                    <p class="section-desc">Statistik terkini pengelolaan aset tanah Pemerintah Kabupaten Donggala.</p>
                 </div>
                 <div class="row g-4">
                     <div class="col-lg-6" data-aos="fade-up">
@@ -533,7 +571,7 @@
             <div class="container gov-container">
                 <div class="text-center mb-5" data-aos="fade-up">
                     <h2 class="section-title">Alur Kerja SIPAT</h2>
-                    <p class="section-desc">Sederhana dan terukur dari awal hingga selesai.</p>
+                    <p class="section-desc mx-auto" style="max-width: 600px;">Proses sistematis untuk memastikan setiap aset tanah terdata dan bersertifikat.</p>
                 </div>
                 <div class="row row-cols-2 row-cols-md-5 g-3" data-aos="fade-up">
                     <div class="col"><div class="flow-step text-center">Input Aset</div></div>
@@ -544,15 +582,15 @@
                 </div>
                 <div class="cta-band mt-5 d-flex flex-wrap align-items-center justify-content-between gap-3" data-aos="zoom-in">
                     <div>
-                        <div class="fw-semibold">Jangan sampai aset terlambat diproses</div>
-                        <div class="text-white-50">Mulai monitoring status tanah sekarang juga.</div>
+                        <h4 class="fw-bold mb-1">Amankan Aset Daerah Sekarang</h4>
+                        <div class="text-white-50">Monitoring status tanah secara real-time untuk masa depan yang lebih baik.</div>
                     </div>
                     <a class="btn btn-light-solid" href="<?= base_url('login') ?>">Masuk SIPAT</a>
                 </div>
             </div>
         </section>
 
-        <section class="py-5">
+        <section class="py-5 bg-white">
             <div class="container gov-container">
                 <div class="mb-4" data-aos="fade-right">
                     <h2 class="section-title">Dokumentasi Lapangan</h2>
@@ -583,7 +621,7 @@
         </section>
     </main>
 
-    <footer class="py-4 bg-white">
+    <footer class="py-4 bg-light border-top">
         <div class="container gov-container footer-note d-flex flex-wrap align-items-center justify-content-between gap-3">
             <?php
                 $logoFooter = $landing['landing_logo_footer'] ?? null;
@@ -591,9 +629,9 @@
             ?>
             <div class="d-flex align-items-center gap-2">
                 <img src="<?= esc($logoFooterUrl) ?>" alt="Logo Footer" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(31,58,95,0.15);">
-                <span>Copyright <?= date('Y') ?> SIPAT - Pemda Donggala</span>
+                <span class="fw-semibold text-dark">Copyright &copy; <?= date('Y') ?> Pemerintah Kabupaten Donggala</span>
             </div>
-            <div><?= esc($landing['landing_footer_text'] ?? 'Monitoring Pensertifikatan Tanah') ?></div>
+            <div class="text-muted small"><?= esc($landing['landing_footer_text'] ?? 'Monitoring Pensertifikatan Tanah') ?></div>
         </div>
     </footer>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
