@@ -3,12 +3,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SIPAT - Sistem Informasi Pensertifikatan Tanah</title>
+    <?php
+        $getSetting = static function (array $landing, string $key, string $default): string {
+            $value = trim((string) ($landing[$key] ?? ''));
+            return $value !== '' ? $value : $default;
+        };
+        $siteTitle = $getSetting($landing ?? [], 'landing_site_title', 'SIPAT - Sistem Informasi Pensertifikatan Tanah');
+    ?>
+    <title><?= esc($siteTitle) ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
+        html { scroll-behavior: smooth; }
         :root {
             --gov-primary: #0c3658;
             --gov-primary-light: #164e7c;
@@ -152,6 +160,12 @@
             padding: 16px;
             height: 100%;
             text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+            border-color: var(--gov-accent);
         }
         .stat-value {
             font-size: 28px;
@@ -359,9 +373,52 @@
         .hero-image-animate {
             animation: float 6s ease-in-out infinite;
         }
+        /* Interactive Additions */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 3px;
+            background: var(--gov-accent);
+            z-index: 9999;
+            transition: width 0.1s;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 48px;
+            height: 48px;
+            background: var(--gov-primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+        }
+        .back-to-top.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--gov-accent);
+            color: #fff;
+            transform: translateY(-4px);
+        }
     </style>
 </head>
 <body>
+    <div class="scroll-progress" id="scrollProgress"></div>
     <header id="mainNav" class="fixed-top py-4 navbar-transition">
         <div class="container gov-container d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="nav-brand">
@@ -371,26 +428,26 @@
                 ?>
                 <img src="<?= esc($logoHeaderUrl) ?>" alt="Logo Kabupaten Donggala">
                 <div>
-                    <div class="nav-title">SIPAT</div>
-                    <div class="nav-subtitle">Pemda Donggala</div>
+                    <div class="nav-title"><?= esc($getSetting($landing ?? [], 'landing_brand_title', 'SIPAT')) ?></div>
+                    <div class="nav-subtitle"><?= esc($getSetting($landing ?? [], 'landing_brand_subtitle', 'Pemda Donggala')) ?></div>
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-gov" href="<?= base_url('login') ?>">Login Pegawai</a>
-                <a class="btn btn-gov" href="<?= base_url('dashboard') ?>">Dashboard</a>
+                <a class="btn btn-outline-gov" href="<?= base_url('login') ?>"><?= esc($getSetting($landing ?? [], 'landing_nav_login_label', 'Login Pegawai')) ?></a>
+                <a class="btn btn-gov" href="<?= base_url('dashboard') ?>"><?= esc($getSetting($landing ?? [], 'landing_nav_dashboard_label', 'Dashboard')) ?></a>
             </div>
         </div>
     </header>
 
-    <main style="padding-top: 110px;">
+    <main style="padding-top: var(--landing-nav-height, 110px);">
         <section class="py-5 position-relative">
             <!-- Background decoration -->
-            <div style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(234, 179, 8, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: -1;"></div>
+            <div class="parallax-bg" style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(234, 179, 8, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: -1; transition: transform 0.1s ease-out;"></div>
             
             <div class="container gov-container">
                 <div class="row align-items-center g-5">
                     <div class="col-lg-6" data-aos="fade-right">
-                        <span class="badge-gov mb-2"><i class="bi bi-building-check me-1"></i> Sistem Informasi Pensertifikatan Tanah</span>
+                        <span class="badge-gov mb-2"><i class="bi bi-building-check me-1"></i> <?= esc($getSetting($landing ?? [], 'landing_badge_text', 'Sistem Informasi Pensertifikatan Tanah')) ?></span>
                         <?php
                             $heroTitle = trim((string) ($landing['landing_hero_title'] ?? ''));
                             $heroSubtitle = trim((string) ($landing['landing_hero_subtitle'] ?? ''));
@@ -461,46 +518,60 @@
         <section id="fitur" class="py-5">
             <div class="container gov-container">
                 <div class="text-center mb-5" data-aos="fade-up">
-                    <h2 class="section-title">Manfaat Utama</h2>
-                    <p class="section-desc mx-auto" style="max-width: 600px;">Dirancang khusus untuk mendukung akuntabilitas dan transparansi pengelolaan aset daerah.</p>
+                    <h2 class="section-title"><?= esc($getSetting($landing ?? [], 'landing_section_features_title', 'Manfaat Utama')) ?></h2>
+                    <p class="section-desc mx-auto" style="max-width: 600px;"><?= esc($getSetting($landing ?? [], 'landing_section_features_desc', 'Dirancang khusus untuk mendukung akuntabilitas dan transparansi pengelolaan aset daerah.')) ?></p>
                 </div>
                 <div class="row g-4">
-                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
-                        <div class="card-elegant card-elegant--monitoring">
-                            <div class="card-icon-wrapper"><i class="bi bi-display"></i></div>
-                            <div class="badge-gov">Monitoring</div>
-                            <div class="accent-line"></div>
-                            <h5>Progres Real-Time</h5>
-                            <p class="text-secondary mb-0">Lacak status aset dari pengukuran hingga sertifikat terbit.</p>
+                    <?php
+                        $featureDefaults = [
+                            [
+                                'badge' => 'Monitoring',
+                                'title' => 'Progres Real-Time',
+                                'desc' => 'Lacak status aset dari pengukuran hingga sertifikat terbit.',
+                                'icon' => 'bi bi-display',
+                                'variant' => 'monitoring',
+                            ],
+                            [
+                                'badge' => 'Dokumen',
+                                'title' => 'Arsip Digital',
+                                'desc' => 'Simpan berkas penting per tahap dengan rapi dan mudah dicari.',
+                                'icon' => 'bi bi-folder2-open',
+                                'variant' => 'dokumen',
+                            ],
+                            [
+                                'badge' => 'Peringatan',
+                                'title' => 'Durasi & Kendala',
+                                'desc' => 'Tampilkan durasi proses dan identifikasi kendala lebih cepat.',
+                                'icon' => 'bi bi-stopwatch',
+                                'variant' => 'peringatan',
+                            ],
+                            [
+                                'badge' => 'Pimpinan',
+                                'title' => 'Dashboard Strategis',
+                                'desc' => 'Rekap status dan progres per OPD untuk pimpinan.',
+                                'icon' => 'bi bi-person-workspace',
+                                'variant' => 'pimpinan',
+                            ],
+                        ];
+                    ?>
+                    <?php foreach ($featureDefaults as $index => $defaults) : ?>
+                        <?php
+                            $num = $index + 1;
+                            $badge = $getSetting($landing ?? [], "landing_feature_{$num}_badge", $defaults['badge']);
+                            $title = $getSetting($landing ?? [], "landing_feature_{$num}_title", $defaults['title']);
+                            $desc = $getSetting($landing ?? [], "landing_feature_{$num}_desc", $defaults['desc']);
+                            $icon = $getSetting($landing ?? [], "landing_feature_{$num}_icon", $defaults['icon']);
+                        ?>
+                        <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="<?= $index * 100 ?>">
+                            <div class="card-elegant card-elegant--<?= esc($defaults['variant']) ?>">
+                                <div class="card-icon-wrapper"><i class="<?= esc($icon) ?>"></i></div>
+                                <div class="badge-gov"><?= esc($badge) ?></div>
+                                <div class="accent-line"></div>
+                                <h5><?= esc($title) ?></h5>
+                                <p class="text-secondary mb-0"><?= esc($desc) ?></p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
-                        <div class="card-elegant card-elegant--dokumen">
-                            <div class="card-icon-wrapper"><i class="bi bi-folder2-open"></i></div>
-                            <div class="badge-gov">Dokumen</div>
-                            <div class="accent-line"></div>
-                            <h5>Arsip Digital</h5>
-                            <p class="text-secondary mb-0">Simpan berkas penting per tahap dengan rapi dan mudah dicari.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
-                        <div class="card-elegant card-elegant--peringatan">
-                            <div class="card-icon-wrapper"><i class="bi bi-stopwatch"></i></div>
-                            <div class="badge-gov">Peringatan</div>
-                            <div class="accent-line"></div>
-                            <h5>Durasi & Kendala</h5>
-                            <p class="text-secondary mb-0">Tampilkan durasi proses dan identifikasi kendala lebih cepat.</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
-                        <div class="card-elegant card-elegant--pimpinan">
-                            <div class="card-icon-wrapper"><i class="bi bi-person-workspace"></i></div>
-                            <div class="badge-gov">Pimpinan</div>
-                            <div class="accent-line"></div>
-                            <h5>Dashboard Strategis</h5>
-                            <p class="text-secondary mb-0">Rekap status dan progres per OPD untuk pimpinan.</p>
-                        </div>
-                    </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </section>
@@ -508,13 +579,13 @@
         <section class="py-5">
             <div class="container gov-container">
                 <div class="mb-4" data-aos="fade-right">
-                    <h2 class="section-title">Rekap Real-Time</h2>
-                    <p class="section-desc">Statistik terkini pengelolaan aset tanah Pemerintah Kabupaten Donggala.</p>
+                    <h2 class="section-title"><?= esc($getSetting($landing ?? [], 'landing_section_stats_title', 'Rekap Real-Time')) ?></h2>
+                    <p class="section-desc"><?= esc($getSetting($landing ?? [], 'landing_section_stats_desc', 'Statistik terkini pengelolaan aset tanah Pemerintah Kabupaten Donggala.')) ?></p>
                 </div>
                 <div class="row g-4">
                     <div class="col-lg-6" data-aos="fade-up">
                         <div class="card-elegant">
-                            <div class="badge-gov">Status Proses</div>
+                            <div class="badge-gov"><?= esc($getSetting($landing ?? [], 'landing_stats_status_title', 'Status Proses')) ?></div>
                             <ul class="list-clean mt-3">
                                 <?php
                                     $statusItems = $statusCounts ?? [];
@@ -540,7 +611,7 @@
                     </div>
                     <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
                         <div class="card-elegant">
-                            <div class="badge-gov">OPD Terbanyak</div>
+                            <div class="badge-gov"><?= esc($getSetting($landing ?? [], 'landing_stats_opd_title', 'OPD Terbanyak')) ?></div>
                             <ul class="list-clean mt-3">
                                 <?php
                                     $opdItems = $opdStats ?? [];
@@ -570,22 +641,22 @@
         <section class="py-5">
             <div class="container gov-container">
                 <div class="text-center mb-5" data-aos="fade-up">
-                    <h2 class="section-title">Alur Kerja SIPAT</h2>
-                    <p class="section-desc mx-auto" style="max-width: 600px;">Proses sistematis untuk memastikan setiap aset tanah terdata dan bersertifikat.</p>
+                    <h2 class="section-title"><?= esc($getSetting($landing ?? [], 'landing_section_flow_title', 'Alur Kerja SIPAT')) ?></h2>
+                    <p class="section-desc mx-auto" style="max-width: 600px;"><?= esc($getSetting($landing ?? [], 'landing_section_flow_desc', 'Proses sistematis untuk memastikan setiap aset tanah terdata dan bersertifikat.')) ?></p>
                 </div>
                 <div class="row row-cols-2 row-cols-md-5 g-3" data-aos="fade-up">
-                    <div class="col"><div class="flow-step text-center">Input Aset</div></div>
-                    <div class="col"><div class="flow-step text-center">Update Status</div></div>
-                    <div class="col"><div class="flow-step text-center">Upload Dokumen</div></div>
-                    <div class="col"><div class="flow-step text-center">Monitoring</div></div>
-                    <div class="col"><div class="flow-step text-center">Laporan</div></div>
+                    <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_1', 'Input Aset')) ?></div></div>
+                    <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_2', 'Update Status')) ?></div></div>
+                    <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_3', 'Upload Dokumen')) ?></div></div>
+                    <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_4', 'Monitoring')) ?></div></div>
+                    <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_5', 'Laporan')) ?></div></div>
                 </div>
                 <div class="cta-band mt-5 d-flex flex-wrap align-items-center justify-content-between gap-3" data-aos="zoom-in">
                     <div>
-                        <h4 class="fw-bold mb-1">Amankan Aset Daerah Sekarang</h4>
-                        <div class="text-white-50">Monitoring status tanah secara real-time untuk masa depan yang lebih baik.</div>
+                        <h4 class="fw-bold mb-1"><?= esc($getSetting($landing ?? [], 'landing_cta_title', 'Amankan Aset Daerah Sekarang')) ?></h4>
+                        <div class="text-white-50"><?= esc($getSetting($landing ?? [], 'landing_cta_desc', 'Monitoring status tanah secara real-time untuk masa depan yang lebih baik.')) ?></div>
                     </div>
-                    <a class="btn btn-light-solid" href="<?= base_url('login') ?>">Masuk SIPAT</a>
+                    <a class="btn btn-light-solid" href="<?= base_url('login') ?>"><?= esc($getSetting($landing ?? [], 'landing_cta_button_label', 'Masuk SIPAT')) ?></a>
                 </div>
             </div>
         </section>
@@ -593,8 +664,8 @@
         <section class="py-5 bg-white">
             <div class="container gov-container">
                 <div class="mb-4" data-aos="fade-right">
-                    <h2 class="section-title">Dokumentasi Lapangan</h2>
-                    <p class="section-desc">Contoh visual proses lapangan dan arsip digital.</p>
+                    <h2 class="section-title"><?= esc($getSetting($landing ?? [], 'landing_section_gallery_title', 'Dokumentasi Lapangan')) ?></h2>
+                    <p class="section-desc"><?= esc($getSetting($landing ?? [], 'landing_section_gallery_desc', 'Contoh visual proses lapangan dan arsip digital.')) ?></p>
                 </div>
                 <div class="row g-3">
                     <?php
@@ -629,13 +700,27 @@
             ?>
             <div class="d-flex align-items-center gap-2">
                 <img src="<?= esc($logoFooterUrl) ?>" alt="Logo Footer" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(31,58,95,0.15);">
-                <span class="fw-semibold text-dark">Copyright &copy; <?= date('Y') ?> Pemerintah Kabupaten Donggala</span>
+                <span class="fw-semibold text-dark">Copyright &copy; <?= date('Y') ?> <?= esc($getSetting($landing ?? [], 'landing_footer_copyright', 'Pemerintah Kabupaten Donggala')) ?></span>
             </div>
             <div class="text-muted small"><?= esc($landing['landing_footer_text'] ?? 'Monitoring Pensertifikatan Tanah') ?></div>
         </div>
     </footer>
+
+    <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="bi bi-arrow-up"></i>
+    </div>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
+        const sipatUpdateLandingNavHeight = () => {
+            const navEl = document.getElementById('mainNav');
+            if (!navEl) return;
+            const height = Math.ceil(navEl.getBoundingClientRect().height || 0);
+            if (height > 0) {
+                document.documentElement.style.setProperty('--landing-nav-height', `${height + 16}px`);
+            }
+        };
+
         // Initialize AOS
         AOS.init({
             once: true,
@@ -645,13 +730,47 @@
 
         // Navbar Scroll Effect
         const nav = document.getElementById('mainNav');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 20) {
+        const progressBar = document.getElementById('scrollProgress');
+        const backToTop = document.getElementById('backToTop');
+
+        const onLandingScroll = () => {
+            const scrollY = window.scrollY;
+
+            // Navbar
+            if (scrollY > 20) {
                 nav.classList.remove('navbar-transition', 'py-4');
                 nav.classList.add('navbar-scrolled');
             } else {
                 nav.classList.add('navbar-transition', 'py-4');
                 nav.classList.remove('navbar-scrolled');
+            }
+            sipatUpdateLandingNavHeight();
+
+            // Progress Bar
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            if (progressBar) progressBar.style.width = scrolled + "%";
+
+            // Back to Top
+            if (scrollY > 300) {
+                backToTop.classList.add('active');
+            } else {
+                backToTop.classList.remove('active');
+            }
+        };
+        window.addEventListener('scroll', onLandingScroll);
+        window.addEventListener('resize', sipatUpdateLandingNavHeight);
+        window.addEventListener('load', sipatUpdateLandingNavHeight);
+        sipatUpdateLandingNavHeight();
+
+        // Mouse Parallax Effect for Background
+        document.addEventListener('mousemove', (e) => {
+            const bgDeco = document.querySelector('.parallax-bg');
+            if (bgDeco) {
+                const x = (window.innerWidth - e.pageX * 2) / 50;
+                const y = (window.innerHeight - e.pageY * 2) / 50;
+                bgDeco.style.transform = `translateX(${x}px) translateY(${y}px)`;
             }
         });
 

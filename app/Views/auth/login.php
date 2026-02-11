@@ -37,6 +37,7 @@
             border-radius: 16px;
             padding: 32px;
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         .logo-box {
@@ -48,6 +49,11 @@
             align-items: center;
             justify-content: center;
             box-shadow: inset 0 0 0 1px #c5d2de;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-box:hover {
+            transform: scale(1.05) rotate(2deg);
         }
 
         .pill-input {
@@ -55,10 +61,13 @@
             border: none;
             border-radius: 999px;
             padding: 12px 16px 12px 44px;
+            transition: all 0.3s ease;
         }
 
         .pill-input:focus {
             box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+            transform: scale(1.02);
+            background: #fff;
         }
 
         .pill-icon {
@@ -67,6 +76,12 @@
             top: 50%;
             transform: translateY(-50%);
             color: #6b7a89;
+            transition: all 0.3s ease;
+        }
+
+        .position-relative:focus-within .pill-icon {
+            color: var(--blue);
+            transform: translateY(-50%) scale(1.1);
         }
 
         .btn-login {
@@ -76,11 +91,14 @@
             padding: 12px 40px;
             font-weight: 700;
             color: #fff;
+            transition: all 0.3s ease;
         }
 
         .btn-login:hover {
             opacity: 0.92;
             color: #fff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(88, 179, 63, 0.3);
         }
 
         .footer-text {
@@ -93,6 +111,17 @@
                 font-size: 42px;
             }
         }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
+        }
+        .logo-animate { animation: float 4s ease-in-out infinite; }
     </style>
 </head>
 
@@ -110,7 +139,8 @@
                         <img
                             src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png/196px-Lambang_Kabupaten_Donggala_%282015-sekarang%29.png"
                             alt="Logo Kabupaten Donggala"
-                            style="max-width: 110px;">
+                            style="max-width: 110px;"
+                            class="logo-animate">
                     </div>
                 </div>
                 <div class="col-md-8">
