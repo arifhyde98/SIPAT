@@ -8,6 +8,8 @@
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
 <div class="card">
     <div class="card-body">
         <form method="post" enctype="multipart/form-data">
@@ -71,23 +73,100 @@
             ?>
 
             <style>
+                :root {
+                    --gov-primary: #0c3658;
+                    --gov-accent: #eab308;
+                }
+                .card {
+                    border: none;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+                    border-radius: 16px;
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                    border-top: 4px solid var(--gov-primary);
+                }
+                .card:hover {
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+                }
+                .form-label {
+                    font-weight: 600;
+                    color: #475569;
+                    font-size: 0.875rem;
+                    margin-bottom: 0.5rem;
+                    transition: color 0.2s;
+                }
+                .form-control {
+                    border-radius: 10px;
+                    border: 1px solid #e2e8f0;
+                    padding: 0.75rem 1rem;
+                    background-color: #f8fafc;
+                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .form-control:focus {
+                    border-color: var(--gov-accent);
+                    box-shadow: 0 0 0 4px rgba(234, 179, 8, 0.15);
+                    background-color: #fff;
+                    transform: translateY(-2px);
+                }
+                .form-control:hover {
+                    background-color: #fff;
+                    border-color: #cbd5e1;
+                }
+                h6.text-uppercase {
+                    color: var(--gov-primary) !important;
+                    font-weight: 800;
+                    letter-spacing: 0.05em;
+                    position: relative;
+                    padding-left: 1rem;
+                    margin-top: 1rem;
+                    border-left: 4px solid var(--gov-accent);
+                    background: linear-gradient(90deg, rgba(234, 179, 8, 0.1) 0%, transparent 100%);
+                    padding-top: 0.5rem;
+                    padding-bottom: 0.5rem;
+                    border-radius: 0 8px 8px 0;
+                }
+                .btn-primary {
+                    background: var(--gov-primary);
+                    border: none;
+                    padding: 12px 30px;
+                    border-radius: 8px;
+                    font-weight: 600;
+                    box-shadow: 0 4px 12px rgba(12, 54, 88, 0.2);
+                    transition: all 0.3s ease;
+                }
+                .btn-primary:hover {
+                    background: #164e7c;
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 20px rgba(12, 54, 88, 0.3);
+                }
                 .preview-thumb {
                     width: 100%;
                     max-width: 240px;
                     height: 140px;
                     border-radius: 12px;
                     object-fit: cover;
-                    border: 1px solid rgba(15, 23, 42, 0.12);
+                    border: 2px solid #fff;
                     box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+                    transition: transform 0.3s ease;
+                    cursor: pointer;
+                }
+                .preview-thumb:hover {
+                    transform: scale(1.05) rotate(1deg);
+                    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
                 }
                 .preview-logo {
-                    width: 64px;
-                    height: 64px;
+                    width: 80px;
+                    height: 80px;
                     border-radius: 50%;
-                    object-fit: cover;
-                    border: 1px solid rgba(15, 23, 42, 0.12);
+                    object-fit: contain;
+                    padding: 8px;
+                    border: 2px solid #fff;
                     box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
                     background: #fff;
+                    transition: transform 0.3s ease;
+                }
+                .preview-logo:hover {
+                    transform: rotate(10deg) scale(1.1);
                 }
             </style>
 
@@ -165,7 +244,10 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Icon (class)</label>
-                    <input type="text" name="landing_feature_1_icon" class="form-control" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_1_icon')) ?>">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-primary"><i class="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_1_icon')) ?> fs-5"></i></span>
+                        <input type="text" name="landing_feature_1_icon" class="form-control icon-input" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_1_icon')) ?>">
+                    </div>
                 </div>
 
                 <div class="col-12">
@@ -185,7 +267,10 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Icon (class)</label>
-                    <input type="text" name="landing_feature_2_icon" class="form-control" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_2_icon')) ?>">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-primary"><i class="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_2_icon')) ?> fs-5"></i></span>
+                        <input type="text" name="landing_feature_2_icon" class="form-control icon-input" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_2_icon')) ?>">
+                    </div>
                 </div>
 
                 <div class="col-12">
@@ -205,7 +290,10 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Icon (class)</label>
-                    <input type="text" name="landing_feature_3_icon" class="form-control" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_3_icon')) ?>">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-primary"><i class="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_3_icon')) ?> fs-5"></i></span>
+                        <input type="text" name="landing_feature_3_icon" class="form-control icon-input" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_3_icon')) ?>">
+                    </div>
                 </div>
 
                 <div class="col-12">
@@ -225,7 +313,10 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Icon (class)</label>
-                    <input type="text" name="landing_feature_4_icon" class="form-control" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_4_icon')) ?>">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-primary"><i class="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_4_icon')) ?> fs-5"></i></span>
+                        <input type="text" name="landing_feature_4_icon" class="form-control icon-input" value="<?= esc($getValue($settings ?? [], $defaults, 'landing_feature_4_icon')) ?>">
+                    </div>
                 </div>
 
                 <div class="col-12 mt-3">
@@ -375,4 +466,13 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.querySelectorAll('.icon-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const icon = this.previousElementSibling.querySelector('i');
+            if(icon) icon.className = this.value + ' fs-5';
+        });
+    });
+</script>
 <?= $this->endSection() ?>
