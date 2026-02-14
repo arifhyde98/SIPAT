@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
@@ -427,12 +427,6 @@
                             </li>
                         <?php endif; ?>
                         <?php if (session()->get('user_role') === 'Admin') : ?>
-                            <li class="nav-item">
-                                <a href="<?= base_url('users') ?>" class="nav-link <?= $is('users') ? 'active' : '' ?>">
-                                    <i class="nav-icon bi bi-people"></i>
-                                    <p>Users</p>
-                                </a>
-                            </li>
                             <li class="nav-item <?= $is('master') ? 'menu-open' : '' ?>">
                                 <a href="#" class="nav-link <?= $is('master') ? 'active' : '' ?>">
                                     <i class="nav-icon bi bi-database-gear"></i>
@@ -442,6 +436,12 @@
                                     </p>
                                 </a>
                                 <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="<?= base_url('users') ?>" class="nav-link <?= $is('users') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-people"></i>
+                                            <p>Users</p>
+                                        </a>
+                                    </li>
                                     <li class="nav-item">
                                         <a href="<?= base_url('master/kecamatan') ?>" class="nav-link <?= $is('master/kecamatan') ? 'active' : '' ?>">
                                             <i class="nav-icon bi bi-geo"></i>
@@ -472,19 +472,25 @@
                                             <p>Pemohon</p>
                                         </a>
                                     </li>
+                                    <li class="nav-item">
+                                        <a href="<?= base_url('master/pengamanan') ?>" class="nav-link <?= $is('master/pengamanan') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-shield-check"></i>
+                                            <p>Master Pengamanan</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="<?= base_url('status') ?>" class="nav-link <?= $is('status') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-tags"></i>
+                                            <p>Status Proses</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="<?= base_url('landing-settings') ?>" class="nav-link <?= $is('landing-settings') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-brush"></i>
+                                            <p>Landing Page</p>
+                                        </a>
+                                    </li>
                                 </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="<?= base_url('status') ?>" class="nav-link <?= $is('status') ? 'active' : '' ?>">
-                                    <i class="nav-icon bi bi-tags"></i>
-                                    <p>Status Proses</p>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="<?= base_url('landing-settings') ?>" class="nav-link <?= $is('landing-settings') ? 'active' : '' ?>">
-                                    <i class="nav-icon bi bi-brush"></i>
-                                    <p>Landing Page</p>
-                                </a>
                             </li>
                         <?php endif; ?>
                     </ul>
@@ -705,3 +711,8 @@
     <?= $this->renderSection('scripts') ?>
 </body>
 </html>
+
+
+
+
+

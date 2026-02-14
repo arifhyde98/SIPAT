@@ -3,9 +3,19 @@
 <?= $this->section('content') ?>
 <noscript>
     <style>
-        .modal { display: block; position: static; }
-        .modal-dialog { max-width: 100%; margin: 0; }
-        .modal-backdrop { display: none; }
+        .modal {
+            display: block;
+            position: static;
+        }
+
+        .modal-dialog {
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .modal-backdrop {
+            display: none;
+        }
     </style>
 </noscript>
 <div class="modal fade modal-modern" id="modalForm" tabindex="-1" aria-hidden="true">
@@ -152,22 +162,21 @@
                             <div class="card-body">
                                 <form action="<?= base_url('pengamanan/' . $aset['id_aset']) ?>" method="post">
                                     <?= csrf_field() ?>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="sertifikat_ada" id="sertifikat_ada" <?= !empty($pengamanan['sertifikat_ada']) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="sertifikat_ada">Sertifikat Ada</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="pagar" id="pagar" <?= !empty($pengamanan['pagar']) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="pagar">Pagar</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="papan_nama" id="papan_nama" <?= !empty($pengamanan['papan_nama']) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="papan_nama">Papan Nama</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="dikuasai_pihak_lain" id="dikuasai_pihak_lain" <?= !empty($pengamanan['dikuasai_pihak_lain']) ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="dikuasai_pihak_lain">Dikuasai Pihak Lain</label>
-                                    </div>
+                                    <?php
+                                    // Fetch dynamic items (sebaiknya dipindah ke Controller)
+                                    $pItems = (new \App\Models\MasterPengamananItemModel())->where('is_active', 1)->findAll();
+                                    $pValues = [];
+                                    if (!empty($pengamanan['id_pengamanan'])) {
+                                        $rawValues = (new \App\Models\PengamananFisikValueModel())->where('id_pengamanan', $pengamanan['id_pengamanan'])->findAll();
+                                        foreach ($rawValues as $v) $pValues[$v['id_item']] = $v['is_checked'];
+                                    }
+                                    ?>
+                                    <?php foreach ($pItems as $item): ?>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="item_<?= $item['id'] ?>" id="item_<?= $item['id'] ?>" <?= !empty($pValues[$item['id']]) ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="item_<?= $item['id'] ?>"><?= esc($item['label']) ?></label>
+                                        </div>
+                                    <?php endforeach; ?>
                                     <div class="mt-3">
                                         <label class="form-label">Tanggal Cek</label>
                                         <input type="date" name="tgl_cek" class="form-control" value="<?= esc($pengamanan['tgl_cek'] ?? '') ?>">
@@ -277,12 +286,14 @@
 
 <?= $this->section('scripts') ?>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
         const modalEl = document.getElementById('modalForm');
         if (!modalEl || typeof bootstrap === 'undefined') return;
-        const modal = new bootstrap.Modal(modalEl, { backdrop: 'static' });
+        const modal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static'
+        });
         modal.show();
-        modalEl.addEventListener('hidden.bs.modal', function () {
+        modalEl.addEventListener('hidden.bs.modal', function() {
             window.location.href = '<?= base_url('aset') ?>';
         });
     });

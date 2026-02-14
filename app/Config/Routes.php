@@ -123,4 +123,10 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->post('pemohon', 'MasterData::storePemohon');
     $routes->post('pemohon/(:num)', 'MasterData::updatePemohon/$1');
     $routes->post('pemohon/delete/(:num)', 'MasterData::deletePemohon/$1');
+
+    // Master Pengamanan
+    $routes->get('pengamanan', 'MasterPengamanan::index');
+    $routes->post('pengamanan', 'MasterPengamanan::store');
+    $routes->post('pengamanan/(:num)', 'MasterPengamanan::update/$1');
+    $routes->post('pengamanan/delete/(:num)', 'MasterPengamanan::delete/$1');
 });
