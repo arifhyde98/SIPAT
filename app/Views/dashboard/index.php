@@ -129,6 +129,36 @@
     </div>
 
     <!-- Baris Kartu Statistik -->
+    <?php
+        $statusCards = $statusCounts ?? [];
+        $breakdownSertifikat = [];
+        $breakdownProses = [];
+        $breakdownKendala = [];
+
+        foreach ($statusCards as $statusName => $statusTotal) {
+            $name = (string) $statusName;
+            $total = (int) $statusTotal;
+            $normalized = strtolower($name);
+
+            if (str_contains($normalized, 'kendala') || str_contains($normalized, 'sengketa')) {
+                $breakdownKendala[$name] = $total;
+            } elseif (str_contains($normalized, 'selesai ukur')) {
+                $breakdownProses[$name] = $total;
+            } elseif (str_contains($normalized, 'sertifikat') || str_contains($normalized, 'terbit') || str_contains($normalized, 'selesai')) {
+                $breakdownSertifikat[$name] = $total;
+            } else {
+                $breakdownProses[$name] = $total;
+            }
+        }
+
+        arsort($breakdownSertifikat);
+        arsort($breakdownProses);
+        arsort($breakdownKendala);
+
+        $miniSertifikat = array_slice($breakdownSertifikat, 0, 3, true);
+        $miniProses = array_slice($breakdownProses, 0, 3, true);
+        $miniKendala = array_slice($breakdownKendala, 0, 3, true);
+    ?>
     <div class="row g-4 mb-5">
         <div class="col-md-6 col-xl-3">
             <div class="card card-stat h-100">
@@ -149,6 +179,13 @@
                     </div>
                     <div class="stat-value"><?= number_format($asetBersertifikat ?? 0) ?></div>
                     <div class="stat-label">Sudah Bersertifikat</div>
+                    <?php if (!empty($miniSertifikat)) : ?>
+                        <div class="text-muted small mt-2">
+                            <?php foreach ($miniSertifikat as $name => $count) : ?>
+                                <div><?= esc($name) ?>: <?= number_format((int) $count) ?></div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -160,6 +197,13 @@
                     </div>
                     <div class="stat-value"><?= number_format($asetProses ?? 0) ?></div>
                     <div class="stat-label">Dalam Proses</div>
+                    <?php if (!empty($miniProses)) : ?>
+                        <div class="text-muted small mt-2">
+                            <?php foreach ($miniProses as $name => $count) : ?>
+                                <div><?= esc($name) ?>: <?= number_format((int) $count) ?></div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -171,11 +215,17 @@
                     </div>
                     <div class="stat-value"><?= number_format($asetKendala ?? 0) ?></div>
                     <div class="stat-label">Ada Kendala</div>
+                    <?php if (!empty($miniKendala)) : ?>
+                        <div class="text-muted small mt-2">
+                            <?php foreach ($miniKendala as $name => $count) : ?>
+                                <div><?= esc($name) ?>: <?= number_format((int) $count) ?></div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
-
 <!-- Baris Grafik dan Tabel -->
 <div class="row g-4">
     <div class="col-xl-8">
@@ -314,3 +364,5 @@
     });
 </script>
 <?= $this->endSection() ?>
+
+

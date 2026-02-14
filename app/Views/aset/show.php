@@ -185,7 +185,7 @@
                                         <label class="form-label">Catatan</label>
                                         <textarea name="catatan" class="form-control" rows="3"><?= esc($pengamanan['catatan'] ?? '') ?></textarea>
                                     </div>
-                                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Petugas Lapangan'], true)) : ?>
+                                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset', 'Petugas Lapangan'], true)) : ?>
                                         <button type="submit" class="btn btn-primary mt-3 rounded-pill">
                                             <i class="bi bi-shield-check me-1"></i>Simpan Pengamanan
                                         </button>

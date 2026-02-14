@@ -201,7 +201,7 @@
                         <th>Nama</th>
                         <th>Penggunaan</th>
                         <th>OPD</th>
-                        <th class="text-end">Luas (m²)</th>
+                        <th class="text-end">Luas (m??)</th>
                         <th class="text-end">Harga</th>
                         <th>Status Saat Ini</th>
                         <th>Durasi (hari)</th>
@@ -209,7 +209,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php $no = 1; ?>
+                    <?php
+                    $currentPage = isset($pager) ? (int) $pager->getCurrentPage('aset') : 1;
+                    $perPageVal = isset($perPage) ? (int) $perPage : count($data);
+                    $no = (($currentPage - 1) * max($perPageVal, 1)) + 1;
+                    ?>
                     <?php foreach ($data as $row) : ?>
                         <tr>
                             <td class="d-none"><?= esc($row['kode_aset']) ?></td>
@@ -349,3 +353,4 @@
     });
 </script>
 <?= $this->endSection() ?>
+

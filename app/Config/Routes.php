@@ -43,7 +43,7 @@ $routes->group('dokumen', ['filter' => 'role:Admin,Pengelola Aset,Petugas Lapang
     $routes->delete('(:num)', 'Dokumen::delete/$1');
 });
 
-$routes->group('pengamanan', ['filter' => 'role:Admin,Petugas Lapangan'], static function ($routes) {
+$routes->group('pengamanan', ['filter' => 'role:Admin,Pengelola Aset,Petugas Lapangan'], static function ($routes) {
     $routes->post('(:num)', 'Pengamanan::store/$1');
 });
 
@@ -130,3 +130,4 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->post('pengamanan/(:num)', 'MasterPengamanan::update/$1');
     $routes->post('pengamanan/delete/(:num)', 'MasterPengamanan::delete/$1');
 });
+
