@@ -6,6 +6,7 @@ use App\Models\AsetModel;
 use App\Models\DokumenAsetModel;
 use App\Models\PengamananFisikModel;
 use App\Models\ProsesAsetModel;
+use App\Models\SettingModel;
 use App\Models\StatusProsesModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
@@ -16,51 +17,9 @@ class Aset extends BaseController
         $asetModel = new AsetModel();
         $statusModel = new StatusProsesModel();
         $db = \Config\Database::connect();
+        $filters = $this->getAsetFilters();
 
-        $filterOpd = $this->request->getGet('opd');
-        $filterStatus = $this->request->getGet('status');
-        $filterTahun = $this->request->getGet('tanggal_perolehan');
-        $filterKeyword = trim((string) $this->request->getGet('q'));
-
-        $asetQuery = $asetModel;
-        if (!empty($filterOpd)) {
-            $asetQuery = $asetQuery->where('opd', $filterOpd);
-        }
-        if (!empty($filterTahun)) {
-            $asetQuery = $asetQuery->where('tanggal_perolehan', $filterTahun);
-        }
-        if ($filterKeyword !== '') {
-            $asetQuery = $asetQuery->groupStart()
-                ->like('kode_aset', $filterKeyword)
-                ->orLike('nama_aset', $filterKeyword)
-                ->orLike('peruntukan', $filterKeyword)
-                ->orLike('opd', $filterKeyword)
-                ->groupEnd();
-        }
-
-        if (!empty($filterStatus)) {
-            $statusRows = $db->query(
-                "SELECT p1.id_aset
-                 FROM proses_aset p1
-                 JOIN (
-                    SELECT id_aset, MAX(id_proses) AS max_id
-                    FROM proses_aset
-                    GROUP BY id_aset
-                 ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
-                 WHERE p1.id_status = ?",
-                [$filterStatus]
-            )->getResultArray();
-
-            $statusIds = array_values(array_filter(array_map(
-                static fn ($row) => (int) ($row['id_aset'] ?? 0),
-                $statusRows
-            )));
-
-            if (empty($statusIds)) {
-                $statusIds = [0];
-            }
-            $asetQuery = $asetQuery->whereIn('id_aset', $statusIds);
-        }
+        $asetQuery = $this->applyAsetFilters($asetModel, $filters);
 
         $perPage = 25;
         $asetList = $asetQuery->orderBy('id_aset', 'DESC')->paginate($perPage, 'aset');
@@ -99,12 +58,7 @@ class Aset extends BaseController
             $opdRows
         )));
 
-        $queryParams = array_filter([
-            'opd' => $filterOpd,
-            'status' => $filterStatus,
-            'tanggal_perolehan' => $filterTahun,
-            'q' => $filterKeyword,
-        ], static fn ($v) => $v !== null && $v !== '');
+        $queryParams = $this->buildFilterQueryParams($filters);
         $queryString = http_build_query($queryParams);
         $pager->setPath(base_url('aset') . ($queryString ? '?' . $queryString : ''));
 
@@ -114,35 +68,15 @@ class Aset extends BaseController
             'opdList'    => $opdList,
             'pager'      => $pager,
             'perPage'    => $perPage,
-            'filters'    => [
-                'opd'    => $filterOpd,
-                'status' => $filterStatus,
-                'tanggal_perolehan'  => $filterTahun,
-                'q'      => $filterKeyword,
-            ],
+            'filters'    => $filters,
+            'exportQueryString' => $queryString ? '?' . $queryString : '',
         ]);
     }
 
 
     public function exportCsv()
     {
-        $db = \Config\Database::connect();
-        $query = $db->query(
-            "SELECT a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan,
-                    a.tanggal_perolehan, sp.nama_status, p.durasi_hari
-             FROM aset_tanah a
-             LEFT JOIN (
-                 SELECT p1.id_aset, p1.id_status, p1.durasi_hari
-                 FROM proses_aset p1
-                 JOIN (
-                     SELECT id_aset, MAX(id_proses) AS max_id
-                     FROM proses_aset
-                     GROUP BY id_aset
-                 ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
-             ) p ON p.id_aset = a.id_aset
-             LEFT JOIN status_proses sp ON sp.id_status = p.id_status
-             ORDER BY a.id_aset DESC"
-        );
+        $query = $this->buildExportQuery($this->getAsetFilters())->get();
 
         $filename = 'aset_export_' . date('Ymd_His') . '.csv';
         $this->response->setHeader('Content-Type', 'text/csv');
@@ -160,7 +94,7 @@ class Aset extends BaseController
                 $row['peruntukan'],
                 $row['opd'],
                 $row['luas'],
-                $row['harga_perolehan'],
+                $this->formatHargaPerolehan($row['harga_perolehan'] ?? null),
                 $row['tanggal_perolehan'],
                 $row['nama_status'] ?? 'Belum Diurus',
                 $row['durasi_hari'] ?? '',
@@ -175,27 +109,287 @@ class Aset extends BaseController
 
     public function printReport()
     {
+        return $this->renderReportPdf(false);
+    }
+
+    public function downloadReportPdf()
+    {
+        return $this->renderReportPdf(true);
+    }
+
+    private function renderReportPdf(bool $download)
+    {
+        $filters = $this->getAsetFilters();
+        $rows = $this->buildExportQuery($filters)->get()->getResultArray();
+        $report = $this->buildReportContext($rows, $filters);
+
+        if (!class_exists(\Mpdf\Mpdf::class)) {
+            return view('aset/print', $report);
+        }
+
+        $html = view('aset/report_pdf', $report);
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4-L',
+            'margin_top' => 10,
+            'margin_bottom' => 26,
+            'margin_left' => 10,
+            'margin_right' => 10,
+        ]);
+        $mpdf->SetTitle($report['reportTitle']);
+        $mpdf->SetHTMLFooter('<div style="font-size:9pt;color:#64748b;border-top:1px solid #dbe3ef;padding-top:6px;text-align:center;">Halaman {PAGENO} dari {nbpg} | ' . htmlspecialchars((string) ($report['kop']['kop_footer'] ?? ''), ENT_QUOTES, 'UTF-8') . '</div>');
+        $mpdf->WriteHTML($html);
+
+        $filename = 'Laporan_Aset_Tanah_' . date('Ymd_His') . '.pdf';
+        $content = $mpdf->Output($filename, 'S');
+        $disposition = $download ? 'attachment' : 'inline';
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', $disposition . '; filename="' . $filename . '"')
+            ->setBody($content);
+    }
+    private function getAsetFilters(): array
+    {
+        return [
+            'opd' => trim((string) $this->request->getGet('opd')),
+            'status' => trim((string) $this->request->getGet('status')),
+            'tanggal_perolehan' => trim((string) $this->request->getGet('tanggal_perolehan')),
+            'q' => trim((string) $this->request->getGet('q')),
+        ];
+    }
+
+    private function buildFilterQueryParams(array $filters): array
+    {
+        return array_filter($filters, static fn ($value) => $value !== null && $value !== '');
+    }
+
+    private function applyAsetFilters(AsetModel $asetQuery, array $filters): AsetModel
+    {
+        if ($filters['opd'] !== '') {
+            $asetQuery = $asetQuery->where('opd', $filters['opd']);
+        }
+        if ($filters['tanggal_perolehan'] !== '') {
+            $asetQuery = $asetQuery->where('tanggal_perolehan', $filters['tanggal_perolehan']);
+        }
+        if ($filters['q'] !== '') {
+            $asetQuery = $asetQuery->groupStart()
+                ->like('kode_aset', $filters['q'])
+                ->orLike('nama_aset', $filters['q'])
+                ->orLike('peruntukan', $filters['q'])
+                ->orLike('opd', $filters['q'])
+                ->groupEnd();
+        }
+        if ($filters['status'] !== '') {
+            $asetQuery = $asetQuery->whereIn('id_aset', $this->getLatestStatusAssetIds($filters['status']));
+        }
+
+        return $asetQuery;
+    }
+
+    private function buildExportQuery(array $filters)
+    {
         $db = \Config\Database::connect();
-        $rows = $db->query(
-            "SELECT a.kode_aset, a.nama_aset, a.opd, a.luas, a.harga_perolehan,
-                    a.tanggal_perolehan, sp.nama_status, p.durasi_hari
-             FROM aset_tanah a
-             LEFT JOIN (
-                 SELECT p1.id_aset, p1.id_status, p1.durasi_hari
-                 FROM proses_aset p1
-                 JOIN (
-                     SELECT id_aset, MAX(id_proses) AS max_id
-                     FROM proses_aset
-                     GROUP BY id_aset
-                 ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
-             ) p ON p.id_aset = a.id_aset
-             LEFT JOIN status_proses sp ON sp.id_status = p.id_status
-             ORDER BY a.id_aset DESC"
+        $builder = $db->table('aset_tanah a')
+            ->select('a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan, a.tanggal_perolehan, sp.nama_status, p.durasi_hari')
+            ->join(
+                '(SELECT p1.id_aset, p1.id_status, p1.durasi_hari
+                  FROM proses_aset p1
+                  JOIN (
+                      SELECT id_aset, MAX(id_proses) AS max_id
+                      FROM proses_aset
+                      GROUP BY id_aset
+                  ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id) p',
+                'p.id_aset = a.id_aset',
+                'left',
+                false
+            )
+            ->join('status_proses sp', 'sp.id_status = p.id_status', 'left')
+            ->orderBy('a.id_aset', 'DESC');
+
+        if ($filters['opd'] !== '') {
+            $builder->where('a.opd', $filters['opd']);
+        }
+        if ($filters['tanggal_perolehan'] !== '') {
+            $builder->where('a.tanggal_perolehan', $filters['tanggal_perolehan']);
+        }
+        if ($filters['q'] !== '') {
+            $builder->groupStart()
+                ->like('a.kode_aset', $filters['q'])
+                ->orLike('a.nama_aset', $filters['q'])
+                ->orLike('a.peruntukan', $filters['q'])
+                ->orLike('a.opd', $filters['q'])
+                ->groupEnd();
+        }
+        if ($filters['status'] !== '') {
+            $builder->whereIn('a.id_aset', $this->getLatestStatusAssetIds($filters['status']));
+        }
+
+        return $builder;
+    }
+
+    private function getLatestStatusAssetIds(string $statusId): array
+    {
+        $db = \Config\Database::connect();
+        $statusRows = $db->query(
+            "SELECT p1.id_aset
+             FROM proses_aset p1
+             JOIN (
+                SELECT id_aset, MAX(id_proses) AS max_id
+                FROM proses_aset
+                GROUP BY id_aset
+             ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
+             WHERE p1.id_status = ?",
+            [$statusId]
         )->getResultArray();
 
-        return view('aset/print', [
-            'rows' => $rows,
-        ]);
+        $statusIds = array_values(array_filter(array_map(
+            static fn ($row) => (int) ($row['id_aset'] ?? 0),
+            $statusRows
+        )));
+
+        return $statusIds !== [] ? $statusIds : [0];
+    }
+
+    private function formatHargaPerolehan($value): string
+    {
+        if ($value === null || $value === '') {
+            return '-';
+        }
+
+        return number_format((float) $value, 2, '.', ',');
+    }
+
+    private function buildReportContext(array $rows, array $filters): array
+    {
+        $statusModel = new StatusProsesModel();
+        $statusName = '';
+        if ($filters['status'] !== '') {
+            $statusRow = $statusModel->find((int) $filters['status']);
+            $statusName = trim((string) ($statusRow['nama_status'] ?? ''));
+        }
+
+        $kop = $this->getKopSettings();
+        $generatedAt = date('d-m-Y H:i');
+        $totalNilai = 0.0;
+        $formattedRows = [];
+
+        foreach ($rows as $index => $row) {
+            $harga = $row['harga_perolehan'] ?? null;
+            $luas = $row['luas'] ?? null;
+            if ($harga !== null && $harga !== '') {
+                $totalNilai += (float) $harga;
+            }
+
+            $formattedRows[] = $row + [
+                'no' => $index + 1,
+                'harga_perolehan_formatted' => $this->formatHargaPerolehan($harga),
+                'luas_formatted' => $this->formatLuas($luas),
+                'tanggal_perolehan_formatted' => $this->formatTanggalIndonesia($row['tanggal_perolehan'] ?? null),
+            ];
+        }
+
+        $activeFilters = [];
+        if ($filters['opd'] !== '') {
+            $activeFilters[] = ['label' => 'OPD', 'value' => $filters['opd']];
+        }
+        if ($statusName !== '') {
+            $activeFilters[] = ['label' => 'Status', 'value' => $statusName];
+        }
+        if ($filters['tanggal_perolehan'] !== '') {
+            $activeFilters[] = ['label' => 'Tanggal Perolehan', 'value' => $this->formatTanggalIndonesia($filters['tanggal_perolehan'])];
+        }
+        if ($filters['q'] !== '') {
+            $activeFilters[] = ['label' => 'Kata Kunci', 'value' => $filters['q']];
+        }
+
+        return [
+            'rows' => $formattedRows,
+            'filters' => $filters,
+            'activeFilters' => $activeFilters,
+            'generatedAt' => $generatedAt,
+            'reportTitle' => $kop['kop_nama_laporan_aset'],
+            'kop' => $kop,
+            'summary' => [
+                'total_data' => count($formattedRows),
+                'total_nilai' => $this->formatHargaPerolehan($totalNilai),
+                'total_berstatus' => count(array_filter($formattedRows, static fn ($row) => ($row['nama_status'] ?? '') !== '' && ($row['nama_status'] ?? '') !== 'Belum Diurus')),
+            ],
+        ];
+    }
+
+    private function getKopSettings(): array
+    {
+        $defaults = [
+            'kop_nama_instansi' => 'PEMERINTAH KABUPATEN DONGGALA',
+            'kop_nama_unit' => 'SISTEM INFORMASI PENSERTIFIKATAN TANAH',
+            'kop_subunit' => 'Bidang Pengelolaan Aset Daerah',
+            'kop_alamat' => 'Jl. Trans Sulawesi, Donggala, Sulawesi Tengah',
+            'kop_kontak' => 'Telp. (0457) 000000 | Email: aset@donggalakab.go.id',
+            'kop_logo' => '',
+            'kop_nama_laporan_aset' => 'LAPORAN ASET TANAH',
+            'kop_footer' => 'Dokumen ini dihasilkan otomatis oleh SIPAT.',
+            'kop_kota_ttd' => 'Donggala',
+            'kop_pejabat_jabatan' => 'Mengetahui, Kepala Bidang Pengelolaan Aset Daerah',
+            'kop_pejabat_nama' => 'Nama Pejabat',
+            'kop_pejabat_nip' => 'NIP. 000000000000000000',
+        ];
+
+        $model = new SettingModel();
+        $rows = $model->whereIn('key', array_keys($defaults))->findAll();
+        $map = $defaults;
+        foreach ($rows as $row) {
+            $value = trim((string) ($row['value'] ?? ''));
+            if ($value !== '') {
+                $map[$row['key']] = $value;
+            }
+        }
+
+        $map['kop_logo_data_uri'] = $this->getKopLogoDataUri($map['kop_logo'] ?? '');
+
+        return $map;
+    }
+
+    private function getKopLogoDataUri(string $filename): ?string
+    {
+        $safeName = basename($filename);
+        if ($safeName === '') {
+            return null;
+        }
+
+        $path = WRITEPATH . 'uploads/kop/' . $safeName;
+        if (!is_file($path)) {
+            return null;
+        }
+
+        $mime = mime_content_type($path) ?: 'image/png';
+
+        return 'data:' . $mime . ';base64,' . base64_encode((string) file_get_contents($path));
+    }
+
+    private function formatTanggalIndonesia(?string $value): string
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '-';
+        }
+
+        try {
+            $date = new \DateTime($value);
+        } catch (\Throwable $e) {
+            return $value;
+        }
+
+        return $date->format('d-m-Y');
+    }
+
+    private function formatLuas($value): string
+    {
+        if ($value === null || $value === '') {
+            return '-';
+        }
+
+        return number_format((float) $value, 2, '.', ',');
     }
 
     public function show($id)
@@ -566,3 +760,4 @@ class Aset extends BaseController
         return redirect()->to('/aset?deleted=1')->with('success', 'Aset berhasil dihapus.');
     }
 }
+

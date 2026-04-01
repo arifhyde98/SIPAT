@@ -38,7 +38,13 @@
                     <td><?= esc($row['nama_aset']) ?></td>
                     <td><?= esc($row['opd'] ?? '-') ?></td>
                     <td><?= esc($row['luas']) ?></td>
-                    <td><?= esc($row['harga_perolehan']) ?></td>
+                    <td>
+                        <?php if (!empty($row['harga_perolehan'])) : ?>
+                            <?= esc(number_format((float) $row['harga_perolehan'], 2, '.', ',')) ?>
+                        <?php else : ?>
+                            -
+                        <?php endif; ?>
+                    </td>
                     <td><?= esc($row['tanggal_perolehan']) ?></td>
                     <td><?= esc($row['nama_status'] ?? 'Belum Diurus') ?></td>
                     <td><?= esc($row['durasi_hari'] ?? '-') ?></td>

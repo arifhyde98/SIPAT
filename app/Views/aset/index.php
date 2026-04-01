@@ -140,8 +140,9 @@
                     <i class="bi bi-download me-1"></i> Export
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="<?= base_url('aset/export/print') ?>" target="_blank"><i class="bi bi-file-pdf me-2"></i>Print / PDF</a></li>
-                    <li><a class="dropdown-item" href="<?= base_url('aset/export/csv') ?>"><i class="bi bi-file-earmark-spreadsheet me-2"></i>CSV</a></li>
+                    <li><a class="dropdown-item" href="<?= base_url('aset/export/print') . ($exportQueryString ?? '') ?>" target="_blank"><i class="bi bi-file-pdf me-2"></i>Preview PDF</a></li>
+                    <li><a class="dropdown-item" href="<?= base_url('aset/export/pdf') . ($exportQueryString ?? '') ?>"><i class="bi bi-download me-2"></i>Download PDF</a></li>
+                    <li><a class="dropdown-item" href="<?= base_url('aset/export/csv') . ($exportQueryString ?? '') ?>"><i class="bi bi-file-earmark-spreadsheet me-2"></i>CSV</a></li>
                 </ul>
             </div>
             <a href="<?= base_url('aset/import') ?>" class="btn btn-outline-primary"><i class="bi bi-upload me-1"></i> Import</a>

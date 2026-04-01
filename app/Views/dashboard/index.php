@@ -119,10 +119,10 @@
             <p class="text-muted mb-0">Selamat datang kembali, <?= esc(session()->get('user_name') ?? 'Admin') ?>!</p>
         </div>
         <div class="d-flex gap-3">
-            <a href="#" class="btn btn-outline-gov">
+            <a href="<?= base_url('laporan') ?>" class="btn btn-outline-gov">
                 <i class="bi bi-file-earmark-text me-2"></i>Laporan
             </a>
-            <a href="<?= base_url('aset/new') ?>" class="btn btn-gov">
+            <a href="<?= base_url('aset/create') ?>" class="btn btn-gov">
                 <i class="bi bi-plus-lg me-2"></i>Aset Baru
             </a>
         </div>
@@ -364,5 +364,4 @@
     });
 </script>
 <?= $this->endSection() ?>
-
 

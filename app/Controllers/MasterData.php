@@ -7,9 +7,73 @@ use App\Models\DesaModel;
 use App\Models\KecamatanModel;
 use App\Models\KepalaDesaModel;
 use App\Models\PemohonModel;
+use App\Models\ReportTitleModel;
 
 class MasterData extends BaseController
 {
+    public function judulLaporan()
+    {
+        $model = new ReportTitleModel();
+        return view('master/judul_laporan', [
+            'title' => 'Master Judul Laporan',
+            'rows' => $model->orderBy('aktif', 'DESC')->orderBy('judul', 'ASC')->findAll(),
+        ]);
+    }
+
+    public function storeJudulLaporan()
+    {
+        $judul = trim((string) $this->request->getPost('judul'));
+        if ($judul === '') {
+            return redirect()->back()->withInput()->with('errors', ['Judul laporan wajib diisi.']);
+        }
+
+        $model = new ReportTitleModel();
+        $model->insert([
+            'judul' => $judul,
+            'aktif' => $this->request->getPost('aktif') ? 1 : 0,
+        ]);
+
+        return redirect()->to('/master/judul-laporan')->with('success', 'Judul laporan disimpan.');
+    }
+
+    public function editJudulLaporan(int $id)
+    {
+        $model = new ReportTitleModel();
+        $row = $model->find($id);
+        if (! $row) {
+            return redirect()->to('/master/judul-laporan')->with('errors', ['Judul laporan tidak ditemukan.']);
+        }
+
+        return view('master/judul_laporan_edit', [
+            'title' => 'Edit Judul Laporan',
+            'row' => $row,
+        ]);
+    }
+
+    public function updateJudulLaporan(int $id)
+    {
+        $judul = trim((string) $this->request->getPost('judul'));
+        if ($judul === '') {
+            return redirect()->back()->withInput()->with('errors', ['Judul laporan wajib diisi.']);
+        }
+
+        $model = new ReportTitleModel();
+        $model->update($id, [
+            'judul' => $judul,
+            'aktif' => $this->request->getPost('aktif') ? 1 : 0,
+        ]);
+
+        return redirect()->to('/master/judul-laporan')->with('success', 'Judul laporan diperbarui.');
+    }
+
+    public function deleteJudulLaporan(int $id)
+    {
+        $model = new ReportTitleModel();
+        $model->delete($id);
+
+        return redirect()->to('/master/judul-laporan')->with('success', 'Judul laporan dihapus.');
+    }
+
     public function kecamatan()
     {
         $model = new KecamatanModel();

@@ -394,6 +394,14 @@
                             </a>
                         </li>
                         <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                            <li class="nav-item">
+                                <a href="<?= base_url('laporan') ?>" class="nav-link <?= $is('laporan') ? 'active' : '' ?>">
+                                    <i class="nav-icon bi bi-file-earmark-bar-graph"></i>
+                                    <p>Laporan</p>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
                             <li class="nav-item <?= $is('surat') ? 'menu-open' : '' ?>">
                                 <a href="#" class="nav-link <?= $is('surat') ? 'active' : '' ?>">
                                     <i class="nav-icon bi bi-file-earmark-text"></i>
@@ -473,6 +481,12 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
+                                        <a href="<?= base_url('master/judul-laporan') ?>" class="nav-link <?= $is('master/judul-laporan') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-card-heading"></i>
+                                            <p>Judul Laporan</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a href="<?= base_url('master/pengamanan') ?>" class="nav-link <?= $is('master/pengamanan') ? 'active' : '' ?>">
                                             <i class="nav-icon bi bi-shield-check"></i>
                                             <p>Master Pengamanan</p>
@@ -488,6 +502,12 @@
                                         <a href="<?= base_url('landing-settings') ?>" class="nav-link <?= $is('landing-settings') ? 'active' : '' ?>">
                                             <i class="nav-icon bi bi-brush"></i>
                                             <p>Landing Page</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="<?= base_url('kop-settings') ?>" class="nav-link <?= $is('kop-settings') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-file-earmark-richtext"></i>
+                                            <p>Master KOP</p>
                                         </a>
                                     </li>
                                 </ul>
@@ -711,8 +731,5 @@
     <?= $this->renderSection('scripts') ?>
 </body>
 </html>
-
-
-
 
 

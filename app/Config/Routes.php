@@ -12,6 +12,13 @@ $routes->post('login', 'Auth::attempt');
 $routes->get('logout', 'Auth::logout');
 
 $routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
+$routes->group('laporan', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {
+    $routes->get('/', 'Laporan::index');
+    $routes->get('aset/csv', 'Laporan::exportCsv');
+    $routes->get('aset/xlsx', 'Laporan::exportXlsx');
+    $routes->get('aset/preview-pdf', 'Laporan::previewPdf');
+    $routes->get('aset/download-pdf', 'Laporan::downloadPdf');
+});
 
 $routes->group('aset', ['filter' => 'auth'], static function ($routes) {
     $routes->get('/', 'Aset::index');
@@ -26,6 +33,7 @@ $routes->group('aset', ['filter' => 'role:Admin,Pengelola Aset'], static functio
     $routes->post('import', 'Aset::importProcess');
     $routes->get('export/csv', 'Aset::exportCsv');
     $routes->get('export/print', 'Aset::printReport');
+    $routes->get('export/pdf', 'Aset::downloadReportPdf');
     $routes->get('(:num)/edit', 'Aset::edit/$1');
     $routes->put('(:num)', 'Aset::update/$1');
     $routes->delete('(:num)', 'Aset::delete/$1');
@@ -89,6 +97,12 @@ $routes->group('landing-settings', ['filter' => 'role:Admin'], static function (
     $routes->post('/', 'LandingSettings::update');
 });
 
+$routes->group('kop-settings', ['filter' => 'role:Admin'], static function ($routes) {
+    $routes->get('/', 'KopSettings::index');
+    $routes->post('/', 'KopSettings::update');
+    $routes->get('media/(:any)', 'KopSettings::media/$1');
+});
+
 $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('kecamatan', 'MasterData::kecamatan');
     $routes->get('kecamatan/(:num)/edit', 'MasterData::editKecamatan/$1');
@@ -124,10 +138,15 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->post('pemohon/(:num)', 'MasterData::updatePemohon/$1');
     $routes->post('pemohon/delete/(:num)', 'MasterData::deletePemohon/$1');
 
+    $routes->get('judul-laporan', 'MasterData::judulLaporan');
+    $routes->get('judul-laporan/(:num)/edit', 'MasterData::editJudulLaporan/$1');
+    $routes->post('judul-laporan', 'MasterData::storeJudulLaporan');
+    $routes->post('judul-laporan/(:num)', 'MasterData::updateJudulLaporan/$1');
+    $routes->post('judul-laporan/delete/(:num)', 'MasterData::deleteJudulLaporan/$1');
+
     // Master Pengamanan
     $routes->get('pengamanan', 'MasterPengamanan::index');
     $routes->post('pengamanan', 'MasterPengamanan::store');
     $routes->post('pengamanan/(:num)', 'MasterPengamanan::update/$1');
     $routes->post('pengamanan/delete/(:num)', 'MasterPengamanan::delete/$1');
 });
-
