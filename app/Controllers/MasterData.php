@@ -6,11 +6,75 @@ use App\Models\CamatModel;
 use App\Models\DesaModel;
 use App\Models\KecamatanModel;
 use App\Models\KepalaDesaModel;
+use App\Models\OpdModel;
 use App\Models\PemohonModel;
 use App\Models\ReportTitleModel;
 
 class MasterData extends BaseController
 {
+    public function opd()
+    {
+        $model = new OpdModel();
+        return view('master/opd', [
+            'title' => 'Master OPD',
+            'rows' => $model->orderBy('aktif', 'DESC')->orderBy('nama', 'ASC')->findAll(),
+        ]);
+    }
+
+    public function storeOpd()
+    {
+        $nama = trim((string) $this->request->getPost('nama'));
+        if ($nama === '') {
+            return redirect()->back()->withInput()->with('errors', ['Nama OPD wajib diisi.']);
+        }
+
+        $model = new OpdModel();
+        $model->insert([
+            'nama' => $nama,
+            'aktif' => $this->request->getPost('aktif') ? 1 : 0,
+        ]);
+
+        return redirect()->to('/master/opd')->with('success', 'OPD disimpan.');
+    }
+
+    public function editOpd(int $id)
+    {
+        $model = new OpdModel();
+        $row = $model->find($id);
+        if (! $row) {
+            return redirect()->to('/master/opd')->with('errors', ['OPD tidak ditemukan.']);
+        }
+
+        return view('master/opd_edit', [
+            'title' => 'Edit OPD',
+            'row' => $row,
+        ]);
+    }
+
+    public function updateOpd(int $id)
+    {
+        $nama = trim((string) $this->request->getPost('nama'));
+        if ($nama === '') {
+            return redirect()->back()->withInput()->with('errors', ['Nama OPD wajib diisi.']);
+        }
+
+        $model = new OpdModel();
+        $model->update($id, [
+            'nama' => $nama,
+            'aktif' => $this->request->getPost('aktif') ? 1 : 0,
+        ]);
+
+        return redirect()->to('/master/opd')->with('success', 'OPD diperbarui.');
+    }
+
+    public function deleteOpd(int $id)
+    {
+        $model = new OpdModel();
+        $model->delete($id);
+
+        return redirect()->to('/master/opd')->with('success', 'OPD dihapus.');
+    }
+
     public function judulLaporan()
     {
         $model = new ReportTitleModel();

@@ -138,6 +138,12 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->post('pemohon/(:num)', 'MasterData::updatePemohon/$1');
     $routes->post('pemohon/delete/(:num)', 'MasterData::deletePemohon/$1');
 
+    $routes->get('opd', 'MasterData::opd');
+    $routes->get('opd/(:num)/edit', 'MasterData::editOpd/$1');
+    $routes->post('opd', 'MasterData::storeOpd');
+    $routes->post('opd/(:num)', 'MasterData::updateOpd/$1');
+    $routes->post('opd/delete/(:num)', 'MasterData::deleteOpd/$1');
+
     $routes->get('judul-laporan', 'MasterData::judulLaporan');
     $routes->get('judul-laporan/(:num)/edit', 'MasterData::editJudulLaporan/$1');
     $routes->post('judul-laporan', 'MasterData::storeJudulLaporan');

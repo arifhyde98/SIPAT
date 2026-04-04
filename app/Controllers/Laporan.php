@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Models\AsetModel;
+use App\Models\OpdModel;
 use App\Models\ReportTitleModel;
 use App\Models\SettingModel;
 use App\Models\StatusProsesModel;
@@ -16,11 +17,7 @@ class Laporan extends BaseController
         $reportTitleModel = new ReportTitleModel();
         $filters = $this->getAsetFilters();
 
-        $opdRows = $asetModel->select('opd')->distinct()->orderBy('opd', 'ASC')->findAll();
-        $opdList = array_values(array_filter(array_map(
-            static fn ($item) => $item['opd'] ?? null,
-            $opdRows
-        )));
+        $opdList = $this->getOpdList();
 
         $rows = $this->buildExportQuery($filters)->get()->getResultArray();
         $summary = $this->buildReportContext($rows, $filters);
@@ -554,6 +551,30 @@ class Laporan extends BaseController
         }
 
         return (float) $normalized;
+    }
+
+    private function getOpdList(): array
+    {
+        try {
+            $opdModel = new OpdModel();
+            $rows = $opdModel->where('aktif', 1)->orderBy('nama', 'ASC')->findAll();
+            $names = array_values(array_filter(array_map(
+                static fn ($item) => trim((string) ($item['nama'] ?? '')),
+                $rows
+            )));
+            if ($names !== []) {
+                return $names;
+            }
+        } catch (\Throwable $e) {
+        }
+
+        $asetModel = new AsetModel();
+        $opdRows = $asetModel->select('opd')->distinct()->orderBy('opd', 'ASC')->findAll();
+
+        return array_values(array_filter(array_map(
+            static fn ($item) => trim((string) ($item['opd'] ?? '')),
+            $opdRows
+        )));
     }
 
     private function getKopLogoPath(string $filename): ?string

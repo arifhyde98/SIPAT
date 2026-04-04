@@ -39,7 +39,12 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">OPD</label>
-                            <input type="text" name="opd" class="form-control" value="<?= old('opd', $aset['opd']) ?>">
+                            <select name="opd" class="form-select">
+                                <option value="">- pilih OPD -</option>
+                                <?php foreach (($opdList ?? []) as $opd) : ?>
+                                    <option value="<?= esc($opd) ?>" <?= old('opd', $aset['opd']) === $opd ? 'selected' : '' ?>><?= esc($opd) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Dasar Perolehan</label>

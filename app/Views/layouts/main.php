@@ -481,6 +481,12 @@
                                         </a>
                                     </li>
                                     <li class="nav-item">
+                                        <a href="<?= base_url('master/opd') ?>" class="nav-link <?= $is('master/opd') ? 'active' : '' ?>">
+                                            <i class="nav-icon bi bi-buildings"></i>
+                                            <p>OPD</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
                                         <a href="<?= base_url('master/judul-laporan') ?>" class="nav-link <?= $is('master/judul-laporan') ? 'active' : '' ?>">
                                             <i class="nav-icon bi bi-card-heading"></i>
                                             <p>Judul Laporan</p>
@@ -731,5 +737,4 @@
     <?= $this->renderSection('scripts') ?>
 </body>
 </html>
-
 

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\AsetModel;
 use App\Models\DokumenAsetModel;
+use App\Models\OpdModel;
 use App\Models\PengamananFisikModel;
 use App\Models\ProsesAsetModel;
 use App\Models\SettingModel;
@@ -52,11 +53,7 @@ class Aset extends BaseController
             $results[] = $aset;
         }
 
-        $opdRows = $asetModel->select('opd')->distinct()->orderBy('opd', 'ASC')->findAll();
-        $opdList = array_values(array_filter(array_map(
-            static fn ($item) => $item['opd'] ?? null,
-            $opdRows
-        )));
+        $opdList = $this->getOpdList();
 
         $queryParams = $this->buildFilterQueryParams($filters);
         $queryString = http_build_query($queryParams);
@@ -392,6 +389,30 @@ class Aset extends BaseController
         return number_format((float) $value, 2, '.', ',');
     }
 
+    private function getOpdList(): array
+    {
+        try {
+            $opdModel = new OpdModel();
+            $rows = $opdModel->where('aktif', 1)->orderBy('nama', 'ASC')->findAll();
+            $names = array_values(array_filter(array_map(
+                static fn ($item) => trim((string) ($item['nama'] ?? '')),
+                $rows
+            )));
+            if ($names !== []) {
+                return $names;
+            }
+        } catch (\Throwable $e) {
+        }
+
+        $asetModel = new AsetModel();
+        $opdRows = $asetModel->select('opd')->distinct()->orderBy('opd', 'ASC')->findAll();
+
+        return array_values(array_filter(array_map(
+            static fn ($item) => trim((string) ($item['opd'] ?? '')),
+            $opdRows
+        )));
+    }
+
     public function show($id)
     {
         $asetModel = new AsetModel();
@@ -468,7 +489,9 @@ class Aset extends BaseController
 
     public function create()
     {
-        return view('aset/create');
+        return view('aset/create', [
+            'opdList' => $this->getOpdList(),
+        ]);
     }
 
     public function importForm()
@@ -678,18 +701,34 @@ class Aset extends BaseController
 
     public function store()
     {
+        $kodeAset = trim((string) $this->request->getPost('kode_aset'));
+
+        if ($this->findDuplicateKodeAset($kodeAset)) {
+            return redirect()->to('/aset/create')->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
+        }
+
         $rules = [
-            'kode_aset' => 'required',
+            'kode_aset' => 'required|is_unique[aset_tanah.kode_aset]',
             'nama_aset' => 'required',
         ];
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        $messages = [
+            'kode_aset' => [
+                'required' => 'Kode aset wajib diisi.',
+                'is_unique' => 'Data sudah ada. Kode aset tersebut sudah digunakan.',
+            ],
+            'nama_aset' => [
+                'required' => 'Nama aset wajib diisi.',
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+            return redirect()->to('/aset/create')->withInput()->with('errors', $this->validator->getErrors());
         }
 
         $asetModel = new AsetModel();
         $payload = [
-            'kode_aset'       => $this->request->getPost('kode_aset'),
+            'kode_aset'       => $kodeAset,
             'nama_aset'       => $this->request->getPost('nama_aset'),
             'peruntukan'      => $this->request->getPost('peruntukan'),
             'luas'            => $this->request->getPost('luas'),
@@ -701,7 +740,11 @@ class Aset extends BaseController
             'harga_perolehan' => $this->request->getPost('harga_perolehan'),
             'tanggal_perolehan' => $this->request->getPost('tanggal_perolehan'),
         ];
-        $asetModel->insert($payload);
+        try {
+            $asetModel->insert($payload);
+        } catch (\Throwable $e) {
+            return redirect()->to('/aset/create')->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
+        }
         $this->logAudit('create', 'aset_tanah', (int) $asetModel->getInsertID(), [], $payload);
 
         return redirect()->to('/aset?created=1')->with('success', 'Aset berhasil dibuat.');
@@ -715,24 +758,43 @@ class Aset extends BaseController
             throw new PageNotFoundException('Aset tidak ditemukan');
         }
 
-        return view('aset/edit', ['aset' => $aset]);
+        return view('aset/edit', [
+            'aset' => $aset,
+            'opdList' => $this->getOpdList(),
+        ]);
     }
 
     public function update($id)
     {
+        $kodeAset = trim((string) $this->request->getPost('kode_aset'));
+
+        if ($this->findDuplicateKodeAset($kodeAset, (int) $id)) {
+            return redirect()->to('/aset/' . $id . '/edit')->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
+        }
+
         $rules = [
-            'kode_aset' => 'required',
+            'kode_aset' => "required|is_unique[aset_tanah.kode_aset,id_aset,{$id}]",
             'nama_aset' => 'required',
         ];
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        $messages = [
+            'kode_aset' => [
+                'required' => 'Kode aset wajib diisi.',
+                'is_unique' => 'Data sudah ada. Kode aset tersebut sudah digunakan.',
+            ],
+            'nama_aset' => [
+                'required' => 'Nama aset wajib diisi.',
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+            return redirect()->to('/aset/' . $id . '/edit')->withInput()->with('errors', $this->validator->getErrors());
         }
 
         $asetModel = new AsetModel();
         $old = $asetModel->find($id) ?? [];
         $payload = [
-            'kode_aset'       => $this->request->getPost('kode_aset'),
+            'kode_aset'       => $kodeAset,
             'nama_aset'       => $this->request->getPost('nama_aset'),
             'peruntukan'      => $this->request->getPost('peruntukan'),
             'luas'            => $this->request->getPost('luas'),
@@ -744,10 +806,30 @@ class Aset extends BaseController
             'harga_perolehan' => $this->request->getPost('harga_perolehan'),
             'tanggal_perolehan' => $this->request->getPost('tanggal_perolehan'),
         ];
-        $asetModel->update($id, $payload);
+        try {
+            $asetModel->update($id, $payload);
+        } catch (\Throwable $e) {
+            return redirect()->to('/aset/' . $id . '/edit')->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
+        }
         $this->logAudit('update', 'aset_tanah', (int) $id, $old, $payload);
 
         return redirect()->to('/aset?updated=1')->with('success', 'Aset berhasil diperbarui.');
+    }
+
+    private function findDuplicateKodeAset(string $kodeAset, ?int $ignoreId = null): bool
+    {
+        if ($kodeAset === '') {
+            return false;
+        }
+
+        $asetModel = new AsetModel();
+        $builder = $asetModel->where('kode_aset', $kodeAset);
+
+        if ($ignoreId !== null) {
+            $builder = $builder->where('id_aset !=', $ignoreId);
+        }
+
+        return $builder->first() !== null;
     }
 
     public function delete($id)

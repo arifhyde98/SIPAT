@@ -18,25 +18,27 @@
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
         html { scroll-behavior: smooth; }
         :root {
-            --gov-primary: #0c3658;
-            --gov-primary-light: #164e7c;
-            --gov-accent: #eab308;
-            --gov-accent-dark: #ca8a04;
-            --gov-success: #10b981;
-            --gov-warning: #f59e0b;
-            --gov-info: #3b82f6;
-            --gov-danger: #ef4444;
-            --gov-ink: #111827;
-            --gov-muted: #6b7280;
-            --gov-bg: #f8fafc;
+            --gov-primary: #0b4f84;
+            --gov-primary-light: #1769aa;
+            --gov-primary-soft: #d9ebf8;
+            --gov-accent: #d4a72c;
+            --gov-accent-dark: #b68715;
+            --gov-success: #179c7d;
+            --gov-warning: #d9971a;
+            --gov-info: #2f7fbd;
+            --gov-danger: #cc5b4c;
+            --gov-ink: #16324a;
+            --gov-muted: #5f7388;
+            --gov-bg: #eef5fb;
             --gov-card: #ffffff;
         }
         body {
             font-family: "Source Sans 3", "Segoe UI", sans-serif;
             color: var(--gov-ink);
             background:
-                radial-gradient(circle at 0% 0%, rgba(12, 54, 88, 0.05), transparent 40%),
-                radial-gradient(circle at 100% 0%, rgba(234, 179, 8, 0.1), transparent 40%),
+                radial-gradient(circle at 0% 0%, rgba(11, 79, 132, 0.12), transparent 42%),
+                radial-gradient(circle at 100% 0%, rgba(47, 127, 189, 0.10), transparent 38%),
+                linear-gradient(180deg, #f3f8fc 0%, var(--gov-bg) 42%, #f8fbfe 100%),
                 var(--gov-bg);
         }
         h1, h2, h3, .display-5 {
@@ -72,45 +74,46 @@
             font-weight: 700;
             font-size: 20px;
             line-height: 1.2;
-            color: var(--gov-primary);
+            color: #ffffff;
         }
         .nav-subtitle {
             font-size: 13px;
-            color: var(--gov-muted);
+            color: rgba(255, 255, 255, 0.78);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             font-weight: 600;
         }
         .btn-gov {
-            background: var(--gov-primary);
+            background: linear-gradient(135deg, var(--gov-primary) 0%, var(--gov-primary-light) 100%);
             color: #fff;
             border-radius: 6px;
             padding: 10px 18px;
             font-weight: 600;
             border: 1px solid transparent;
-            box-shadow: 0 4px 12px rgba(12, 54, 88, 0.2);
+            box-shadow: 0 8px 18px rgba(11, 79, 132, 0.22);
             transition: all 0.3s ease;
         }
         .btn-gov:hover {
-            background: var(--gov-primary-light);
+            background: linear-gradient(135deg, #09466f 0%, #145c94 100%);
             color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(12, 54, 88, 0.3);
+            box-shadow: 0 10px 22px rgba(11, 79, 132, 0.28);
         }
         .btn-outline-gov {
-            color: var(--gov-primary);
-            border: 2px solid var(--gov-primary);
+            color: #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 6px;
             padding: 10px 18px;
             font-weight: 600;
-            background: transparent;
+            background: rgba(255, 255, 255, 0.08);
         }
         .btn-outline-gov:hover {
-            background: var(--gov-primary);
-            color: #fff;
+            background: #ffffff;
+            border-color: #ffffff;
+            color: var(--gov-primary);
         }
         .btn-accent {
-            background: var(--gov-accent);
+            background: linear-gradient(135deg, var(--gov-accent) 0%, #e2ba4b 100%);
             color: #fff;
             border-radius: 6px;
             padding: 10px 18px;
@@ -126,11 +129,11 @@
             box-shadow: 0 6px 16px rgba(234, 179, 8, 0.4);
         }
         .hero-card {
-            background: var(--gov-card);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 250, 255, 0.98) 100%);
             border-radius: 12px;
-            border: 0;
+            border: 1px solid rgba(23, 105, 170, 0.12);
             border-top: 4px solid var(--gov-accent);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 18px 38px rgba(11, 79, 132, 0.12);
             padding: 24px;
         }
         .hero-image {
@@ -146,7 +149,7 @@
             gap: 8px;
             padding: 6px 12px;
             border-radius: 4px;
-            background: rgba(12, 54, 88, 0.1);
+            background: rgba(11, 79, 132, 0.10);
             color: var(--gov-primary);
             font-size: 12px;
             font-weight: 700;
@@ -154,9 +157,9 @@
             letter-spacing: 0.05em;
         }
         .stat-card {
-            background: #f8fafc;
+            background: linear-gradient(180deg, #ffffff 0%, #f5fafe 100%);
             border-radius: 8px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d9e7f3;
             padding: 16px;
             height: 100%;
             text-align: center;
@@ -164,8 +167,8 @@
         }
         .stat-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-            border-color: var(--gov-accent);
+            box-shadow: 0 14px 24px rgba(11, 79, 132, 0.10);
+            border-color: rgba(212, 167, 44, 0.65);
         }
         .stat-value {
             font-size: 28px;
@@ -189,7 +192,7 @@
             display: block;
             width: 60px;
             height: 4px;
-            background: var(--gov-accent);
+            background: linear-gradient(90deg, var(--gov-primary-light) 0%, var(--gov-accent) 100%);
             margin: 8px auto 0;
             border-radius: 2px;
         }
@@ -201,8 +204,8 @@
         .card-elegant {
             background: var(--gov-card);
             border-radius: 12px;
-            border: 1px solid #e2e8f0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            border: 1px solid #d9e7f3;
+            box-shadow: 0 10px 24px rgba(11, 79, 132, 0.06);
             padding: 24px;
             height: 100%;
             position: relative;
@@ -211,8 +214,8 @@
         }
         .card-elegant:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.06);
-            border-color: var(--gov-accent);
+            box-shadow: 0 18px 30px rgba(11, 79, 132, 0.10);
+            border-color: rgba(23, 105, 170, 0.24);
         }
         .card-elegant .badge-gov,
         .card-elegant h5,
@@ -258,8 +261,8 @@
             min-width: 32px;
             padding: 4px 10px;
             border-radius: 4px;
-            background: #f1f5f9;
-            color: var(--gov-ink);
+            background: #edf5fb;
+            color: var(--gov-primary);
             font-weight: 700;
             font-size: 12px;
         }
@@ -273,7 +276,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px solid #f1f5f9;
+            border-bottom: 1px solid #e8f0f7;
             margin-bottom: 8px;
         }
         .list-clean li:last-child {
@@ -282,29 +285,29 @@
         .flow-step {
             background: var(--gov-card);
             border-radius: 8px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d8e6f2;
             padding: 14px 10px;
             font-weight: 600;
             color: var(--gov-primary);
-            background: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            background: linear-gradient(180deg, #ffffff 0%, #f5fafe 100%);
+            box-shadow: 0 8px 16px rgba(11, 79, 132, 0.05);
             transition: all 0.3s ease;
             position: relative;
             z-index: 1;
         }
         .flow-step:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
-            border-color: var(--gov-accent);
-            background: var(--gov-primary);
+            box-shadow: 0 16px 26px rgba(11, 79, 132, 0.14);
+            border-color: rgba(23, 105, 170, 0.25);
+            background: linear-gradient(135deg, var(--gov-primary) 0%, var(--gov-primary-light) 100%);
             color: #fff;
         }
         .cta-band {
-            background: var(--gov-primary);
+            background: linear-gradient(135deg, #0b4f84 0%, #1769aa 58%, #2f7fbd 100%);
             color: #fff;
             border-radius: 12px;
             padding: 32px;
-            box-shadow: 0 10px 25px rgba(12, 54, 88, 0.15);
+            box-shadow: 0 18px 34px rgba(11, 79, 132, 0.22);
             position: relative;
             overflow: hidden;
         }
@@ -329,11 +332,11 @@
             color: #fff;
         }
         .gallery-shot {
-            background: #fff;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbfe 100%);
             border-radius: 8px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #d9e7f3;
             padding: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
+            box-shadow: 0 10px 20px rgba(11, 79, 132, 0.06);
             transition: transform 0.3s ease;
         }
         .gallery-shot:hover {
@@ -346,7 +349,7 @@
             border-radius: 4px;
         }
         .footer-note {
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #d8e5f1;
             padding-top: 24px;
             color: var(--gov-ink);
             font-size: 14px;
@@ -354,16 +357,27 @@
         /* New Styles for Modern Feel */
         .navbar-transition {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            background: #fff;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+            background: linear-gradient(135deg, #0b4f84 0%, #1769aa 52%, #2d89c8 100%);
+            box-shadow: 0 10px 28px rgba(11, 79, 132, 0.28);
         }
         .navbar-scrolled {
-            background: rgba(255, 255, 255, 0.95);
+            background: linear-gradient(135deg, rgba(11, 79, 132, 0.96) 0%, rgba(23, 105, 170, 0.95) 52%, rgba(45, 137, 200, 0.93) 100%);
             backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+            box-shadow: 0 10px 28px rgba(11, 79, 132, 0.25);
             padding-top: 12px !important;
             padding-bottom: 12px !important;
+        }
+        .navbar-scrolled .nav-title {
+            color: #ffffff;
+        }
+        .navbar-scrolled .nav-subtitle {
+            color: rgba(255, 255, 255, 0.78);
+        }
+        .navbar-scrolled .btn-outline-gov {
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.76);
+            background: rgba(255, 255, 255, 0.08);
         }
         @keyframes float {
             0% { transform: translateY(0px); }
