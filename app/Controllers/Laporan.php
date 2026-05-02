@@ -268,9 +268,15 @@ class Laporan extends BaseController
         }
 
         $html = view('aset/report_pdf', $report);
+        $pdfTempDir = WRITEPATH . 'cache/mpdf';
+        if (!is_dir($pdfTempDir)) {
+            mkdir($pdfTempDir, 0775, true);
+        }
+
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4-L',
+            'tempDir' => $pdfTempDir,
             'margin_top' => 10,
             'margin_bottom' => 26,
             'margin_left' => 10,
