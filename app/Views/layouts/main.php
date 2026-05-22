@@ -11,8 +11,8 @@
     <style>
         :root {
             --lte-sidebar-width: 230px;
-            --admin-blue: #0eee34ff;
-            --admin-blue-dark: #064911ff;
+            --admin-blue: #0b4f84;
+            --admin-blue-dark: #083d67;
             --admin-gold: #f0b429;
             --admin-header-height: 56px;
             --admin-footer-height: 44px;
