@@ -137,7 +137,7 @@
                 <div class="col-md-4 text-center">
                     <div class="logo-box mx-auto">
                         <img
-                            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png/196px-Lambang_Kabupaten_Donggala_%282015-sekarang%29.png"
+                            src="<?= esc(get_landing_logo_url()) ?>"
                             alt="Logo Kabupaten Donggala"
                             style="max-width: 110px;"
                             class="logo-animate">

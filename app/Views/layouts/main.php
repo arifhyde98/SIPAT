@@ -359,7 +359,7 @@
         <aside class="app-sidebar shadow admin-sidebar" data-bs-theme="dark">
             <div class="sidebar-brand">
                 <a href="<?= base_url('dashboard') ?>" class="brand-link">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png/196px-Lambang_Kabupaten_Donggala_%282015-sekarang%29.png" alt="Logo Kabupaten Donggala" class="brand-image img-circle elevation-3" style="opacity: .9">
+                    <img src="<?= esc(get_landing_logo_url()) ?>" alt="Logo Kabupaten Donggala" class="brand-image img-circle elevation-3" style="opacity: .9">
                     <span class="brand-text fw-light">SIPAT Admin</span>
                 </a>
             </div>

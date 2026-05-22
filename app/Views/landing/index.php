@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
@@ -437,8 +437,7 @@
         <div class="container gov-container d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="nav-brand">
                 <?php
-                    $logoHeader = $landing['landing_logo_header'] ?? null;
-                    $logoHeaderUrl = $logoHeader ? base_url('landing/media/' . $logoHeader) : 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Lambang_Kabupaten_Donggala_%282015-sekarang%29.png/196px-Lambang_Kabupaten_Donggala_%282015-sekarang%29.png';
+                    $logoHeaderUrl = get_landing_logo_url();
                 ?>
                 <img src="<?= esc($logoHeaderUrl) ?>" alt="Logo Kabupaten Donggala">
                 <div>
