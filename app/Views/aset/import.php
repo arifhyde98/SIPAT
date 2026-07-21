@@ -4,15 +4,15 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
         <h1 class="h4 fw-semibold mb-1">Import Aset</h1>
-        <small class="text-muted">Upload file CSV untuk input data kolektif</small>
+        <small class="text-muted">Upload file Excel untuk input data kolektif</small>
     </div>
     <a href="<?= base_url('aset') ?>" class="btn btn-outline-secondary">Kembali</a>
 </div>
 
 <div class="card">
     <div class="card-body">
-        <p class="mb-2">Unduh template (CSV):</p>
-        <a href="<?= base_url('template-import-aset.csv') ?>" class="btn btn-sm btn-outline-primary mb-3">Download Template</a>
+        <p class="mb-2">Unduh template (Excel):</p>
+        <a href="<?= base_url('template-import-aset.xlsx') ?>" class="btn btn-sm btn-outline-primary mb-3">Download Template</a>
         <div class="small text-muted mb-3">
             Opsional kolom status proses: <code>status_proses</code>, <code>tgl_mulai</code>, <code>tgl_selesai</code>, <code>keterangan</code>.
             Nilai <code>status_proses</code> harus sama dengan nama status di Master Status.
