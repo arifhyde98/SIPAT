@@ -116,6 +116,7 @@ class Aset extends BaseController
 
     private function renderReportPdf(bool $download)
     {
+        ini_set('memory_limit', '512M');
         $filters = $this->getAsetFilters();
         $rows = $this->buildExportQuery($filters)->get()->getResultArray();
         $report = $this->buildReportContext($rows, $filters);
