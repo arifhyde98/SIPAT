@@ -13,7 +13,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
             <div class="modal-body">
-                <form action="<?= base_url('aset/' . $aset['id_aset']) ?>" method="post">
+                <form action="<?= base_url('aset/' . $aset['id_aset']) . (!empty($queryString) ? '?' . $queryString : '') ?>" method="post">
                     <?= csrf_field() ?>
                     <input type="hidden" name="_method" value="PUT">
                     <div class="row g-3">
@@ -94,7 +94,7 @@
         const modal = new bootstrap.Modal(modalEl, { backdrop: 'static' });
         modal.show();
         modalEl.addEventListener('hidden.bs.modal', function () {
-            window.location.href = '<?= base_url('aset') ?>';
+            window.location.href = '<?= base_url('aset') . (!empty($queryString) ? '?' . $queryString : '') ?>';
         });
     });
 </script>

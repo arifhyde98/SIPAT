@@ -782,9 +782,14 @@ class Aset extends BaseController
             throw new PageNotFoundException('Aset tidak ditemukan');
         }
 
+        $filters = $this->getAsetFilters();
+        $queryParams = $this->buildFilterQueryParams($filters);
+        $queryString = http_build_query($queryParams);
+
         return view('aset/edit', [
             'aset' => $aset,
             'opdList' => $this->getOpdList(),
+            'queryString' => $queryString,
         ]);
     }
 
@@ -792,8 +797,13 @@ class Aset extends BaseController
     {
         $kodeAset = trim((string) $this->request->getPost('kode_aset'));
 
+        $filters = $this->getAsetFilters();
+        $queryParams = $this->buildFilterQueryParams($filters);
+        $queryString = http_build_query($queryParams);
+        $querySuffix = $queryString ? '?' . $queryString : '';
+
         if ($this->findDuplicateKodeAset($kodeAset, (int) $id)) {
-            return redirect()->to('/aset/' . $id . '/edit')->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
+            return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
         }
 
         $rules = [
@@ -812,7 +822,7 @@ class Aset extends BaseController
         ];
 
         if (!$this->validate($rules, $messages)) {
-            return redirect()->to('/aset/' . $id . '/edit')->withInput()->with('errors', $this->validator->getErrors());
+            return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)->withInput()->with('errors', $this->validator->getErrors());
         }
 
         $asetModel = new AsetModel();
@@ -834,11 +844,14 @@ class Aset extends BaseController
         try {
             $asetModel->update($id, $payload);
         } catch (\Throwable $e) {
-            return redirect()->to('/aset/' . $id . '/edit')->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
+            return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
         }
         $this->logAudit('update', 'aset_tanah', (int) $id, $old, $payload);
 
-        return redirect()->to('/aset?updated=1')->with('success', 'Aset berhasil diperbarui.');
+        $queryParams['updated'] = '1';
+        $redirectUrl = '/aset?' . http_build_query($queryParams);
+
+        return redirect()->to($redirectUrl)->with('success', 'Aset berhasil diperbarui.');
     }
 
     private function findDuplicateKodeAset(string $kodeAset, ?int $ignoreId = null): bool

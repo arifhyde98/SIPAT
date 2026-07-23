@@ -206,7 +206,7 @@
                         <th class="text-end">Luas (m??)</th>
                         <th class="text-end">Harga</th>
                         <th>Status Saat Ini</th>
-                        <th>Durasi (hari)</th>
+                        
                         <th class="text-center" style="width: 60px;">Aksi</th>
                     </tr>
                 </thead>
@@ -232,7 +232,8 @@
                                 <?php endif; ?>
                             </td>
                             <td><span class="badge badge-pastel bg-<?= esc($row['warna_status']) ?>"><?= esc($row['status_terkini']) ?></span></td>
-                            <td class="text-muted"><?= esc($row['durasi_hari']) ?></td>
+                          
+                            
                             <td class="text-center">
                                 <div class="dropdown">
                                     <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -246,7 +247,7 @@
                                         </li>
                                         <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
                                             <li>
-                                                <a class="dropdown-item" href="<?= base_url('aset/' . $row['id_aset'] . '/edit') ?>">
+                                                <a class="dropdown-item" href="<?= base_url('aset/' . $row['id_aset'] . '/edit') . ($exportQueryString ?? '') ?>">
                                                     <i class="bi bi-pencil me-2 text-warning"></i>Edit
                                                 </a>
                                             </li>
