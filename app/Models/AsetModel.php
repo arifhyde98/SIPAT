@@ -23,6 +23,7 @@ class AsetModel extends Model
         'dasar_perolehan',
         'harga_perolehan',
         'tanggal_perolehan',
+        'keterangan',
     ];
 
     protected $useTimestamps = true;

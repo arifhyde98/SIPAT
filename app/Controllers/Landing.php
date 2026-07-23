@@ -16,8 +16,8 @@ class Landing extends BaseController
         $totalAset = $asetModel->countAllResults();
         $statusCounts = [];
 
-        $sertifikatRow = $db->table('status_proses')->select('id_status')->where('nama_status', 'Sertifikat Terbit')->get()->getRowArray();
-        $kendalaRow = $db->table('status_proses')->select('id_status')->where('nama_status', 'Kendala/Sengketa')->get()->getRowArray();
+        $sertifikatRow = $db->table('status_proses')->select('id_status')->where('nama_status', 'Bersertifikat')->get()->getRowArray();
+        $kendalaRow = $db->table('status_proses')->select('id_status')->where('nama_status', 'Bermasalah')->get()->getRowArray();
         $sertifikatId = $sertifikatRow ? (int) $sertifikatRow['id_status'] : null;
         $kendalaId = $kendalaRow ? (int) $kendalaRow['id_status'] : null;
 

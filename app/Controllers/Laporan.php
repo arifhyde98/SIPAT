@@ -47,7 +47,7 @@ class Laporan extends BaseController
         $out = fopen('php://temp', 'r+');
         fputcsv($out, [
             'kode_aset', 'nama_aset', 'peruntukan', 'opd', 'luas', 'harga_perolehan',
-            'tanggal_perolehan', 'status_terkini', 'durasi_hari',
+            'tanggal_perolehan', 'status_terkini', 'durasi_hari', 'keterangan',
         ]);
         while ($row = $query->getUnbufferedRow('array')) {
             fputcsv($out, [
@@ -60,6 +60,7 @@ class Laporan extends BaseController
                 $row['tanggal_perolehan'],
                 $row['nama_status'] ?? 'Belum Diurus',
                 $row['durasi_hari'] ?? '',
+                $row['keterangan_aset'] ?? '',
             ]);
         }
         rewind($out);
@@ -86,7 +87,7 @@ class Laporan extends BaseController
         $summarySheet->setTitle('Ringkasan');
 
         $startColumn = 'A';
-        $endColumn = 'J';
+        $endColumn = 'K';
         $titleStartColumn = 'B';
         $sheet->mergeCells($titleStartColumn . '1:' . $endColumn . '1');
         $sheet->mergeCells($titleStartColumn . '2:' . $endColumn . '2');
@@ -122,7 +123,7 @@ class Laporan extends BaseController
         } else {
             $filterText .= 'Semua data aset tanah';
         }
-        $sheet->mergeCells('A8:J8');
+        $sheet->mergeCells('A8:K8');
         $sheet->setCellValue('A8', $filterText);
 
         $sheet->mergeCells('A10:B10');
@@ -135,7 +136,7 @@ class Laporan extends BaseController
         $sheet->setCellValue('G10', 'Sudah Berstatus');
         $sheet->setCellValue('I10', (int) ($report['summary']['total_berstatus'] ?? 0));
 
-        $headers = ['No', 'Kode Aset', 'Nama Aset', 'Peruntukan', 'OPD', 'Luas (m2)', 'Nilai Perolehan', 'Tanggal Perolehan', 'Status', 'Durasi'];
+        $headers = ['No', 'Kode Aset', 'Nama Aset', 'Peruntukan', 'OPD', 'Luas (m2)', 'Nilai Perolehan', 'Tanggal Perolehan', 'Status', 'Durasi', 'Keterangan'];
         $headerRow = 12;
         foreach ($headers as $index => $header) {
             $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($index + 1);
@@ -154,28 +155,29 @@ class Laporan extends BaseController
             $sheet->setCellValue('H' . $rowNumber, (string) ($row['tanggal_perolehan_formatted'] ?? '-'));
             $sheet->setCellValue('I' . $rowNumber, (string) ($row['nama_status'] ?? 'Belum Diurus'));
             $sheet->setCellValue('J' . $rowNumber, (string) ($row['durasi_hari'] ?? '-'));
+            $sheet->setCellValue('K' . $rowNumber, (string) ($row['keterangan_aset'] ?? ''));
             $rowNumber++;
         }
 
         $lastDataRow = max($headerRow + 1, $rowNumber - 1);
 
-        $sheet->getStyle('B1:J1')->applyFromArray([
+        $sheet->getStyle('B1:K1')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14],
             'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
         ]);
-        $sheet->getStyle('B2:J2')->applyFromArray([
+        $sheet->getStyle('B2:K2')->applyFromArray([
             'font' => ['bold' => true, 'size' => 16, 'color' => ['rgb' => '0B4F84']],
             'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
         ]);
-        $sheet->getStyle('B3:J3')->applyFromArray([
+        $sheet->getStyle('B3:K3')->applyFromArray([
             'font' => ['size' => 11],
             'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
         ]);
-        $sheet->getStyle('B4:J4')->applyFromArray([
+        $sheet->getStyle('B4:K4')->applyFromArray([
             'font' => ['bold' => true, 'size' => 15],
             'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
         ]);
-        $sheet->getStyle('A5:J8')->applyFromArray([
+        $sheet->getStyle('A5:K8')->applyFromArray([
             'font' => ['size' => 10, 'color' => ['rgb' => '334155']],
         ]);
         $sheet->getStyle('A10:I10')->applyFromArray([
@@ -191,7 +193,7 @@ class Laporan extends BaseController
                 ],
             ],
         ]);
-        $sheet->getStyle('A12:J12')->applyFromArray([
+        $sheet->getStyle('A12:K12')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
@@ -199,7 +201,7 @@ class Laporan extends BaseController
             ],
             'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
         ]);
-        $sheet->getStyle('A12:J' . $lastDataRow)->applyFromArray([
+        $sheet->getStyle('A12:K' . $lastDataRow)->applyFromArray([
             'borders' => [
                 'allBorders' => [
                     'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -209,8 +211,8 @@ class Laporan extends BaseController
         ]);
         for ($row = $headerRow + 1; $row <= $lastDataRow; $row++) {
             if (($row - ($headerRow + 1)) % 2 === 0) {
-                $sheet->getStyle('A' . $row . ':J' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
-                $sheet->getStyle('A' . $row . ':J' . $row)->getFill()->getStartColor()->setRGB('F8FAFC');
+                $sheet->getStyle('A' . $row . ':K' . $row)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID);
+                $sheet->getStyle('A' . $row . ':K' . $row)->getFill()->getStartColor()->setRGB('F8FAFC');
             }
         }
 
@@ -220,9 +222,9 @@ class Laporan extends BaseController
         $sheet->getStyle('F13:G' . $lastDataRow)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
         $sheet->getStyle('H13:H' . $lastDataRow)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('J13:J' . $lastDataRow)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A1:J' . $lastDataRow)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
+        $sheet->getStyle('A1:K' . $lastDataRow)->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
 
-        foreach (range('A', 'J') as $column) {
+        foreach (range('A', 'K') as $column) {
             $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
@@ -259,6 +261,7 @@ class Laporan extends BaseController
 
     private function renderReportPdf(bool $download)
     {
+        ini_set('memory_limit', '512M');
         $filters = $this->getAsetFilters();
         $rows = $this->buildExportQuery($filters)->get()->getResultArray();
         $report = $this->buildReportContext($rows, $filters);
@@ -318,7 +321,7 @@ class Laporan extends BaseController
     {
         $db = \Config\Database::connect();
         $builder = $db->table('aset_tanah a')
-            ->select('a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan, a.tanggal_perolehan, sp.nama_status, p.durasi_hari')
+            ->select('a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan, a.tanggal_perolehan, a.keterangan as keterangan_aset, sp.nama_status, p.durasi_hari')
             ->join(
                 '(SELECT p1.id_aset, p1.id_status, p1.durasi_hari
                   FROM proses_aset p1
@@ -335,7 +338,14 @@ class Laporan extends BaseController
             ->orderBy('a.id_aset', 'DESC');
 
         if ($filters['opd'] !== '') {
-            $builder->where('a.opd', $filters['opd']);
+            if ($filters['opd'] === 'KOSONG') {
+                $builder->groupStart()
+                    ->where('a.opd', null)
+                    ->orWhere('a.opd', '')
+                    ->groupEnd();
+            } else {
+                $builder->where('a.opd', $filters['opd']);
+            }
         }
         if ($filters['tanggal_perolehan'] !== '') {
             $builder->where('a.tanggal_perolehan', $filters['tanggal_perolehan']);

@@ -70,6 +70,10 @@
                                 <div class="text-muted small">Lng</div>
                                 <div class="fw-semibold"><?= esc($aset['lng'] ?? '-') ?></div>
                             </div>
+                            <div class="col-md-12">
+                                <div class="text-muted small">Keterangan</div>
+                                <div class="fw-semibold"><?= esc($aset['keterangan'] ?? '-') ?></div>
+                            </div>
                         </div>
                     </div>
                 </div>

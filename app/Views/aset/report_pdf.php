@@ -233,15 +233,16 @@
         <thead>
             <tr>
                 <th width="4%">No</th>
-                <th width="11%">Kode</th>
-                <th width="20%">Nama Aset</th>
-                <th width="14%">Peruntukan</th>
-                <th width="12%">OPD</th>
-                <th width="10%">Luas (m2)</th>
-                <th width="12%">Nilai Perolehan</th>
-                <th width="10%">Tanggal</th>
-                <th width="12%">Status</th>
-                <th width="7%">Durasi</th>
+                <th width="10%">Kode</th>
+                <th width="16%">Nama Aset</th>
+                <th width="12%">Peruntukan</th>
+                <th width="11%">OPD</th>
+                <th width="8%">Luas (m2)</th>
+                <th width="11%">Nilai Perolehan</th>
+                <th width="9%">Tanggal</th>
+                <th width="11%">Status</th>
+                <th width="6%">Durasi</th>
+                <th width="12%">Keterangan</th>
             </tr>
         </thead>
         <tbody>
@@ -258,11 +259,12 @@
                         <td class="text-center"><?= esc($row['tanggal_perolehan_formatted']) ?></td>
                         <td><?= esc($row['nama_status'] ?? 'Belum Diurus') ?></td>
                         <td class="text-center"><?= esc($row['durasi_hari'] ?? '-') ?></td>
+                        <td><?= esc($row['keterangan_aset'] ?: '-') ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="10" class="text-center">Tidak ada data untuk ditampilkan.</td>
+                    <td colspan="11" class="text-center">Tidak ada data untuk ditampilkan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

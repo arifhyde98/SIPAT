@@ -795,6 +795,10 @@
             counters.forEach(counter => {
                 const updateCount = () => {
                     const target = +counter.getAttribute('data-count');
+                    if (target === 0) {
+                        counter.innerText = '0';
+                        return;
+                    }
                     const count = +counter.innerText.replace(/,/g, '');
                     const inc = target / speed;
 

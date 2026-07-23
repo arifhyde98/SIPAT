@@ -82,7 +82,7 @@ class Aset extends BaseController
         $out = fopen('php://temp', 'r+');
         fputcsv($out, [
             'kode_aset', 'nama_aset', 'peruntukan', 'opd', 'luas', 'harga_perolehan',
-            'tanggal_perolehan', 'status_terkini', 'durasi_hari',
+            'tanggal_perolehan', 'status_terkini', 'durasi_hari', 'keterangan',
         ]);
         while ($row = $query->getUnbufferedRow('array')) {
             fputcsv($out, [
@@ -95,6 +95,7 @@ class Aset extends BaseController
                 $row['tanggal_perolehan'],
                 $row['nama_status'] ?? 'Belum Diurus',
                 $row['durasi_hari'] ?? '',
+                $row['keterangan_aset'] ?? '',
             ]);
         }
         rewind($out);
@@ -171,7 +172,14 @@ class Aset extends BaseController
     private function applyAsetFilters(AsetModel $asetQuery, array $filters): AsetModel
     {
         if ($filters['opd'] !== '') {
-            $asetQuery = $asetQuery->where('opd', $filters['opd']);
+            if ($filters['opd'] === 'KOSONG') {
+                $asetQuery = $asetQuery->groupStart()
+                    ->where('opd', null)
+                    ->orWhere('opd', '')
+                    ->groupEnd();
+            } else {
+                $asetQuery = $asetQuery->where('opd', $filters['opd']);
+            }
         }
         if ($filters['tanggal_perolehan'] !== '') {
             $asetQuery = $asetQuery->where('tanggal_perolehan', $filters['tanggal_perolehan']);
@@ -195,7 +203,7 @@ class Aset extends BaseController
     {
         $db = \Config\Database::connect();
         $builder = $db->table('aset_tanah a')
-            ->select('a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan, a.tanggal_perolehan, sp.nama_status, p.durasi_hari')
+            ->select('a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan, a.tanggal_perolehan, a.keterangan as keterangan_aset, sp.nama_status, p.durasi_hari')
             ->join(
                 '(SELECT p1.id_aset, p1.id_status, p1.durasi_hari
                   FROM proses_aset p1
@@ -212,7 +220,14 @@ class Aset extends BaseController
             ->orderBy('a.id_aset', 'DESC');
 
         if ($filters['opd'] !== '') {
-            $builder->where('a.opd', $filters['opd']);
+            if ($filters['opd'] === 'KOSONG') {
+                $builder->groupStart()
+                    ->where('a.opd', null)
+                    ->orWhere('a.opd', '')
+                    ->groupEnd();
+            } else {
+                $builder->where('a.opd', $filters['opd']);
+            }
         }
         if ($filters['tanggal_perolehan'] !== '') {
             $builder->where('a.tanggal_perolehan', $filters['tanggal_perolehan']);
@@ -640,6 +655,7 @@ class Aset extends BaseController
                     'dasar_perolehan'   => $data['dasar_perolehan'] ?? null,
                     'harga_perolehan'   => $harga ?: null,
                     'tanggal_perolehan' => $tanggal ?: null,
+                    'keterangan'        => $data['keterangan'] ?? null,
                 ];
 
                 $statusName = $data['status_proses'] ?? null;
@@ -746,6 +762,7 @@ class Aset extends BaseController
             'dasar_perolehan' => $this->request->getPost('dasar_perolehan'),
             'harga_perolehan' => $this->request->getPost('harga_perolehan'),
             'tanggal_perolehan' => $this->request->getPost('tanggal_perolehan'),
+            'keterangan'      => $this->request->getPost('keterangan'),
         ];
         try {
             $asetModel->insert($payload);
@@ -812,6 +829,7 @@ class Aset extends BaseController
             'dasar_perolehan' => $this->request->getPost('dasar_perolehan'),
             'harga_perolehan' => $this->request->getPost('harga_perolehan'),
             'tanggal_perolehan' => $this->request->getPost('tanggal_perolehan'),
+            'keterangan'      => $this->request->getPost('keterangan'),
         ];
         try {
             $asetModel->update($id, $payload);

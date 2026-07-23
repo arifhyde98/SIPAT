@@ -85,6 +85,7 @@
                         <label class="form-label">OPD</label>
                         <select name="opd" class="form-select">
                             <option value="">Semua OPD</option>
+                            <option value="KOSONG" <?= ($filters['opd'] === 'KOSONG') ? 'selected' : '' ?>>[Tanpa OPD / Kosong]</option>
                             <?php foreach ($opdList as $opd) : ?>
                                 <option value="<?= esc($opd) ?>" <?= ($filters['opd'] === $opd) ? 'selected' : '' ?>><?= esc($opd) ?></option>
                             <?php endforeach; ?>

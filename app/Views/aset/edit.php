@@ -66,6 +66,10 @@
                             <label class="form-label">Longitude</label>
                             <input type="text" name="lng" class="form-control" value="<?= old('lng', $aset['lng']) ?>">
                         </div>
+                        <div class="col-12">
+                            <label class="form-label">Keterangan</label>
+                            <textarea name="keterangan" class="form-control" rows="2" placeholder="Keterangan tambahan aset..."><?= old('keterangan', $aset['keterangan'] ?? '') ?></textarea>
+                        </div>
                     </div>
                     <div class="modal-footer px-0">
                         <button type="submit" class="btn btn-primary rounded-pill">
