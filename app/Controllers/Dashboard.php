@@ -39,6 +39,13 @@ class Dashboard extends BaseController
         $asetBersertifikat = 0;
         $asetKendala = 0;
         $asetProses = 0;
+        $asetBelumDiurus = 0;
+        $statusBreakdowns = [
+            'bersertifikat' => [],
+            'proses'        => [],
+            'kendala'       => [],
+            'belum_diurus'  => [],
+        ];
 
         // Siapkan semua status agar distribusi selalu mengikuti master status.
         $statusCounts = [];
@@ -68,13 +75,15 @@ class Dashboard extends BaseController
             }
             $statusCounts[$statusName]++;
 
-            $normalized = strtolower($statusName);
-            if (str_contains($normalized, 'kendala') || str_contains($normalized, 'sengketa')) {
+            $category = $this->getStatusCategory($statusName);
+            $statusBreakdowns[$category][$statusName] = ($statusBreakdowns[$category][$statusName] ?? 0) + 1;
+
+            if ($category === 'kendala') {
                 $asetKendala++;
-            } elseif (str_contains($normalized, 'selesai ukur')) {
-                $asetProses++;
-            } elseif (str_contains($normalized, 'sertifikat') || str_contains($normalized, 'terbit') || str_contains($normalized, 'selesai')) {
+            } elseif ($category === 'bersertifikat') {
                 $asetBersertifikat++;
+            } elseif ($category === 'belum_diurus') {
+                $asetBelumDiurus++;
             } else {
                 $asetProses++;
             }
@@ -97,14 +106,48 @@ class Dashboard extends BaseController
             }
         }
         $statusCounts = $orderedStatusCounts;
+        foreach ($statusBreakdowns as $category => $items) {
+            arsort($items);
+            $statusBreakdowns[$category] = $items;
+        }
 
         return view('dashboard/index', [
             'totalAset'         => $totalAset,
             'asetBersertifikat' => $asetBersertifikat,
             'asetKendala'       => $asetKendala,
             'asetProses'        => $asetProses,
+            'asetBelumDiurus'   => $asetBelumDiurus,
             'opdStats'          => $opdStats,
             'statusCounts'      => $statusCounts,
+            'statusBreakdowns'  => $statusBreakdowns,
         ]);
+    }
+
+    private function getStatusCategory(string $statusName): string
+    {
+        $normalized = strtolower(trim($statusName));
+
+        if ($normalized === '' || str_contains($normalized, 'belum diurus')) {
+            return 'belum_diurus';
+        }
+
+        if (str_contains($normalized, 'belum bersertifikat')) {
+            return 'proses';
+        }
+
+        if (str_contains($normalized, 'kendala')
+            || str_contains($normalized, 'sengketa')
+            || str_contains($normalized, 'masalah')
+            || str_contains($normalized, 'bermasalah')) {
+            return 'kendala';
+        }
+
+        if (str_contains($normalized, 'sertifikat')
+            || str_contains($normalized, 'terbit')
+            || $normalized === 'selesai') {
+            return 'bersertifikat';
+        }
+
+        return 'proses';
     }
 }

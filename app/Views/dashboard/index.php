@@ -130,34 +130,16 @@
 
     <!-- Baris Kartu Statistik -->
     <?php
-        $statusCards = $statusCounts ?? [];
-        $breakdownSertifikat = [];
-        $breakdownProses = [];
-        $breakdownKendala = [];
-
-        foreach ($statusCards as $statusName => $statusTotal) {
-            $name = (string) $statusName;
-            $total = (int) $statusTotal;
-            $normalized = strtolower($name);
-
-            if (str_contains($normalized, 'kendala') || str_contains($normalized, 'sengketa')) {
-                $breakdownKendala[$name] = $total;
-            } elseif (str_contains($normalized, 'selesai ukur')) {
-                $breakdownProses[$name] = $total;
-            } elseif (str_contains($normalized, 'sertifikat') || str_contains($normalized, 'terbit') || str_contains($normalized, 'selesai')) {
-                $breakdownSertifikat[$name] = $total;
-            } else {
-                $breakdownProses[$name] = $total;
-            }
-        }
-
-        arsort($breakdownSertifikat);
-        arsort($breakdownProses);
-        arsort($breakdownKendala);
+        $breakdowns = $statusBreakdowns ?? [];
+        $breakdownSertifikat = $breakdowns['bersertifikat'] ?? [];
+        $breakdownProses = $breakdowns['proses'] ?? [];
+        $breakdownKendala = $breakdowns['kendala'] ?? [];
+        $breakdownBelumDiurus = $breakdowns['belum_diurus'] ?? [];
 
         $miniSertifikat = array_slice($breakdownSertifikat, 0, 3, true);
         $miniProses = array_slice($breakdownProses, 0, 3, true);
         $miniKendala = array_slice($breakdownKendala, 0, 3, true);
+        $miniBelumDiurus = array_slice($breakdownBelumDiurus, 0, 3, true);
     ?>
     <div class="row g-4 mb-5">
         <div class="col-md-6 col-xl-3">
@@ -202,6 +184,10 @@
                             <?php foreach ($miniProses as $name => $count) : ?>
                                 <div><?= esc($name) ?>: <?= number_format((int) $count) ?></div>
                             <?php endforeach; ?>
+                        </div>
+                    <?php elseif (!empty($miniBelumDiurus)) : ?>
+                        <div class="text-muted small mt-2">
+                            Belum diurus: <?= number_format((int) ($asetBelumDiurus ?? 0)) ?>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -364,4 +350,3 @@
     });
 </script>
 <?= $this->endSection() ?>
-
