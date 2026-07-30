@@ -8,23 +8,37 @@
     <link href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --lte-sidebar-width: 230px;
-            --admin-blue: #0b4f84;
-            --admin-blue-dark: #083d67;
-            --admin-gold: #f0b429;
-            --admin-header-height: 56px;
+            --lte-sidebar-width: 260px;
+            --admin-primary: #1E5EFF;
+            --admin-primary-dark: #1846C7;
+            --admin-sidebar-bg: #0F2747;
+            --admin-bg: #F8FAFC;
+            --admin-card-bg: #FFFFFF;
+            --admin-border: #E5E7EB;
+            --admin-success: #22C55E;
+            --admin-warning: #F59E0B;
+            --admin-danger: #EF4444;
+            --admin-info: #06B6D4;
+            --admin-header-height: 64px;
             --admin-footer-height: 44px;
         }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--admin-bg) !important;
+        }
+
         body.admin-skin {
-            background: #eef2f6;
+            background: var(--admin-bg);
         }
 
         .admin-header {
-            background: var(--admin-blue);
-            border-bottom: 3px solid var(--admin-gold);
+            background: var(--admin-card-bg);
+            border-bottom: 1px solid var(--admin-border);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             position: fixed;
             top: 0;
             left: 0;
@@ -33,6 +47,7 @@
         }
         .admin-header .container-fluid {
             min-height: var(--admin-header-height);
+            padding: 0 1.5rem;
         }
         @media (min-width: 992px) {
             .admin-header {
@@ -44,52 +59,84 @@
         }
         .admin-header .nav-link,
         .admin-header .navbar-text,
-        .admin-header .btn,
         .admin-header .badge {
-            color: #fff;
+            color: #475569;
+        }
+        .admin-header .btn {
+            color: #475569;
         }
         .admin-header .btn.btn-light {
-            color: var(--admin-blue-dark);
+            background: #f1f5f9;
+            border: none;
+            color: #475569;
+            font-weight: 500;
+            border-radius: 9999px;
+            padding: 0.35rem 1rem;
+            transition: all 0.2s;
+        }
+        .admin-header .btn.btn-light:hover {
+            background: #e2e8f0;
+            color: #0f172a;
         }
         .admin-header .header-title {
-            font-weight: 700;
-            letter-spacing: 0.3px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            letter-spacing: 0;
+            font-size: 0.95rem;
+            color: #0f172a;
             margin-left: 12px;
             margin-right: auto;
         }
 
         .app-sidebar.admin-sidebar {
-            background: var(--admin-blue-dark);
+            background: var(--admin-sidebar-bg);
             top: 0;
+            border-right: none;
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.04);
         }
         .admin-sidebar .brand-link {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1.25rem 1rem;
         }
         .admin-sidebar .brand-text {
-            color: #fff;
-            font-weight: 600;
+            color: #ffffff;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-size: 1.2rem;
         }
         .admin-sidebar .nav-link {
-            color: rgba(255, 255, 255, 0.9);
+            color: #94a3b8;
+            padding: 0.75rem 1.25rem;
+            margin: 0.25rem 1rem;
+            border-radius: 0.75rem;
+            transition: all 0.2s ease;
         }
         .admin-sidebar .nav-link .nav-icon {
-            color: rgba(255, 255, 255, 0.9);
+            color: #94a3b8;
+            font-size: 1.25rem;
+            margin-right: 0.75rem;
+            transition: all 0.2s ease;
         }
         .admin-sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.15);
-            color: #fff;
+            background: var(--admin-primary);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(30, 94, 255, 0.25);
         }
-        .admin-sidebar .nav-link:hover {
-            background: rgba(255, 255, 255, 0.08);
+        .admin-sidebar .nav-link.active .nav-icon {
+            color: #ffffff;
+        }
+        .admin-sidebar .nav-link:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.06);
+            color: #f8fafc;
+            transform: translateX(4px);
+        }
+        .admin-sidebar .nav-link:hover:not(.active) .nav-icon {
+            color: #f8fafc;
         }
 
         .app-footer.admin-footer {
-            background: var(--admin-blue-dark);
-            color: #fff;
-            border-top: 3px solid var(--admin-gold);
+            background: var(--admin-card-bg);
+            color: #64748b;
+            border-top: 1px solid var(--admin-border);
             position: fixed;
             left: 0;
             right: 0;
@@ -106,7 +153,7 @@
         }
         .app-footer.admin-footer strong,
         .app-footer.admin-footer .float-end {
-            color: #fff;
+            color: #475569;
         }
 
         .admin-content {
@@ -231,16 +278,8 @@
         }
 
         .app-sidebar .nav-link p {
-            font-weight: 700;
-            letter-spacing: 0.2px;
-        }
-        .app-sidebar .nav-link.active {
-            background: rgba(255, 255, 255, 0.18);
-            border-radius: 0.5rem;
-        }
-        .app-sidebar .nav-link.active .nav-icon,
-        .app-sidebar .nav-link.active p {
-            color: #fff;
+            font-weight: 500;
+            letter-spacing: 0;
         }
 
         body:not(.sidebar-open) .sidebar-overlay {
@@ -327,6 +366,118 @@
             background: #ffffff;
             background-clip: padding-box;
         }
+        /* ── Global Page Header ── */
+        .page-header-global {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .page-header-global h1, .page-header-global .h4, .page-header-global .h3 {
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 3px;
+        }
+        .page-header-global .subtitle, .page-header-global small {
+            font-size: 0.82rem;
+            color: #64748b;
+        }
+
+        /* ── Global Buttons ── */
+        .btn-primary {
+            background: #1E5EFF;
+            border-color: #1E5EFF;
+            border-radius: 10px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(30,94,255,0.15);
+            transition: all 0.2s ease;
+        }
+        .btn-primary:hover {
+            background: #1846C7;
+            border-color: #1846C7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(30,94,255,0.25);
+        }
+        .btn-outline-primary {
+            border-radius: 10px;
+            border-color: #1E5EFF;
+            color: #1E5EFF;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .btn-outline-primary:hover { background: #eff6ff; transform: translateY(-1px); }
+        .btn-outline-secondary {
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-color: #e2e8f0;
+            color: #475569;
+        }
+        .btn-outline-secondary:hover { background: #f8fafc; border-color: #cbd5e1; transform: translateY(-1px); }
+
+        /* ── Card improvements ── */
+        .card {
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 2px 8px rgba(15,23,42,0.04);
+            transition: box-shadow 0.2s ease;
+        }
+
+        /* ── Table premium global ── */
+        .table-premium thead th {
+            text-transform: uppercase;
+            letter-spacing: .05em;
+            font-size: .72rem;
+            color: #64748b;
+            font-weight: 600;
+            background: #f8fafc;
+            border-bottom: 1.5px solid #f1f5f9;
+        }
+        .table-premium tbody tr:hover td {
+            background: #f0f7ff !important;
+            transition: background 0.15s;
+        }
+        .table-premium tbody tr:nth-child(even) td {
+            background-color: #fafbfc;
+        }
+        .table-premium tbody td {
+            vertical-align: middle;
+            border-bottom: 1px solid #f8fafc;
+            font-size: 0.875rem;
+            color: #334155;
+        }
+
+        /* ── Badge global ── */
+        .badge {
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+
+        /* ── Form controls global ── */
+        .form-control, .form-select {
+            border-radius: 10px;
+            border-color: #e2e8f0;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #1E5EFF;
+            box-shadow: 0 0 0 3px rgba(30,94,255,0.1);
+        }
+        .form-label { font-weight: 500; font-size: 0.875rem; color: #374151; }
+
+        /* ── List group polish ── */
+        .list-group-item {
+            border-color: #f1f5f9;
+            transition: background 0.15s;
+        }
+        .list-group-item-action:hover {
+            background: #f8fafc;
+            transform: translateX(2px);
+            transition: all 0.15s;
+        }
     </style>
 </head>
 
@@ -341,16 +492,23 @@
                         </a>
                     </li>
                 </ul>
-                <div class="header-title d-none d-md-block">ANDA SEDANG LOGIN SIPAT DONGGALA 2026</div>
-                <ul class="navbar-nav ms-auto text-white">
-                    <li class="nav-item me-2">
-                        <span class="badge text-bg-light text-primary"><?= esc(session()->get('user_role') ?? 'Guest') ?></span>
+                <div class="header-title d-none d-md-block text-muted fw-medium">Monitoring Pensertifikatan Aset Tanah</div>
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item me-3 d-none d-sm-block">
+                        <div class="d-flex flex-column text-end">
+                            <span class="text-dark fw-semibold" style="font-size: 0.85rem;"><?= esc(session()->get('user_name') ?? 'Admin') ?></span>
+                            <span class="text-muted" style="font-size: 0.75rem;"><?= esc(session()->get('user_role') ?? 'Administrator') ?></span>
+                        </div>
                     </li>
                     <li class="nav-item me-3">
-                        <span class="text-white small"><?= esc(session()->get('user_name') ?? '') ?></span>
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-weight: 600; font-size: 1rem;">
+                            <?= strtoupper(substr(session()->get('user_name') ?? 'A', 0, 1)) ?>
+                        </div>
                     </li>
-                    <li class="nav-item">
-                        <a href="<?= base_url('logout') ?>" class="btn btn-sm btn-light">Logout</a>
+                    <li class="nav-item border-start ps-3 ms-1">
+                        <a href="<?= base_url('logout') ?>" class="btn btn-sm btn-light d-flex align-items-center gap-2 text-danger bg-transparent hover-bg-light">
+                            <i class="bi bi-box-arrow-right"></i> <span class="d-none d-sm-inline">Logout</span>
+                        </a>
                     </li>
                 </ul>
             </div>

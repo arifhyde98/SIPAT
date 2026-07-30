@@ -27,7 +27,23 @@ class Laporan extends BaseController
             'title' => 'Laporan',
             'filters' => $filters,
             'opdList' => $opdList,
-            'statusList' => $statusModel->orderBy('urutan', 'ASC')->findAll(),
+            'statusList' => (function() use ($statusModel) {
+                $db = \Config\Database::connect();
+                $activeStatusIds = array_column(
+                    $db->query("SELECT DISTINCT p1.id_status 
+                                FROM proses_aset p1
+                                JOIN (
+                                    SELECT id_aset, MAX(id_proses) AS max_id
+                                    FROM proses_aset
+                                    GROUP BY id_aset
+                                ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id")->getResultArray(),
+                    'id_status'
+                );
+                if (empty($activeStatusIds)) {
+                    return [];
+                }
+                return $statusModel->whereIn('id_status', $activeStatusIds)->orderBy('urutan', 'ASC')->findAll();
+            })(),
             'reportTitleList' => $reportTitleModel->where('aktif', 1)->orderBy('judul', 'ASC')->findAll(),
             'exportQueryString' => $queryString ? '?' . $queryString : '',
             'summary' => $summary['summary'],
@@ -301,9 +317,16 @@ class Laporan extends BaseController
 
     private function getAsetFilters(): array
     {
+        $rawStatus = $this->request->getGet('status');
+        if (is_array($rawStatus)) {
+            $statusIds = array_values(array_filter(array_map('trim', $rawStatus)));
+        } else {
+            $statusIds = trim((string) $rawStatus) !== '' ? [trim((string) $rawStatus)] : [];
+        }
+
         return [
             'opd' => trim((string) $this->request->getGet('opd')),
-            'status' => trim((string) $this->request->getGet('status')),
+            'status' => $statusIds,
             'tanggal_perolehan' => trim((string) $this->request->getGet('tanggal_perolehan')),
             'q' => trim((string) $this->request->getGet('q')),
             'title_mode' => trim((string) $this->request->getGet('title_mode')) ?: 'master',
@@ -358,16 +381,25 @@ class Laporan extends BaseController
                 ->orLike('a.opd', $filters['q'])
                 ->groupEnd();
         }
-        if ($filters['status'] !== '') {
+        if (!empty($filters['status'])) {
             $builder->whereIn('a.id_aset', $this->getLatestStatusAssetIds($filters['status']));
         }
 
         return $builder;
     }
 
-    private function getLatestStatusAssetIds(string $statusId): array
+    /**
+     * Mendapatkan id_aset yang memiliki status terkini salah satu dari $statusIds.
+     * @param array $statusIds Array of status ID strings
+     */
+    private function getLatestStatusAssetIds(array $statusIds): array
     {
+        if (empty($statusIds)) {
+            return [0];
+        }
+
         $db = \Config\Database::connect();
+        $placeholders = implode(',', array_fill(0, count($statusIds), '?'));
         $statusRows = $db->query(
             "SELECT p1.id_aset
              FROM proses_aset p1
@@ -376,25 +408,30 @@ class Laporan extends BaseController
                 FROM proses_aset
                 GROUP BY id_aset
              ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
-             WHERE p1.id_status = ?",
-            [$statusId]
+             WHERE p1.id_status IN ($placeholders)",
+            $statusIds
         )->getResultArray();
 
-        $statusIds = array_values(array_filter(array_map(
+        $asetIds = array_values(array_filter(array_map(
             static fn ($row) => (int) ($row['id_aset'] ?? 0),
             $statusRows
         )));
 
-        return $statusIds !== [] ? $statusIds : [0];
+        return $asetIds !== [] ? $asetIds : [0];
     }
 
     private function buildReportContext(array $rows, array $filters): array
     {
         $statusModel = new StatusProsesModel();
-        $statusName = '';
-        if ($filters['status'] !== '') {
-            $statusRow = $statusModel->find((int) $filters['status']);
-            $statusName = trim((string) ($statusRow['nama_status'] ?? ''));
+        $statusNames = [];
+        if (!empty($filters['status'])) {
+            foreach ($filters['status'] as $sid) {
+                $statusRow = $statusModel->find((int) $sid);
+                $n = trim((string) ($statusRow['nama_status'] ?? ''));
+                if ($n !== '') {
+                    $statusNames[] = $n;
+                }
+            }
         }
 
         $kop = $this->getKopSettings();
@@ -421,8 +458,8 @@ class Laporan extends BaseController
         if ($filters['opd'] !== '') {
             $activeFilters[] = ['label' => 'OPD', 'value' => $filters['opd']];
         }
-        if ($statusName !== '') {
-            $activeFilters[] = ['label' => 'Status', 'value' => $statusName];
+        if (!empty($statusNames)) {
+            $activeFilters[] = ['label' => 'Status', 'value' => implode(', ', $statusNames)];
         }
         if ($filters['tanggal_perolehan'] !== '') {
             $activeFilters[] = ['label' => 'Tanggal Perolehan', 'value' => $this->formatTanggalIndonesia($filters['tanggal_perolehan'])];

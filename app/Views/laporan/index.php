@@ -7,69 +7,64 @@
         grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
         gap: 1.25rem;
     }
-    @media (max-width: 991.98px) {
-        .report-shell {
-            grid-template-columns: 1fr;
-        }
-    }
+    @media (max-width: 991.98px) { .report-shell { grid-template-columns: 1fr; } }
     .report-card {
         border: 0;
         border-radius: 18px;
-        box-shadow: 0 16px 36px rgba(15, 23, 42, 0.08);
+        box-shadow: 0 4px 20px rgba(15,23,42,0.06);
     }
     .report-summary {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 1rem;
     }
-    @media (max-width: 767.98px) {
-        .report-summary {
-            grid-template-columns: 1fr;
-        }
-    }
+    @media (max-width: 767.98px) { .report-summary { grid-template-columns: 1fr; } }
     .summary-box {
-        padding: 1rem 1.1rem;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        background: linear-gradient(180deg, #ffffff, #f8fafc);
+        padding: 1rem 1.2rem;
+        border: 1.5px solid #f1f5f9;
+        border-radius: 14px;
+        background: linear-gradient(160deg, #ffffff, #f8fafc);
+        transition: box-shadow 0.2s;
     }
-    .summary-label {
-        color: #64748b;
-        font-size: 0.82rem;
-    }
-    .summary-value {
-        font-weight: 800;
-        font-size: 1.5rem;
-        color: #0f172a;
-    }
+    .summary-box:hover { box-shadow: 0 4px 12px rgba(15,23,42,0.06); }
+    .summary-label { color: #64748b; font-size: 0.8rem; font-weight: 500; margin-bottom: 4px; }
+    .summary-value { font-weight: 800; font-size: 1.5rem; color: #0f172a; }
     .filter-chip {
-        display: inline-flex;
-        align-items: center;
-        gap: .35rem;
-        padding: .35rem .7rem;
-        border-radius: 999px;
-        background: #eff6ff;
-        color: #1d4ed8;
-        font-size: .8rem;
-        font-weight: 600;
+        display: inline-flex; align-items: center; gap: .35rem;
+        padding: .3rem .75rem; border-radius: 999px;
+        background: #eff6ff; color: #1d4ed8;
+        font-size: .78rem; font-weight: 600;
         margin: 0 .4rem .4rem 0;
     }
     .action-list .list-group-item {
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        margin-bottom: .75rem;
+        border: 1.5px solid #f1f5f9;
+        border-radius: 12px;
+        margin-bottom: .6rem;
+        padding: 1rem 1.2rem;
+        transition: all 0.15s;
     }
+    .action-list .list-group-item:hover {
+        background: #f8fafc;
+        border-color: #e2e8f0;
+        transform: translateX(2px);
+        box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+    }
+    .action-list .list-group-item .fw-semibold { color: #0f172a; }
     .manual-title-box {
         background: #fff7ed;
-        border: 1px solid #fed7aa;
-        border-radius: 14px;
-        padding: 1rem;
+        border: 1.5px solid #fed7aa;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
     }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+<div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-2">
     <div>
-        <h1 class="h4 fw-semibold mb-1">Laporan</h1>
+        <div style="font-size:0.75rem;color:#94a3b8;margin-bottom:4px;">
+            <a href="<?= base_url('dashboard') ?>" style="color:#94a3b8;text-decoration:none;">Dashboard</a>
+            <span class="mx-1">›</span> Laporan
+        </div>
+        <h1 class="h4 fw-bold text-dark mb-1">Laporan Aset</h1>
         <small class="text-muted">Pusat download laporan aset tanah dengan filter yang sama seperti export di master aset.</small>
     </div>
 </div>
@@ -93,10 +88,9 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label">Status</label>
-                        <select name="status" class="form-select">
-                            <option value="">Semua Status</option>
+                        <select name="status[]" id="statusMultiSelect" class="form-select" multiple placeholder="Semua Status...">
                             <?php foreach ($statusList as $status) : ?>
-                                <option value="<?= esc($status['id_status']) ?>" <?= ($filters['status'] == $status['id_status']) ? 'selected' : '' ?>><?= esc($status['nama_status']) ?></option>
+                                <option value="<?= esc($status['id_status']) ?>" <?= in_array((string)$status['id_status'], (array)($filters['status'] ?? []), true) ? 'selected' : '' ?>><?= esc($status['nama_status']) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
@@ -203,6 +197,9 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<!-- TomSelect untuk multi-select status -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.bootstrap5.min.css">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const masterRadio = document.getElementById('titleModeMaster');
@@ -217,6 +214,23 @@ document.addEventListener('DOMContentLoaded', function () {
     if (masterRadio) masterRadio.addEventListener('change', syncMode);
     if (manualRadio) manualRadio.addEventListener('change', syncMode);
     syncMode();
+
+    // Initialize TomSelect for status
+    const statusEl = document.getElementById('statusMultiSelect');
+    if (statusEl) {
+        new TomSelect(statusEl, {
+            plugins: ['remove_button', 'checkbox_options'],
+            placeholder: 'Semua Status...',
+            maxOptions: 50,
+            closeAfterSelect: false,
+            hideSelected: false,
+            render: {
+                option: function(data, escape) {
+                    return '<div class="d-flex align-items-center gap-2"><span>' + escape(data.text) + '</span></div>';
+                }
+            }
+        });
+    }
 });
 </script>
 <?= $this->endSection() ?>
