@@ -917,5 +917,24 @@ class Aset extends BaseController
 
         return redirect()->to('/aset?deleted=1')->with('success', 'Aset berhasil dihapus.');
     }
+
+    public function cekGanda()
+    {
+        $db = \Config\Database::connect();
+        $duplicates = $db->table('aset_tanah')
+            ->select('kode_aset, COUNT(*) as jumlah, GROUP_CONCAT(nama_aset SEPARATOR ", ") as daftar_aset')
+            ->where('kode_aset IS NOT NULL')
+            ->where('kode_aset !=', '')
+            ->groupBy('kode_aset')
+            ->having('jumlah > 1')
+            ->get()
+            ->getResultArray();
+
+        return $this->response->setJSON([
+            'success' => true,
+            'count'   => count($duplicates),
+            'data'    => $duplicates,
+        ]);
+    }
 }
 

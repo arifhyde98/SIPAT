@@ -22,6 +22,7 @@ $routes->group('laporan', ['filter' => 'role:Admin,Pengelola Aset'], static func
 
 $routes->group('aset', ['filter' => 'auth'], static function ($routes) {
     $routes->get('/', 'Aset::index');
+    $routes->get('cek-ganda', 'Aset::cekGanda');
     $routes->get('(:num)/modal', 'Aset::modal/$1');
     $routes->get('(:num)', 'Aset::show/$1');
 });
@@ -79,6 +80,12 @@ $routes->group('users', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('(:num)/edit', 'Users::edit/$1');
     $routes->put('(:num)', 'Users::update/$1');
     $routes->delete('(:num)', 'Users::delete/$1');
+});
+
+$routes->group('logs', ['filter' => 'role:Admin'], static function ($routes) {
+    $routes->get('/', 'AuditLogs::index');
+    $routes->get('detail/(:num)', 'AuditLogs::detail/$1');
+    $routes->post('clear', 'AuditLogs::clear');
 });
 
 $routes->group('status', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {

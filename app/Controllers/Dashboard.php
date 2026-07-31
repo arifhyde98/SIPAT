@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\AsetModel;
 use App\Models\StatusProsesModel;
+use App\Models\AuditLogModel;
 
 class Dashboard extends BaseController
 {
@@ -11,10 +12,17 @@ class Dashboard extends BaseController
     {
         $asetModel = new AsetModel();
         $statusModel = new StatusProsesModel();
+        $auditModel = new AuditLogModel();
         $db = \Config\Database::connect();
 
         $totalAset = $asetModel->countAllResults();
         $statusMaster = $statusModel->orderBy('urutan', 'ASC')->findAll();
+
+        $recentLogs = $auditModel->select('audit_logs.*, users.nama as user_name')
+            ->join('users', 'users.id_user = audit_logs.user_id', 'left')
+            ->orderBy('audit_logs.id', 'DESC')
+            ->limit(5)
+            ->findAll();
 
         $latestRows = $db->query(
             "SELECT p1.id_aset, p1.id_status, sp.nama_status
@@ -120,6 +128,7 @@ class Dashboard extends BaseController
             'opdStats'          => $opdStats,
             'statusCounts'      => $statusCounts,
             'statusBreakdowns'  => $statusBreakdowns,
+            'recentLogs'        => $recentLogs,
         ]);
     }
 

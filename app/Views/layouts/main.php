@@ -677,6 +677,12 @@
                                                 <p>Master KOP</p>
                                             </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a href="<?= base_url('logs') ?>" class="nav-link <?= $is('logs') ? 'active' : '' ?>">
+                                                <i class="nav-icon bi bi-journal-text"></i>
+                                                <p>Log Aktivitas</p>
+                                            </a>
+                                        </li>
                                     <?php endif; ?>
                                 </ul>
                             </li>

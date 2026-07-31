@@ -266,6 +266,9 @@
             <a href="<?= base_url('aset/import') ?>" class="btn-action-secondary d-flex align-items-center gap-2 text-decoration-none">
                 <i class="bi bi-upload"></i> Import
             </a>
+            <button type="button" id="btnCekGanda" class="btn-action-secondary d-flex align-items-center gap-2">
+                <i class="bi bi-shield-exclamation text-warning"></i> Cek Kode Ganda
+            </button>
             <a href="<?= base_url('aset/create') ?>" class="btn-action-primary d-flex align-items-center gap-2 text-decoration-none">
                 <i class="bi bi-plus-lg"></i> Tambah Aset
             </a>
@@ -484,6 +487,77 @@
         if (created === '1' || updated === '1' || deleted === '1' || imported === '1') {
             const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
             window.history.replaceState({}, document.title, newUrl);
+        }
+
+        // ── Cek Kode Ganda Handler ──
+        const btnCekGanda = document.getElementById('btnCekGanda');
+        if (btnCekGanda) {
+            btnCekGanda.addEventListener('click', async function () {
+                btnCekGanda.disabled = true;
+                const originalHtml = btnCekGanda.innerHTML;
+                btnCekGanda.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Memproses...';
+                
+                try {
+                    const res = await fetch('<?= base_url('aset/cek-ganda') ?>', {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    const result = await res.json();
+                    
+                    if (result.success) {
+                        if (result.count === 0) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Verifikasi Kode Aset',
+                                text: 'Hebat! Tidak ditemukan kode aset ganda di database.',
+                                confirmButtonColor: '#1E5EFF'
+                            });
+                        } else {
+                            let rows = '';
+                            result.data.forEach(item => {
+                                rows += `<tr>
+                                    <td class="font-monospace text-start fw-bold" style="font-size: 0.8rem;">${sipatEscape(item.kode_aset)}</td>
+                                    <td class="text-secondary text-start" style="font-size: 0.8rem;">${sipatEscape(item.jumlah)} kali</td>
+                                    <td class="text-muted text-start" style="font-size: 0.75rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${sipatEscape(item.daftar_aset)}">${sipatEscape(item.daftar_aset)}</td>
+                                </tr>`;
+                            });
+                            
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Verifikasi Kode Aset',
+                                html: `
+                                    <p class="mb-3 text-start">Ditemukan <strong>${result.count}</strong> kode aset ganda di database:</p>
+                                    <div class="table-responsive" style="max-height: 250px;">
+                                        <table class="table table-sm table-bordered align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th class="text-start">Kode</th>
+                                                    <th class="text-start">Jumlah</th>
+                                                    <th class="text-start">Daftar Aset</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${rows}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                `,
+                                confirmButtonColor: '#1E5EFF',
+                                confirmButtonText: 'Tutup'
+                            });
+                        }
+                    }
+                } catch (err) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Kesalahan',
+                        text: 'Gagal memproses verifikasi kode aset ganda.'
+                    });
+                } finally {
+                    btnCekGanda.disabled = false;
+                    btnCekGanda.innerHTML = originalHtml;
+                }
+            });
         }
     });
 </script>

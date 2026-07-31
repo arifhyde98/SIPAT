@@ -488,51 +488,109 @@
                 </div>
                 <div class="card-body">
                     <div class="d-flex flex-column gap-4">
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="bg-gov-success-light text-gov-success rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                <i class="bi bi-check2"></i>
+                        <?php if (empty($recentLogs)): ?>
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-clock-history fs-3 mb-2 d-block"></i>
+                                <span class="small">Belum ada riwayat aktivitas.</span>
                             </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold text-dark" style="font-size: 14px;">Aset tanah berhasil ditambahkan</h6>
-                                <p class="mb-0 text-muted" style="font-size: 13px;">Lapangan Bola Desa Labuan</p>
-                            </div>
-                            <div class="text-end">
-                                <div class="text-muted" style="font-size: 12px;">30 Jul 2026</div>
-                                <div class="text-muted" style="font-size: 12px;">10:12 WIB</div>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="bg-gov-warning-light text-gov-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                <i class="bi bi-file-earmark-text"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold text-dark" style="font-size: 14px;">Proses sertifikasi selesai</h6>
-                                <p class="mb-0 text-muted" style="font-size: 13px;">Puskesmas Banawa</p>
-                            </div>
-                            <div class="text-end">
-                                <div class="text-muted" style="font-size: 12px;">30 Jul 2026</div>
-                                <div class="text-muted" style="font-size: 12px;">09:45 WIB</div>
-                            </div>
-                        </div>
+                        <?php else: ?>
+                            <?php foreach ($recentLogs as $log): ?>
+                                <?php
+                                $badgeClass = 'bg-gov-primary-light text-gov-primary';
+                                $iconClass = 'bi bi-info-circle';
+                                if ($log['action'] === 'create') {
+                                    $badgeClass = 'bg-gov-success-light text-gov-success';
+                                    $iconClass = 'bi bi-plus-circle';
+                                } elseif ($log['action'] === 'update') {
+                                    $badgeClass = 'bg-gov-warning-light text-gov-warning';
+                                    $iconClass = 'bi bi-pencil-square';
+                                } elseif ($log['action'] === 'delete') {
+                                    $badgeClass = 'bg-gov-danger-light text-gov-danger';
+                                    $iconClass = 'bi bi-trash3';
+                                }
 
-                        <div class="d-flex align-items-start gap-3">
-                            <div class="bg-gov-primary-light text-gov-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                                <i class="bi bi-cloud-arrow-up"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1 fw-bold text-dark" style="font-size: 14px;">Import data aset berhasil</h6>
-                                <p class="mb-0 text-muted" style="font-size: 13px;">File: aset_tanah_juli_2026.xlsx</p>
-                            </div>
-                            <div class="text-end">
-                                <div class="text-muted" style="font-size: 12px;">30 Jul 2026</div>
-                                <div class="text-muted" style="font-size: 12px;">09:20 WIB</div>
-                            </div>
-                        </div>
+                                // Format Entity Name
+                                $entityMap = [
+                                    'aset_tanah'     => 'Aset Tanah',
+                                    'users'          => 'User',
+                                    'proses_aset'    => 'Proses Sertifikasi',
+                                    'dokumen_aset'   => 'Dokumen Aset',
+                                    'status_proses'  => 'Status Proses',
+                                    'kepala_desa'    => 'Kepala Desa',
+                                    'camat'          => 'Camat',
+                                    'pemohon'        => 'Pemohon',
+                                    'kecamatan'      => 'Kecamatan',
+                                    'desa'           => 'Desa',
+                                    'opd'            => 'OPD',
+                                ];
+                                $entityName = $entityMap[$log['entity']] ?? esc($log['entity']);
+
+                                // Format Action Name
+                                $actionText = '';
+                                if ($log['action'] === 'create') {
+                                    $actionText = 'ditambahkan';
+                                } elseif ($log['action'] === 'update') {
+                                    $actionText = 'diperbarui';
+                                } elseif ($log['action'] === 'delete') {
+                                    $actionText = 'dihapus';
+                                } else {
+                                    $actionText = esc($log['action']);
+                                }
+
+                                // Get Item Name/Identifier
+                                $payload = json_decode($log['new_data'] ?: ($log['old_data'] ?: '{}'), true);
+                                if ($log['entity'] === 'proses_aset') {
+                                    $db = \Config\Database::connect();
+                                    $statusId = $payload['id_status'] ?? null;
+                                    $statusName = 'Status';
+                                    if ($statusId) {
+                                        $statusRow = $db->table('status_proses')->select('nama_status')->where('id_status', $statusId)->get()->getRowArray();
+                                        $statusName = $statusRow['nama_status'] ?? 'Status';
+                                    }
+                                    $asetId = $payload['id_aset'] ?? null;
+                                    $asetPeruntukan = '';
+                                    if ($asetId) {
+                                        $asetRow = $db->table('aset_tanah')->select('peruntukan')->where('id_aset', $asetId)->get()->getRowArray();
+                                        $asetPeruntukan = $asetRow['peruntukan'] ?? '';
+                                    }
+                                    $itemName = '"' . $statusName . '"' . ($asetPeruntukan ? ' pada "' . $asetPeruntukan . '"' : '');
+                                } elseif ($log['entity'] === 'dokumen_aset') {
+                                    $db = \Config\Database::connect();
+                                    $docName = $payload['nama_dokumen'] ?? ($payload['nama_file'] ?? 'Dokumen');
+                                    $asetId = $payload['id_aset'] ?? null;
+                                    $asetPeruntukan = '';
+                                    if ($asetId) {
+                                        $asetRow = $db->table('aset_tanah')->select('peruntukan')->where('id_aset', $asetId)->get()->getRowArray();
+                                        $asetPeruntukan = $asetRow['peruntukan'] ?? '';
+                                    }
+                                    $itemName = '"' . $docName . '"' . ($asetPeruntukan ? ' pada "' . $asetPeruntukan . '"' : '');
+                                } else {
+                                    $itemName = $payload['peruntukan'] ?? ($payload['nama_aset'] ?? ($payload['nama'] ?? ($payload['nama_status'] ?? ($payload['email'] ?? ($payload['nama_dokumen'] ?? ($payload['nama_file'] ?? 'ID #' . $log['entity_id']))))));
+                                }
+                                ?>
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="<?= $badgeClass ?> rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; flex-shrink: 0;">
+                                        <i class="<?= $iconClass ?>"></i>
+                                    </div>
+                                    <div class="flex-grow-1 min-width-0 text-break">
+                                        <h6 class="mb-1 fw-bold text-dark" style="font-size: 14px;"><?= $entityName ?> <?= $actionText ?></h6>
+                                        <p class="mb-0 text-muted" style="font-size: 13px;">
+                                            <?= esc($itemName) ?> oleh <strong><?= esc($log['user_name'] ?: 'Sistem') ?></strong>
+                                        </p>
+                                    </div>
+                                    <div class="text-end" style="flex-shrink: 0;">
+                                        <div class="text-muted" style="font-size: 11px;"><?= date('d M Y', strtotime($log['created_at'])) ?></div>
+                                        <div class="text-muted" style="font-size: 11px;"><?= date('H:i', strtotime($log['created_at'])) ?> WIB</div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
-                    <a href="#" class="btn btn-outline-gov w-100 mt-4 d-flex align-items-center justify-content-center gap-2">
-                        Lihat semua aktivitas <i class="bi bi-arrow-right"></i>
-                    </a>
+                    <?php if (session()->get('user_role') === 'Admin'): ?>
+                        <a href="<?= base_url('logs') ?>" class="btn btn-outline-gov w-100 mt-4 d-flex align-items-center justify-content-center gap-2">
+                            Lihat semua aktivitas <i class="bi bi-arrow-right"></i>
+                        </a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
