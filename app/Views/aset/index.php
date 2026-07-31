@@ -134,11 +134,11 @@
         background: #f8fafc;
         color: #64748b;
         font-weight: 600;
-        font-size: 0.72rem;
+        font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.06em;
-        padding: 12px 18px;
-        border-bottom: 1.5px solid #f1f5f9;
+        padding: 8px 12px;
+        border-bottom: 1.5px solid #cbd5e1;
         white-space: nowrap;
         position: sticky;
         top: 0;
@@ -146,11 +146,11 @@
         background-clip: padding-box;
     }
     .aset-table tbody td {
-        padding: 12px 18px;
+        padding: 8px 12px;
         vertical-align: middle;
-        border-bottom: 1px solid #f8fafc;
+        border-bottom: 1px solid #cbd5e1;
         color: #334155;
-        font-size: 0.875rem;
+        font-size: 0.8rem;
         transition: background 0.15s;
     }
     .aset-table tbody tr:nth-child(even) td { background-color: #fafbfc; }

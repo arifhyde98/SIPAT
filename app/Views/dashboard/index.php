@@ -73,7 +73,7 @@
 
     /* Cards */
     .card {
-        border: 1px solid #f1f5f9;
+        border: 1px solid #cbd5e1;
         border-radius: 16px;
         background: var(--gov-card-bg);
         box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
@@ -183,7 +183,7 @@
     }
 
     .mini-stat-card {
-        border: 1px solid #f1f5f9;
+        border: 1px solid #cbd5e1;
         border-radius: 12px;
         padding: 16px;
         background: #f8fafc;
@@ -223,8 +223,8 @@
                 <span style="font-size: 0.85rem; text-align: left; line-height: 1.2;">
                     <?php
                         $formatter = new \IntlDateFormatter('id_ID', \IntlDateFormatter::FULL, \IntlDateFormatter::SHORT);
-                        $formatter->setPattern('EEEE, dd MMMM yyyy HH:mm \W\I\B');
-                        echo $formatter->format(new \DateTime());
+                        $formatter->setPattern('EEEE, dd MMMM yyyy HH:mm');
+                        echo $formatter->format(new \DateTime()) . ' WIB';
                     ?>
                 </span>
             </div>
@@ -256,7 +256,7 @@
         $breakdownBelumDiurus = $breakdowns['belum_diurus'] ?? [];
     ?>
     <div class="row g-4 mb-5">
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-lg-6 col-xxl-3">
             <div class="card card-stat h-100 d-flex flex-column">
                 <div class="wave-bg"></div>
                 <div class="position-relative flex-grow-1" style="z-index: 1;">
@@ -292,7 +292,7 @@
             </div>
         </div>
         
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-lg-6 col-xxl-3">
             <div class="card card-stat h-100 d-flex flex-column">
                 <div class="flex-grow-1">
                     <div class="stat-header">
@@ -325,7 +325,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-lg-6 col-xxl-3">
             <div class="card card-stat h-100 d-flex flex-column">
                 <div class="flex-grow-1">
                     <div class="stat-header">
@@ -358,7 +358,7 @@
             </div>
         </div>
 
-        <div class="col-md-6 col-xl-3">
+        <div class="col-md-6 col-lg-6 col-xxl-3">
             <div class="card card-stat h-100 d-flex flex-column">
                 <div class="flex-grow-1">
                     <div class="stat-header">

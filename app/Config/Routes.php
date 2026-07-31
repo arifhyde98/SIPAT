@@ -12,6 +12,10 @@ $routes->post('login', 'Auth::attempt');
 $routes->get('logout', 'Auth::logout');
 
 $routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
+$routes->group('profile', ['filter' => 'auth'], static function ($routes) {
+    $routes->get('/', 'Profile::index');
+    $routes->post('update', 'Profile::update');
+});
 $routes->group('laporan', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {
     $routes->get('/', 'Laporan::index');
     $routes->get('aset/csv', 'Laporan::exportCsv');
@@ -104,7 +108,7 @@ $routes->group('landing-settings', ['filter' => 'role:Admin'], static function (
     $routes->post('/', 'LandingSettings::update');
 });
 
-$routes->group('kop-settings', ['filter' => 'role:Admin'], static function ($routes) {
+$routes->group('kop-settings', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {
     $routes->get('/', 'KopSettings::index');
     $routes->post('/', 'KopSettings::update');
     $routes->get('media/(:any)', 'KopSettings::media/$1');

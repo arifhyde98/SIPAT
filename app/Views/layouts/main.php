@@ -158,8 +158,8 @@
 
         .admin-content {
             width: 100%;
-            max-width: none;
-            margin: 0;
+            max-width: 1600px;
+            margin: 0 auto;
             padding: 0 24px;
         }
         .admin-content > :first-child {
@@ -420,7 +420,7 @@
         /* ── Card improvements ── */
         .card {
             border-radius: 16px;
-            border: 1px solid #f1f5f9;
+            border: 1px solid #cbd5e1;
             box-shadow: 0 2px 8px rgba(15,23,42,0.04);
             transition: box-shadow 0.2s ease;
         }
@@ -429,11 +429,12 @@
         .table-premium thead th {
             text-transform: uppercase;
             letter-spacing: .05em;
-            font-size: .72rem;
+            font-size: 0.7rem;
             color: #64748b;
             font-weight: 600;
             background: #f8fafc;
-            border-bottom: 1.5px solid #f1f5f9;
+            border-bottom: 1.5px solid #cbd5e1;
+            padding: 8px 12px !important;
         }
         .table-premium tbody tr:hover td {
             background: #f0f7ff !important;
@@ -444,9 +445,10 @@
         }
         .table-premium tbody td {
             vertical-align: middle;
-            border-bottom: 1px solid #f8fafc;
-            font-size: 0.875rem;
+            border-bottom: 1px solid #cbd5e1;
+            font-size: 0.8rem;
             color: #334155;
+            padding: 8px 12px !important;
         }
 
         /* ── Badge global ── */
@@ -495,15 +497,17 @@
                 <div class="header-title d-none d-md-block text-muted fw-medium">Monitoring Pensertifikatan Aset Tanah</div>
                 <ul class="navbar-nav ms-auto align-items-center">
                     <li class="nav-item me-3 d-none d-sm-block">
-                        <div class="d-flex flex-column text-end">
+                        <a href="<?= base_url('profile') ?>" class="text-decoration-none d-flex flex-column text-end">
                             <span class="text-dark fw-semibold" style="font-size: 0.85rem;"><?= esc(session()->get('user_name') ?? 'Admin') ?></span>
                             <span class="text-muted" style="font-size: 0.75rem;"><?= esc(session()->get('user_role') ?? 'Administrator') ?></span>
-                        </div>
+                        </a>
                     </li>
                     <li class="nav-item me-3">
-                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-weight: 600; font-size: 1rem;">
-                            <?= strtoupper(substr(session()->get('user_name') ?? 'A', 0, 1)) ?>
-                        </div>
+                        <a href="<?= base_url('profile') ?>" class="text-decoration-none">
+                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; font-weight: 600; font-size: 1rem;" title="Profil Saya">
+                                <?= strtoupper(substr(session()->get('user_name') ?? 'A', 0, 1)) ?>
+                            </div>
+                        </a>
                     </li>
                     <li class="nav-item border-start ps-3 ms-1">
                         <a href="<?= base_url('logout') ?>" class="btn btn-sm btn-light d-flex align-items-center gap-2 text-danger bg-transparent hover-bg-light">
@@ -515,10 +519,13 @@
         </nav>
 
         <aside class="app-sidebar shadow admin-sidebar" data-bs-theme="dark">
-            <div class="sidebar-brand">
-                <a href="<?= base_url('dashboard') ?>" class="brand-link">
+            <div class="sidebar-brand d-flex align-items-center justify-content-between">
+                <a href="<?= base_url('dashboard') ?>" class="brand-link flex-grow-1">
                     <img src="<?= esc(get_landing_logo_url()) ?>" alt="Logo Kabupaten Donggala" class="brand-image img-circle elevation-3" style="opacity: .9">
                     <span class="brand-text fw-light">SIPAT Admin</span>
+                </a>
+                <a class="text-white pe-3 d-lg-none" data-lte-toggle="sidebar" href="#" role="button" title="Sembunyikan Sidebar" style="font-size: 1.1rem; text-decoration: none; padding: 0.5rem 0.25rem;">
+                    <i class="bi bi-x-lg"></i>
                 </a>
             </div>
             <div class="sidebar-wrapper">
@@ -671,12 +678,16 @@
                                                 <p>Landing Page</p>
                                             </a>
                                         </li>
+                                    <?php endif; ?>
+                                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
                                         <li class="nav-item">
                                             <a href="<?= base_url('kop-settings') ?>" class="nav-link <?= $is('kop-settings') ? 'active' : '' ?>">
                                                 <i class="nav-icon bi bi-file-earmark-richtext"></i>
                                                 <p>Master KOP</p>
                                             </a>
                                         </li>
+                                    <?php endif; ?>
+                                    <?php if (session()->get('user_role') === 'Admin') : ?>
                                         <li class="nav-item">
                                             <a href="<?= base_url('logs') ?>" class="nav-link <?= $is('logs') ? 'active' : '' ?>">
                                                 <i class="nav-icon bi bi-journal-text"></i>
