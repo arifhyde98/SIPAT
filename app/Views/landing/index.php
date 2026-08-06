@@ -68,7 +68,10 @@
             width: 56px;
             height: 56px;
             object-fit: contain;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+            background-color: #ffffff;
+            border-radius: 50%;
+            padding: 5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .nav-title {
             font-weight: 700;
@@ -712,7 +715,7 @@
                 $logoFooterUrl = $logoFooter ? base_url('landing/media/' . $logoFooter) : $logoHeaderUrl;
             ?>
             <div class="d-flex align-items-center gap-2">
-                <img src="<?= esc($logoFooterUrl) ?>" alt="Logo Footer" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(31,58,95,0.15);">
+                <img src="<?= esc($logoFooterUrl) ?>" alt="Logo Footer" style="width:32px;height:32px;border-radius:50%;border:1px solid rgba(31,58,95,0.15);background-color:#ffffff;padding:2px;">
                 <span class="fw-semibold text-dark">Copyright &copy; <?= date('Y') ?> <?= esc($getSetting($landing ?? [], 'landing_footer_copyright', 'Pemerintah Kabupaten Donggala')) ?></span>
             </div>
             <div class="text-muted small"><?= esc($landing['landing_footer_text'] ?? 'Monitoring Pensertifikatan Tanah') ?></div>

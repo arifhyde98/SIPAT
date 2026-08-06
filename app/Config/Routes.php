@@ -169,3 +169,6 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->post('pengamanan/(:num)', 'MasterPengamanan::update/$1');
     $routes->post('pengamanan/delete/(:num)', 'MasterPengamanan::delete/$1');
 });
+
+// Monitoring API (Spoke)
+$routes->get('api/health-check', 'HealthCheck::index');
