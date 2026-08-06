@@ -5,6 +5,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login - SIPAT</title>
+    <link rel="icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
+    <link rel="shortcut icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>

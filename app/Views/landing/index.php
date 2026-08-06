@@ -11,6 +11,8 @@
         $siteTitle = $getSetting($landing ?? [], 'landing_site_title', 'SIPAT - Sistem Informasi Pensertifikatan Tanah');
     ?>
     <title><?= esc($siteTitle) ?></title>
+    <link rel="icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
+    <link rel="shortcut icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">

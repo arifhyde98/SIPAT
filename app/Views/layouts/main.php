@@ -4,6 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= esc($title ?? 'SIPAT') ?></title>
+    <link rel="icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
+    <link rel="shortcut icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
     <link href="https://cdn.jsdelivr.net/npm/adminlte4@4.0.0-rc.6.20260104/dist/css/adminlte.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/styles/overlayscrollbars.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">

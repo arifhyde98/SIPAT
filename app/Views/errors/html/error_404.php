@@ -3,6 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title><?= lang('Errors.pageNotFound') ?></title>
+    <link rel="icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
+    <link rel="shortcut icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
 
     <style>
         div.logo {
