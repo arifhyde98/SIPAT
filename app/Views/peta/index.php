@@ -1,25 +1,42 @@
 <?= $this->extend('layouts/main') ?>
 
 <?= $this->section('content') ?>
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-3">
     <div>
-        <h1 class="h4 fw-semibold mb-1">Peta Aset</h1>
-        <small class="text-muted">Sebaran aset berdasarkan status</small>
+        <h1 class="h4 fw-bold mb-1 text-dark">Peta Aset Tanah</h1>
+        <small class="text-muted">Sebaran peta geografis & status pensertifikatan aset</small>
     </div>
 </div>
 
 <style>
     #map {
-        height: 60vh;
-        min-height: 420px;
+        height: 70vh;
+        min-height: 480px;
         width: 100%;
-        border-radius: 12px;
+        border-radius: 16px;
+        z-index: 1;
+    }
+    @media (max-width: 767.98px) {
+        #map {
+            height: calc(100vh - var(--admin-header-height, 64px) - var(--mobile-nav-height, 64px) - 60px) !important;
+            min-height: 380px;
+            border-radius: 14px;
+        }
     }
 </style>
 
-<div class="card">
-    <div class="card-body">
+<div class="card border-0 shadow-sm overflow-hidden position-relative">
+    <div class="card-body p-2 position-relative">
         <div id="map"></div>
+        <!-- Mobile Map Floating Action Buttons -->
+        <div class="mobile-map-fab-group">
+            <button type="button" class="mobile-map-fab" id="btnFitBounds" title="Reset Tampilan Peta">
+                <i class="bi bi-arrows-fullscreen"></i>
+            </button>
+            <button type="button" class="mobile-map-fab text-primary" id="btnLocateMe" title="Lokasi Saya">
+                <i class="bi bi-geo-alt-fill"></i>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -46,13 +63,37 @@
             if (Number.isNaN(lat) || Number.isNaN(lng)) return;
             const marker = L.marker([lat, lng]).addTo(map);
             marker.bindPopup(
-                `<strong>${item.kode}</strong><br>${item.nama}<br>Status: ${item.status}<br><a href="<?= base_url('aset') ?>/${item.id}">Detail</a>`
+                `<div style="font-family:sans-serif; padding:4px;">
+                    <span class="badge bg-primary mb-1">${sipatEscape(item.kode)}</span>
+                    <h6 class="fw-bold mb-1 text-dark" style="font-size:14px;">${sipatEscape(item.nama)}</h6>
+                    <div class="small text-muted mb-2">Status: <strong>${sipatEscape(item.status)}</strong></div>
+                    <a href="<?= base_url('aset') ?>/${item.id}" class="btn btn-xs btn-primary text-white w-100 text-decoration-none">
+                        <i class="bi bi-eye me-1"></i> Lihat Detail Aset
+                    </a>
+                </div>`
             );
             bounds.push([lat, lng]);
         });
-        if (bounds.length) {
-            map.fitBounds(bounds, { padding: [40, 40] });
-        }
+
+        const resetView = () => {
+            if (bounds.length) {
+                map.fitBounds(bounds, { padding: [30, 30] });
+            }
+        };
+        resetView();
+
+        document.getElementById('btnFitBounds')?.addEventListener('click', resetView);
+        document.getElementById('btnLocateMe')?.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    map.setView([pos.coords.latitude, pos.coords.longitude], 15);
+                    L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map)
+                        .bindPopup('<b>Posisi Anda Saat Ini</b>').openPopup();
+                }, () => {
+                    if (typeof Swal !== 'undefined') Swal.fire('Lokasi', 'Gagal mengakses GPS perangkat.', 'info');
+                });
+            }
+        });
 
         setTimeout(() => map.invalidateSize(), 300);
     });

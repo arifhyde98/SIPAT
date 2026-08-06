@@ -346,7 +346,7 @@
         <?php endif; ?>
     </div>
 <?php else : ?>
-    <div class="table-container">
+    <div class="table-container hide-on-mobile">
         <div class="table-responsive">
             <table class="table align-middle mb-0 aset-table">
                 <thead>
@@ -431,6 +431,48 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <!-- Mobile Card View (<768px) -->
+    <div class="mobile-card-view d-md-none">
+        <?php foreach ($data as $row) : ?>
+            <div class="mobile-data-card">
+                <div class="mobile-card-header">
+                    <div>
+                        <span class="mobile-card-code"><?= esc($row['kode_aset'] ?? 'ASET') ?></span>
+                        <div class="mobile-card-title mt-1"><?= esc($row['nama_aset']) ?></div>
+                    </div>
+                    <span class="badge-status bg-<?= esc($row['warna_status']) ?>">
+                        <?= esc($row['status_terkini']) ?>
+                    </span>
+                </div>
+                <div class="mobile-card-subtitle">
+                    <i class="bi bi-buildings text-muted me-1"></i>
+                    <span><?= esc(!empty($row['opd']) ? $row['opd'] : 'Tanpa OPD') ?></span>
+                </div>
+                <div class="mobile-card-details">
+                    <div class="mobile-card-detail-item">
+                        <span class="mobile-card-detail-label">Penggunaan</span>
+                        <span class="mobile-card-detail-val"><?= esc($row['peruntukan'] ?? '-') ?></span>
+                    </div>
+                    <div class="mobile-card-detail-item">
+                        <span class="mobile-card-detail-label">Luas Tanah</span>
+                        <span class="mobile-card-detail-val"><?= esc($row['luas']) ?> m²</span>
+                    </div>
+                </div>
+                <div class="mobile-card-actions">
+                    <a class="btn btn-sm btn-outline-primary" href="<?= base_url('aset/' . $row['id_aset']) ?>"
+                       data-modal-aset data-modal-url="<?= base_url('aset/' . $row['id_aset'] . '/modal') ?>">
+                        <i class="bi bi-eye"></i> Detail
+                    </a>
+                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                        <a class="btn btn-sm btn-outline-warning" href="<?= base_url('aset/' . $row['id_aset'] . '/edit') . ($exportQueryString ?? '') ?>">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+        <?php endforeach; ?>
     </div>
     <?php if (isset($pager)) : ?>
         <div class="d-flex justify-content-center mt-4">

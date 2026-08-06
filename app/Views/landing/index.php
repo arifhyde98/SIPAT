@@ -14,6 +14,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="<?= base_url('assets/css/mobile-custom.css') ?>" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
         html { scroll-behavior: smooth; }
@@ -138,6 +139,9 @@
             border-top: 4px solid var(--gov-accent);
             box-shadow: 0 18px 38px rgba(11, 79, 132, 0.12);
             padding: 24px;
+            max-width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
         }
         .hero-image {
             width: 100%;
@@ -157,7 +161,12 @@
             font-size: 12px;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.03em;
+            max-width: 100%;
+            white-space: normal;
+            word-break: break-word;
+            line-height: 1.4;
+            box-sizing: border-box;
         }
         .stat-card {
             background: linear-gradient(180deg, #ffffff 0%, #f5fafe 100%);
@@ -167,6 +176,9 @@
             height: 100%;
             text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            max-width: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
         }
         .stat-card:hover {
             transform: translateY(-5px);
@@ -214,6 +226,8 @@
             position: relative;
             overflow: hidden;
             transition: all 0.3s ease;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .card-elegant:hover {
             transform: translateY(-5px);
@@ -297,6 +311,10 @@
             transition: all 0.3s ease;
             position: relative;
             z-index: 1;
+            max-width: 100%;
+            overflow: hidden;
+            word-break: break-word;
+            box-sizing: border-box;
         }
         .flow-step:hover {
             transform: translateY(-4px);
@@ -313,6 +331,8 @@
             box-shadow: 0 18px 34px rgba(11, 79, 132, 0.22);
             position: relative;
             overflow: hidden;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         .cta-band::before {
             content: '';
@@ -434,31 +454,33 @@
         }
     </style>
 </head>
-<body>
+<body style="padding-bottom: 80px;">
     <div class="scroll-progress" id="scrollProgress"></div>
-    <header id="mainNav" class="fixed-top py-4 navbar-transition">
+    <header id="mainNav" class="fixed-top py-2 py-md-4 navbar-transition">
         <div class="container gov-container d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="nav-brand">
                 <?php
                     $logoHeaderUrl = get_landing_logo_url();
                 ?>
-                <img src="<?= esc($logoHeaderUrl) ?>" alt="Logo Kabupaten Donggala">
+                <img src="<?= esc($logoHeaderUrl) ?>" alt="Logo Kabupaten Donggala" class="img-fluid" style="max-height: 46px; max-width: 46px;">
                 <div>
-                    <div class="nav-title"><?= esc($getSetting($landing ?? [], 'landing_brand_title', 'SIPAT')) ?></div>
-                    <div class="nav-subtitle"><?= esc($getSetting($landing ?? [], 'landing_brand_subtitle', 'Pemda Donggala')) ?></div>
+                    <div class="nav-title fs-6 fs-sm-5 fw-bold text-white mb-0" style="line-height: 1.15; letter-spacing: 0.3px;">PEMERINTAH KABUPATEN DONGGALA</div>
+                    <div class="nav-subtitle mt-1 text-white-50" style="font-size: 9.5px; line-height: 1.2; max-width: 260px; white-space: normal; letter-spacing: 0.2px;">BADAN PENGELOLAAN KEUANGAN DAN ASET DAERAH</div>
                 </div>
             </div>
-            <div class="d-flex gap-2">
-                <a class="btn btn-outline-gov" href="<?= base_url('login') ?>"><?= esc($getSetting($landing ?? [], 'landing_nav_login_label', 'Login Pegawai')) ?></a>
-                <a class="btn btn-gov" href="<?= base_url('dashboard') ?>"><?= esc($getSetting($landing ?? [], 'landing_nav_dashboard_label', 'Dashboard')) ?></a>
+            <div class="d-none d-md-flex gap-2">
+                <a class="btn btn-outline-light btn-sm" href="<?= base_url('login') ?>"><?= esc($getSetting($landing ?? [], 'landing_nav_login_label', 'Login Pegawai')) ?></a>
+                <a class="btn btn-light btn-sm text-primary shadow-sm fw-bold" style="padding-top: 6px; padding-bottom: 6px;" href="<?= base_url('dashboard') ?>">
+                    <?= esc($getSetting($landing ?? [], 'landing_nav_dashboard_label', 'Dashboard')) ?>
+                </a>
             </div>
         </div>
     </header>
 
-    <main style="padding-top: var(--landing-nav-height, 110px);">
-        <section class="py-5 position-relative">
+    <main style="padding-top: var(--landing-nav-height, 90px);">
+        <section class="pt-2 pt-md-5 pb-5 position-relative">
             <!-- Background decoration -->
-            <div class="parallax-bg" style="position: absolute; top: -100px; right: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(234, 179, 8, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: -1; transition: transform 0.1s ease-out;"></div>
+            <div class="parallax-bg" style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(234, 179, 8, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: -1; transition: transform 0.1s ease-out;"></div>
             
             <div class="container gov-container">
                 <div class="row align-items-center g-5">
@@ -468,13 +490,13 @@
                             $heroTitle = trim((string) ($landing['landing_hero_title'] ?? ''));
                             $heroSubtitle = trim((string) ($landing['landing_hero_subtitle'] ?? ''));
                         ?>
-                        <h1 class="display-5 mt-2 fw-bold text-dark">
+                        <h1 class="display-6 display-md-5 mt-2 fw-bold text-dark">
                             <?= esc($heroTitle !== '' ? $heroTitle : 'Monitoring aset tanah Pemda secara real-time, rapi, dan akuntabel.') ?>
                         </h1>
                         <p class="mt-3 text-secondary lead">
                             <?= esc($heroSubtitle !== '' ? $heroSubtitle : 'SIPAT membantu pengelola aset memantau proses pensertifikatan dari awal hingga sertifikat terbit, lengkap dengan dokumen digital, durasi proses, dan dashboard pimpinan yang mudah dipahami.') ?>
                         </p>
-                        <div class="d-flex flex-wrap gap-2 mt-4">
+                        <div class="d-none d-md-flex flex-wrap gap-2 mt-4">
                             <a class="btn btn-gov" href="<?= base_url('login') ?>">Akses Sistem</a>
                             <a class="btn btn-outline-gov" href="#fitur">Lihat Fitur</a>
                         </div>
@@ -498,7 +520,7 @@
                                 <div class="badge-gov mb-2">Ringkasan Cepat</div>
                                 <h3 class="mt-2">Status Proses Terkini</h3>
                                 <p class="text-secondary mb-3">Data real-time dari database SIPAT.</p>
-                                <div class="row g-3">
+                                 <div class="row g-3 stat-card-grid-mobile">
                                     <div class="col-6">
                                         <div class="stat-card">
                                             <div class="stat-value" data-count="<?= (int) ($asetProses ?? 0) ?>">0</div>
@@ -612,14 +634,14 @@
                                         $shown++;
                                 ?>
                                     <li>
-                                        <span><?= esc($name) ?></span>
-                                        <span class="pill"><?= number_format((int) $count) ?></span>
+                                        <span class="text-truncate me-2" title="<?= esc($name) ?>"><?= esc($name) ?></span>
+                                        <span class="pill flex-shrink-0"><?= number_format((int) $count) ?></span>
                                     </li>
                                 <?php endforeach; ?>
                                 <?php if (empty($statusItems)) : ?>
                                     <li>
-                                        <span>Belum ada data</span>
-                                        <span class="pill">0</span>
+                                        <span class="text-truncate me-2">Belum ada data</span>
+                                        <span class="pill flex-shrink-0">0</span>
                                     </li>
                                 <?php endif; ?>
                             </ul>
@@ -637,14 +659,14 @@
                                         $shown++;
                                 ?>
                                     <li>
-                                        <span><?= esc($name) ?></span>
-                                        <span class="pill"><?= number_format((int) $count) ?></span>
+                                        <span class="text-truncate me-2" title="<?= esc($name) ?>"><?= esc($name) ?></span>
+                                        <span class="pill flex-shrink-0"><?= number_format((int) $count) ?></span>
                                     </li>
                                 <?php endforeach; ?>
                                 <?php if (empty($opdItems)) : ?>
                                     <li>
-                                        <span>Belum ada data</span>
-                                        <span class="pill">0</span>
+                                        <span class="text-truncate me-2">Belum ada data</span>
+                                        <span class="pill flex-shrink-0">0</span>
                                     </li>
                                 <?php endif; ?>
                             </ul>
@@ -660,7 +682,7 @@
                     <h2 class="section-title"><?= esc($getSetting($landing ?? [], 'landing_section_flow_title', 'Alur Kerja SIPAT')) ?></h2>
                     <p class="section-desc mx-auto" style="max-width: 600px;"><?= esc($getSetting($landing ?? [], 'landing_section_flow_desc', 'Proses sistematis untuk memastikan setiap aset tanah terdata dan bersertifikat.')) ?></p>
                 </div>
-                <div class="row row-cols-2 row-cols-md-5 g-3" data-aos="fade-up">
+                <div class="row row-cols-2 row-cols-md-5 g-3 flow-steps-mobile-scroll" data-aos="fade-up">
                     <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_1', 'Input Aset')) ?></div></div>
                     <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_2', 'Update Status')) ?></div></div>
                     <div class="col"><div class="flow-step text-center"><?= esc($getSetting($landing ?? [], 'landing_flow_step_3', 'Upload Dokumen')) ?></div></div>
@@ -726,6 +748,12 @@
         <i class="bi bi-arrow-up"></i>
     </div>
 
+    <!-- Mobile Landing Sticky CTA (<768px) -->
+    <div class="landing-mobile-sticky-cta d-md-none">
+        <a class="btn btn-outline-gov text-dark border-secondary bg-white" href="#fitur"><i class="bi bi-info-circle me-1"></i> Fitur</a>
+        <a class="btn btn-gov shadow-sm" href="<?= base_url('login') ?>"><i class="bi bi-box-arrow-in-right me-1"></i> <?= esc($getSetting($landing ?? [], 'landing_nav_login_label', 'Login Pegawai')) ?></a>
+    </div>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         const sipatUpdateLandingNavHeight = () => {
@@ -733,9 +761,14 @@
             if (!navEl) return;
             const height = Math.ceil(navEl.getBoundingClientRect().height || 0);
             if (height > 0) {
-                document.documentElement.style.setProperty('--landing-nav-height', `${height + 16}px`);
+                const extraSpace = window.innerWidth < 768 ? 16 : 24;
+                document.documentElement.style.setProperty('--landing-nav-height', `${height + extraSpace}px`);
             }
         };
+
+        const navObserver = new ResizeObserver(() => sipatUpdateLandingNavHeight());
+        const mainNavEl = document.getElementById('mainNav');
+        if (mainNavEl) navObserver.observe(mainNavEl);
 
         // Initialize AOS
         AOS.init({
@@ -754,10 +787,10 @@
 
             // Navbar
             if (scrollY > 20) {
-                nav.classList.remove('navbar-transition', 'py-4');
+                nav.classList.remove('navbar-transition', 'py-4', 'py-2', 'py-md-4');
                 nav.classList.add('navbar-scrolled');
             } else {
-                nav.classList.add('navbar-transition', 'py-4');
+                nav.classList.add('navbar-transition', 'py-2', 'py-md-4');
                 nav.classList.remove('navbar-scrolled');
             }
             sipatUpdateLandingNavHeight();

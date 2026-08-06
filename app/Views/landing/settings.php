@@ -19,7 +19,7 @@
                 $defaults = [
                     'landing_site_title' => 'SIPAT - Sistem Informasi Pensertifikatan Tanah',
                     'landing_brand_title' => 'SIPAT',
-                    'landing_brand_subtitle' => 'Pemda Donggala',
+                    'landing_brand_subtitle' => 'Pemerintah Kabupaten Donggala, Badan Pengelolaan Keuangan dan Aset Daerah',
                     'landing_nav_login_label' => 'Login Pegawai',
                     'landing_nav_dashboard_label' => 'Dashboard',
                     'landing_badge_text' => 'Sistem Informasi Pensertifikatan Tanah',

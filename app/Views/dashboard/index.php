@@ -217,7 +217,7 @@
                 Monitoring Pensertifikatan Aset Tanah Kabupaten Donggala secara real-time.
             </p>
         </div>
-        <div class="d-flex align-items-center gap-3 mt-2 mt-md-0">
+        <div class="d-flex flex-wrap align-items-center gap-2 mt-2 mt-md-0 w-100 w-md-auto">
             <div class="btn-light-gov d-flex align-items-center gap-2">
                 <i class="bi bi-calendar4"></i>
                 <span style="font-size: 0.85rem; text-align: left; line-height: 1.2;">
@@ -228,12 +228,14 @@
                     ?>
                 </span>
             </div>
-            <a href="<?= base_url('laporan') ?>" class="btn btn-outline-gov d-flex align-items-center gap-2">
-                <i class="bi bi-file-earmark-text"></i> Laporan <i class="bi bi-chevron-down ms-1" style="font-size: 0.75rem;"></i>
-            </a>
-            <a href="<?= base_url('aset/create') ?>" class="btn btn-gov d-flex align-items-center gap-2">
-                <i class="bi bi-plus-lg"></i> Tambah Aset
-            </a>
+            <div class="d-flex gap-2">
+                <a href="<?= base_url('laporan') ?>" class="btn btn-outline-gov d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-text"></i> Laporan <i class="bi bi-chevron-down ms-1" style="font-size: 0.75rem;"></i>
+                </a>
+                <a href="<?= base_url('aset/create') ?>" class="btn btn-gov d-flex align-items-center gap-2">
+                    <i class="bi bi-plus-lg"></i> Tambah Aset
+                </a>
+            </div>
         </div>
     </div>
 
@@ -408,7 +410,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex align-items-center justify-content-center gap-4 mb-3" style="font-size: 13px; color: #64748b;">
+                    <div class="d-flex flex-wrap align-items-center justify-content-center gap-3 mb-3" style="font-size: 13px; color: #64748b;">
                         <div class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 2px; background-color: var(--gov-success);"></span> Sertifikat Selesai</div>
                         <div class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 2px; background-color: var(--gov-warning);"></span> Dalam Proses</div>
                         <div class="d-flex align-items-center gap-2"><span style="width: 8px; height: 8px; border-radius: 2px; background-color: var(--gov-primary);"></span> Belum Bersertifikat</div>
@@ -435,13 +437,13 @@
                     </div>
                 </div>
                 <div class="card-body d-flex flex-column">
-                    <div class="row flex-grow-1 align-items-center">
-                        <div class="col-6">
+                    <div class="row flex-grow-1 align-items-center g-3">
+                        <div class="col-12 col-md-6">
                             <div class="chart-container" style="height: 220px; position: relative;">
                                 <canvas id="opdChart"></canvas>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-md-6">
                             <div class="d-flex flex-column gap-3" style="font-size: 13px;">
                                 <?php
                                     $opdLabels = isset($opdStats) ? array_keys($opdStats) : ['Dinas A', 'Dinas B', 'Lainnya'];

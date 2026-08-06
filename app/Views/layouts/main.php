@@ -9,6 +9,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="<?= base_url('assets/css/mobile-custom.css') ?>?v=<?= time() ?>" rel="stylesheet">
     <style>
         :root {
             --lte-sidebar-width: 260px;
@@ -37,8 +38,9 @@
 
         .admin-header {
             background: var(--admin-card-bg);
-            border-bottom: 1px solid var(--admin-border);
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid #cbd5e1;
+            border-top: 3px solid #1E5EFF;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
             position: fixed;
             top: 0;
             left: 0;
@@ -179,6 +181,7 @@
         @media (max-width: 991.98px) {
             :root {
                 --lte-sidebar-width: 200px;
+                --admin-header-height: 70px;
             }
             .admin-content {
                 padding: 0 16px;
@@ -187,6 +190,7 @@
                 min-height: auto;
                 height: auto;
                 overflow-y: visible;
+                padding-top: calc(var(--admin-header-height) + 24px);
             }
         }
         @media (max-width: 767.98px) {
@@ -198,16 +202,6 @@
             }
         }
         @media (max-width: 575.98px) {
-            .admin-header .container-fluid {
-                flex-wrap: wrap;
-                gap: 0.35rem 0.6rem;
-            }
-            .admin-header .navbar-nav.ms-auto {
-                width: 100%;
-                justify-content: flex-end;
-                flex-wrap: wrap;
-                gap: 0.35rem 0.6rem;
-            }
             .admin-header .badge,
             .admin-header .btn,
             .admin-header .navbar-text {
@@ -483,20 +477,24 @@
     </style>
 </head>
 
-<body class="layout-fixed sidebar-expand-lg bg-body-tertiary admin-skin">
+<body class="layout-fixed sidebar-expand-lg bg-body-tertiary admin-skin has-mobile-nav">
     <div class="app-wrapper">
-        <nav class="app-header navbar navbar-expand admin-header">
-            <div class="container-fluid">
-                <ul class="navbar-nav">
+        <nav class="app-header navbar navbar-expand admin-header p-0">
+            <div class="container-fluid d-flex align-items-center justify-content-between h-100" style="min-height: var(--admin-header-height);">
+                <ul class="navbar-nav d-none d-md-flex">
                     <li class="nav-item">
                         <a class="nav-link" data-lte-toggle="sidebar" href="#" role="button">
-                            <i class="bi bi-list"></i>
+                            <i class="bi bi-list fs-4"></i>
                         </a>
                     </li>
                 </ul>
+                <div class="d-md-none d-flex align-items-center gap-2 m-0 ps-3">
+                    <img src="<?= esc(get_landing_logo_url()) ?>" alt="Logo SIPAT" style="height: 32px; width: auto; object-fit: contain;">
+                    <span class="fw-bold text-dark mb-0" style="letter-spacing: -0.5px; line-height: 1; padding-top: 2px; font-size: 1.15rem;">SIPAT</span>
+                </div>
                 <div class="header-title d-none d-md-block text-muted fw-medium">Monitoring Pensertifikatan Aset Tanah</div>
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item me-3 d-none d-sm-block">
+                <ul class="navbar-nav ms-auto align-items-center mb-0 pe-3 flex-row gap-1">
+                    <li class="nav-item me-2 d-none d-sm-block">
                         <a href="<?= base_url('profile') ?>" class="text-decoration-none d-flex flex-column text-end">
                             <span class="text-dark fw-semibold" style="font-size: 0.85rem;"><?= esc(session()->get('user_name') ?? 'Admin') ?></span>
                             <span class="text-muted" style="font-size: 0.75rem;"><?= esc(session()->get('user_role') ?? 'Administrator') ?></span>
@@ -713,8 +711,35 @@
 
         <footer class="app-footer admin-footer">
             <div class="float-end d-none d-sm-inline">SIPAT</div>
-            <strong>Monitoring Pensertifikatan Tanah</strong>
-        </footer>
+        <!-- Mobile Bottom Navigation Bar (<768px) -->
+        <nav class="mobile-bottom-nav">
+            <a href="<?= base_url('dashboard') ?>" class="mobile-nav-item <?= $is('dashboard') ? 'active' : '' ?>">
+                <i class="bi bi-speedometer2"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="<?= base_url('aset') ?>" class="mobile-nav-item <?= $is('aset') ? 'active' : '' ?>">
+                <i class="bi bi-building"></i>
+                <span>Aset</span>
+            </a>
+            <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                <a href="<?= base_url('aset/create') ?>" class="mobile-nav-fab" title="Tambah Aset Baru">
+                    <i class="bi bi-plus-lg"></i>
+                </a>
+            <?php else : ?>
+                <a href="<?= base_url('peta') ?>" class="mobile-nav-item <?= $is('peta') ? 'active' : '' ?>">
+                    <i class="bi bi-map"></i>
+                    <span>Peta</span>
+                </a>
+            <?php endif; ?>
+            <a href="<?= base_url('peta') ?>" class="mobile-nav-item <?= $is('peta') ? 'active' : '' ?>">
+                <i class="bi bi-map"></i>
+                <span>Peta</span>
+            </a>
+            <a href="#" class="mobile-nav-item" data-lte-toggle="sidebar">
+                <i class="bi bi-grid-fill"></i>
+                <span>Menu</span>
+            </a>
+        </nav>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
@@ -726,6 +751,22 @@
     <script src="https://cdn.jsdelivr.net/npm/datatables.net-bs5@1.13.8/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Auto convert modals to bottom sheets on mobile
+        document.addEventListener('DOMContentLoaded', () => {
+            const handleMobileModals = () => {
+                const isMobile = window.innerWidth < 768;
+                document.querySelectorAll('.modal').forEach(modal => {
+                    if (isMobile) {
+                        modal.classList.add('mobile-bottom-sheet');
+                    } else {
+                        modal.classList.remove('mobile-bottom-sheet');
+                    }
+                });
+            };
+            handleMobileModals();
+            window.addEventListener('resize', handleMobileModals);
+        });
+
         const sipatHighlightRow = (highlight) => {
             if (!highlight) return false;
             const selector = `[data-row-id="${highlight}"], [data-id="${highlight}"], #row-${highlight}`;
