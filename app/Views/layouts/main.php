@@ -530,7 +530,7 @@
             </div>
             <div class="sidebar-wrapper">
                 <?php
-                $path = trim(service('uri')->getPath(), '/');
+                $path = trim(uri_string(), '/');
                 $is = static function (string $prefix) use ($path): bool {
                     if ($prefix === '') {
                         return $path === '' || $path === 'dashboard';
