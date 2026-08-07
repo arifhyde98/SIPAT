@@ -148,28 +148,32 @@ class LandingSettings extends BaseController
 
         foreach ($uploads as $key) {
             $file = $this->request->getFile($key);
-            if ($file && $file->isValid() && !$file->hasMoved()) {
-                $ext = strtolower((string) $file->getExtension());
-                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
-                    $errors[] = "File {$key} harus berupa gambar (jpg, jpeg, png, webp).";
-                    continue;
-                }
-                $newName = $key . '_' . time() . '.' . $file->getExtension();
-                $targetDir = WRITEPATH . 'uploads/landing';
-                if (!is_dir($targetDir)) {
-                    mkdir($targetDir, 0775, true);
-                }
-                $file->move($targetDir, $newName);
-
-                $old = $model->where('key', $key)->first();
-                if (!empty($old['value'])) {
-                    $oldPath = $targetDir . DIRECTORY_SEPARATOR . $old['value'];
-                    if (is_file($oldPath)) {
-                        @unlink($oldPath);
+            if ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+                if ($file->isValid() && !$file->hasMoved()) {
+                    $ext = strtolower((string) $file->getExtension());
+                    if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                        $errors[] = "File {$key} harus berupa gambar (jpg, jpeg, png, webp).";
+                        continue;
                     }
-                }
+                    $newName = $key . '_' . time() . '.' . $file->getExtension();
+                    $targetDir = WRITEPATH . 'uploads/landing';
+                    if (!is_dir($targetDir)) {
+                        mkdir($targetDir, 0775, true);
+                    }
+                    $file->move($targetDir, $newName);
 
-                $this->saveSetting($model, $key, $newName);
+                    $old = $model->where('key', $key)->first();
+                    if (!empty($old['value'])) {
+                        $oldPath = $targetDir . DIRECTORY_SEPARATOR . $old['value'];
+                        if (is_file($oldPath)) {
+                            @unlink($oldPath);
+                        }
+                    }
+
+                    $this->saveSetting($model, $key, $newName);
+                } else {
+                    $errors[] = "Gagal mengunggah {$key}: " . $file->getErrorString() . " (Kode: " . $file->getError() . ")";
+                }
             }
         }
 

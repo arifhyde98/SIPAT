@@ -53,29 +53,33 @@ class KopSettings extends BaseController
         }
 
         $file = $this->request->getFile('kop_logo');
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            $ext = strtolower((string) $file->getExtension());
-            if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
-                return redirect()->back()->with('errors', ['Logo KOP harus berupa gambar jpg, jpeg, png, atau webp.']);
-            }
-
-            $targetDir = WRITEPATH . 'uploads/kop';
-            if (!is_dir($targetDir)) {
-                mkdir($targetDir, 0775, true);
-            }
-
-            $old = $model->where('key', 'kop_logo')->first();
-            $newName = 'kop_logo_' . time() . '.' . $file->getExtension();
-            $file->move($targetDir, $newName);
-
-            if (!empty($old['value'])) {
-                $oldPath = $targetDir . DIRECTORY_SEPARATOR . basename((string) $old['value']);
-                if (is_file($oldPath)) {
-                    @unlink($oldPath);
+        if ($file && $file->getError() !== UPLOAD_ERR_NO_FILE) {
+            if ($file->isValid() && !$file->hasMoved()) {
+                $ext = strtolower((string) $file->getExtension());
+                if (!in_array($ext, ['jpg', 'jpeg', 'png', 'webp'], true)) {
+                    return redirect()->back()->with('errors', ['Logo KOP harus berupa gambar jpg, jpeg, png, atau webp.']);
                 }
-            }
 
-            $this->saveSetting($model, 'kop_logo', $newName);
+                $targetDir = WRITEPATH . 'uploads/kop';
+                if (!is_dir($targetDir)) {
+                    mkdir($targetDir, 0775, true);
+                }
+
+                $old = $model->where('key', 'kop_logo')->first();
+                $newName = 'kop_logo_' . time() . '.' . $file->getExtension();
+                $file->move($targetDir, $newName);
+
+                if (!empty($old['value'])) {
+                    $oldPath = $targetDir . DIRECTORY_SEPARATOR . basename((string) $old['value']);
+                    if (is_file($oldPath)) {
+                        @unlink($oldPath);
+                    }
+                }
+
+                $this->saveSetting($model, 'kop_logo', $newName);
+            } else {
+                return redirect()->back()->with('errors', ['Gagal mengunggah Logo KOP: ' . $file->getErrorString() . ' (Kode: ' . $file->getError() . ')']);
+            }
         }
 
         return redirect()->back()->with('success', 'Master KOP berhasil disimpan.');
