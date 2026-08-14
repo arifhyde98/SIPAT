@@ -598,59 +598,82 @@
 </div>
 
 <!-- ── Modal Ubah Status Massal ── -->
-<div class="modal fade" id="modalBulkStatus" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
-            <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-layers me-2 text-primary"></i>Ubah Status Massal</h5>
+<div class="modal fade modal-modern" id="modalBulkStatus" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-header bg-primary-subtle border-bottom px-4 py-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="bi bi-layers-fill fs-5"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark mb-0">Ubah Status Massal (Bulk Update)</h5>
+                        <small class="text-primary fw-medium">Pembaruan Riwayat Status Kolektif Aset</small>
+                    </div>
+                </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('proses/bulk') ?>" method="post" id="formBulkStatus">
+            <form action="<?= base_url('proses/bulk') ?>" method="post" id="formBulkStatus" onsubmit="handleFormSubmit(this)">
                 <?= csrf_field() ?>
                 <div id="bulkSelectedInputsContainer"></div>
-                <div class="modal-body pt-3">
-                    <div class="alert alert-primary d-flex align-items-center gap-2 mb-3" style="border-radius: 10px; font-size: 0.85rem;">
-                        <i class="bi bi-info-circle-fill fs-5"></i>
-                        <div>Anda akan memperbarui status untuk <strong id="modalBulkCount">0</strong> aset sekaligus.</div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-primary border-0 d-flex align-items-center gap-3 mb-3 p-3 rounded-3" style="font-size: 0.85rem;">
+                        <i class="bi bi-info-circle-fill fs-4 text-primary"></i>
+                        <div>Anda akan memperbarui status untuk <strong id="modalBulkCount" class="badge bg-primary fs-6 px-2 py-1 ms-1">0</strong> aset sekaligus.</div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label small fw-semibold text-secondary">Status Proses Baru <span class="text-danger">*</span></label>
-                        <select name="id_status" class="form-select form-select-soft" required>
-                            <option value="">-- Pilih Status Proses --</option>
-                            <?php if (!empty($allStatusList)): ?>
-                                <?php foreach ($allStatusList as $st): ?>
-                                    <option value="<?= esc($st['id_status']) ?>"><?= esc($st['nama_status']) ?></option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label small fw-semibold text-secondary">Tanggal Mulai</label>
-                            <input type="date" name="tgl_mulai" class="form-control form-control-soft" value="<?= date('Y-m-d') ?>">
+
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-3">
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-secondary mb-1">Pilih Status Proses Baru <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white text-muted"><i class="bi bi-tags"></i></span>
+                                <select name="id_status" class="form-select form-select-soft" required>
+                                    <option value="">-- Pilih Status Proses --</option>
+                                    <?php if (!empty($allStatusList)): ?>
+                                        <?php foreach ($allStatusList as $st): ?>
+                                            <option value="<?= esc($st['id_status']) ?>"><?= esc($st['nama_status']) ?></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <label class="form-label small fw-semibold text-secondary">Tanggal Selesai</label>
-                            <input type="date" name="tgl_selesai" class="form-control form-control-soft">
+
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Tanggal Mulai</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white text-muted"><i class="bi bi-calendar-event"></i></span>
+                                    <input type="date" name="tgl_mulai" class="form-control form-control-soft" value="<?= date('Y-m-d') ?>">
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label small fw-semibold text-secondary mb-1">Tanggal Selesai</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-white text-muted"><i class="bi bi-calendar-check"></i></span>
+                                    <input type="date" name="tgl_selesai" class="form-control form-control-soft">
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <a class="small text-decoration-none fw-semibold text-primary d-inline-flex align-items-center gap-1 mb-1" data-bs-toggle="collapse" href="#collapseNibarList" role="button" aria-expanded="false">
-                            <i class="bi bi-clipboard-plus"></i> + Tempel / Masukkan NIBAR Massal (Database Global)
+
+                    <div class="card bg-light border-0 rounded-3 p-3 mb-3">
+                        <a class="small text-decoration-none fw-semibold text-primary d-inline-flex align-items-center gap-2" data-bs-toggle="collapse" href="#collapseNibarList" role="button" aria-expanded="false">
+                            <i class="bi bi-clipboard-plus fs-6"></i> + Tempel / Masukkan Daftar NIBAR Massal (Match Database)
                         </a>
-                        <div class="collapse mt-1" id="collapseNibarList">
-                            <textarea name="nibar_list" class="form-control form-control-soft font-monospace" rows="3" style="font-size: 0.8rem;" placeholder="Tempel daftar NIBAR di sini (dipisahkan baris/koma)...&#10;Contoh:&#10;12.01.02.01.001&#10;12.01.02.01.002"></textarea>
-                            <div class="text-muted mt-1" style="font-size: 0.72rem;">*NIBAR yang ditempel di sini akan dicocokkan ke seluruh database secara otomatis.</div>
+                        <div class="collapse mt-2" id="collapseNibarList">
+                            <textarea name="nibar_list" class="form-control form-control-soft font-monospace p-2" rows="3" style="font-size: 0.8rem;" placeholder="Tempel daftar NIBAR di sini (dipisahkan baris/koma)...&#10;Contoh:&#10;12.01.02.01.001&#10;12.01.02.01.002"></textarea>
+                            <div class="text-muted mt-1" style="font-size: 0.75rem;"><i class="bi bi-info-circle me-1"></i> NIBAR yang ditempel di sini akan dicocokkan ke seluruh database secara otomatis.</div>
                         </div>
                     </div>
-                    <div class="mb-2">
-                        <label class="form-label small fw-semibold text-secondary">Keterangan / Catatan</label>
+
+                    <div>
+                        <label class="form-label small fw-semibold text-secondary mb-1">Keterangan / Catatan Proses</label>
                         <textarea name="keterangan" class="form-control form-control-soft" rows="2" placeholder="Catatan proses massal (opsional)...">Update status massal</textarea>
                     </div>
                 </div>
-                <div class="modal-footer border-top-0 pt-0">
-                    <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary rounded-3 px-4"><i class="bi bi-save me-1"></i>Simpan Pembaruan</button>
+                <div class="modal-footer border-top pt-2 px-4 pb-3">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm" id="btnSubmitBulk"><i class="bi bi-save2 me-1"></i> Simpan Pembaruan Massal</button>
                 </div>
             </form>
         </div>

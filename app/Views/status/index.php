@@ -29,15 +29,24 @@
                 <table class="table table-premium table-hover align-middle mb-0 js-datatable">
                 <thead class="bg-light">
                     <tr>
-                        <th width="35%">Nama Status</th>
-                        <th width="15%" class="text-center">Urutan</th>
-                        <th width="35%">Preview Visual Warna</th>
-                        <th width="15%" class="text-center">Aksi</th>
+                        <th width="28%">Nama Status</th>
+                        <th width="10%" class="text-center">Urutan</th>
+                        <th width="25%">Kategori Dashboard</th>
+                        <th width="25%">Preview Warna</th>
+                        <th width="12%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($status as $row) : 
                         $warna = $row['warna'] ?: 'secondary';
+                        $catMap = [
+                            'belum_diurus'  => ['label' => 'Belum Diurus / Diproses', 'class' => 'bg-secondary text-secondary'],
+                            'proses'        => ['label' => 'Sedang Diproses', 'class' => 'bg-primary text-primary'],
+                            'kendala'       => ['label' => 'Kendala / Sengketa', 'class' => 'bg-danger text-danger'],
+                            'bersertifikat' => ['label' => 'Sudah Bersertifikat', 'class' => 'bg-success text-success'],
+                        ];
+                        $catKey = $row['kategori'] ?? 'proses';
+                        $catInfo = $catMap[$catKey] ?? $catMap['proses'];
                     ?>
                         <tr>
                             <td>
@@ -46,6 +55,11 @@
                             <td class="text-center">
                                 <span class="badge bg-light text-dark border border-secondary border-opacity-25 rounded-circle fs-6 p-2" style="width:35px; height:35px; display:inline-flex; align-items:center; justify-content:center;">
                                     <?= esc($row['urutan']) ?>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge <?= $catInfo['class'] ?> bg-opacity-10 border border-opacity-25 rounded-pill px-3 py-1.5 fw-medium" style="font-size: 0.75rem;">
+                                    <i class="bi bi-tag-fill me-1"></i> <?= $catInfo['label'] ?>
                                 </span>
                             </td>
                             <td>

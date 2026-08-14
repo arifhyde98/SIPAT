@@ -30,6 +30,7 @@ class Status extends BaseController
         $rules = [
             'nama_status' => 'required',
             'urutan'      => 'required|numeric',
+            'kategori'    => 'required|in_list[belum_diurus,proses,kendala,bersertifikat]',
         ];
 
         if (!$this->validate($rules)) {
@@ -40,7 +41,8 @@ class Status extends BaseController
         $payload = [
             'nama_status' => $this->request->getPost('nama_status'),
             'urutan'      => $this->request->getPost('urutan'),
-            'warna'       => $this->request->getPost('warna'),
+            'warna'       => $this->request->getPost('warna') ?: 'secondary',
+            'kategori'    => $this->request->getPost('kategori') ?: 'proses',
         ];
         $model->insert($payload);
         $this->logAudit('create', 'status_proses', (int) $model->getInsertID(), [], $payload);
@@ -75,6 +77,7 @@ class Status extends BaseController
         $rules = [
             'nama_status' => 'required',
             'urutan'      => 'required|numeric',
+            'kategori'    => 'required|in_list[belum_diurus,proses,kendala,bersertifikat]',
         ];
 
         if (!$this->validate($rules)) {
@@ -86,7 +89,8 @@ class Status extends BaseController
         $payload = [
             'nama_status' => $this->request->getPost('nama_status'),
             'urutan'      => $this->request->getPost('urutan'),
-            'warna'       => $this->request->getPost('warna'),
+            'warna'       => $this->request->getPost('warna') ?: 'secondary',
+            'kategori'    => $this->request->getPost('kategori') ?: 'proses',
         ];
         $model->update($id, $payload);
         $this->logAudit('update', 'status_proses', (int) $id, $old, $payload);

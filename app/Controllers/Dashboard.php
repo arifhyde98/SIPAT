@@ -33,10 +33,12 @@ class Dashboard extends BaseController
         $totalAset = $asetModel->countAllResults();
         $statusMaster = $statusModel->orderBy('urutan', 'ASC')->findAll();
         
-        // Buat map id_status -> nama_status
+        // Buat map id_status -> nama_status dan id_status -> kategori
         $statusMap = [];
+        $statusCategoryMap = [];
         foreach ($statusMaster as $sm) {
             $statusMap[(int)$sm['id_status']] = trim((string)($sm['nama_status'] ?? ''));
+            $statusCategoryMap[(int)$sm['id_status']] = trim((string)($sm['kategori'] ?? ''));
         }
 
         $recentLogs = $auditModel->select('audit_logs.*, users.nama as user_name')
@@ -46,7 +48,7 @@ class Dashboard extends BaseController
             ->findAll();
 
         $latestRows = $db->query(
-            "SELECT p1.id_aset, p1.id_status, sp.nama_status
+            "SELECT p1.id_aset, p1.id_status, sp.nama_status, sp.kategori
              FROM proses_aset p1
              JOIN (
                  SELECT id_aset, MAX(id_proses) AS max_id
@@ -61,6 +63,7 @@ class Dashboard extends BaseController
             $latestMap[(int) $row['id_aset']] = [
                 'id_status'   => (int) ($row['id_status'] ?? 0),
                 'nama_status' => trim((string) ($row['nama_status'] ?? '')),
+                'kategori'    => trim((string) ($row['kategori'] ?? '')),
             ];
         }
 
@@ -95,6 +98,7 @@ class Dashboard extends BaseController
             $latest = $latestMap[$idAset] ?? null;
 
             $statusName = $latest['nama_status'] ?? '';
+            $statusId = $latest['id_status'] ?? 0;
             if ($statusName === '') {
                 $statusName = 'Belum Diurus';
             }
@@ -104,7 +108,8 @@ class Dashboard extends BaseController
             }
             $statusCounts[$statusName]++;
 
-            $category = $this->getStatusCategory($statusName);
+            $explicitCategory = $statusCategoryMap[$statusId] ?? ($latest['kategori'] ?? null);
+            $category = $this->getStatusCategory($statusName, $explicitCategory);
             $statusBreakdowns[$category][$statusName] = ($statusBreakdowns[$category][$statusName] ?? 0) + 1;
 
             if ($category === 'kendala') {
@@ -171,6 +176,7 @@ class Dashboard extends BaseController
                 
                 // Cari status terakhir di bulan ini
                 $currentStatusName = 'Belum Diurus';
+                $explicitCat = 'belum_diurus';
                 $asetIdChart = (int) $asetChart['id_aset'];
                 
                 if (isset($prosesByAset[$asetIdChart])) {
@@ -183,11 +189,13 @@ class Dashboard extends BaseController
                         }
                     }
                     if ($latestProsesInMonth) {
-                        $currentStatusName = $statusMap[(int)$latestProsesInMonth['id_status']] ?? 'Belum Diurus';
+                        $stId = (int) $latestProsesInMonth['id_status'];
+                        $currentStatusName = $statusMap[$stId] ?? 'Belum Diurus';
+                        $explicitCat = $statusCategoryMap[$stId] ?? null;
                     }
                 }
                 
-                $cat = $this->getStatusCategory($currentStatusName);
+                $cat = $this->getStatusCategory($currentStatusName, $explicitCat);
                 if ($cat === 'bersertifikat') {
                     $chartSelesai[$m - 1]++;
                 } elseif ($cat === 'proses' || $cat === 'kendala') {
@@ -198,7 +206,7 @@ class Dashboard extends BaseController
             }
         }
         // --- END LOGIKA CHART ---
-        
+
         $pctBersertifikat = $totalAset > 0 ? round(($asetBersertifikat / $totalAset) * 100, 1) : 0;
         $pctProses = $totalAset > 0 ? round(($asetProses / $totalAset) * 100, 1) : 0;
         $pctKendala = $totalAset > 0 ? round(($asetKendala / $totalAset) * 100, 1) : 0;
@@ -322,29 +330,41 @@ class Dashboard extends BaseController
         ];
     }
 
-    private function getStatusCategory(string $statusName): string
+    private function getStatusCategory(string $statusName, ?string $explicitCategory = null): string
     {
+        if (!empty($explicitCategory)) {
+            $cat = strtolower(trim($explicitCategory));
+            if (in_array($cat, ['belum_diurus', 'proses', 'kendala', 'bersertifikat'], true)) {
+                return $cat;
+            }
+        }
+
         $normalized = strtolower(trim($statusName));
 
-        if ($normalized === '' || str_contains($normalized, 'belum diurus') || str_contains($normalized, 'belum bersertifikat')) {
+        // 1. Kategori "Belum Diurus": Jika nama status kosong, atau mengandung kata "belum" / "tanpa"
+        if ($normalized === '' || str_contains($normalized, 'belum') || str_contains($normalized, 'tanpa')) {
             return 'belum_diurus';
         }
 
+        // 2. Kategori "Kendala / Sengketa": Jika mengandung kata kendala, sengketa, masalah, batal, ditolak
         if (str_contains($normalized, 'kendala')
             || str_contains($normalized, 'sengketa')
             || str_contains($normalized, 'masalah')
-            || str_contains($normalized, 'bermasalah')) {
+            || str_contains($normalized, 'bermasalah')
+            || str_contains($normalized, 'batal')
+            || str_contains($normalized, 'ditolak')) {
             return 'kendala';
         }
 
-        // Kategori "Sudah Bersertifikat" hanya untuk sertifikat yang sudah jadi/final.
-        // Status seperti "Terbit Pertek", "Terbit SK", "Terbit PBT" adalah tahap proses permohonan.
-        if ((str_contains($normalized, 'sertifikat') && !str_contains($normalized, 'proses') && !str_contains($normalized, 'belum'))
+        // 3. Kategori "Sudah Bersertifikat": Hanya untuk sertifikat yang sudah jadi/final.
+        if (((str_contains($normalized, 'sertifikat') || str_contains($normalized, 'sertipikat')) && !str_contains($normalized, 'proses'))
             || str_contains($normalized, 'terbit sertifikat')
+            || str_contains($normalized, 'terbit sertipikat')
             || $normalized === 'selesai') {
             return 'bersertifikat';
         }
 
+        // 4. Kategori "Sedang Diproses": Semua status tahapan proses permohonan berjalan
         return 'proses';
     }
 }

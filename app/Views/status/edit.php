@@ -23,6 +23,17 @@
                             <label for="nama_status">Nama Status</label>
                         </div>
                         
+                        <?php $currentCat = old('kategori', $row['kategori'] ?? 'proses'); ?>
+                        <div class="form-floating mb-2">
+                            <select name="kategori" id="e_kategori" class="form-select" required>
+                                <option value="belum_diurus" <?= $currentCat === 'belum_diurus' ? 'selected' : '' ?>>Belum Diurus / Belum Diproses (Kartu Abu-abu)</option>
+                                <option value="proses" <?= $currentCat === 'proses' ? 'selected' : '' ?>>Sedang Diproses (Kartu Biru)</option>
+                                <option value="kendala" <?= $currentCat === 'kendala' ? 'selected' : '' ?>>Kendala / Bermasalah (Kartu Merah)</option>
+                                <option value="bersertifikat" <?= $currentCat === 'bersertifikat' ? 'selected' : '' ?>>Sudah Bersertifikat / Selesai (Kartu Hijau)</option>
+                            </select>
+                            <label for="e_kategori">Kategori Dashboard</label>
+                        </div>
+                        
                         <div class="row g-3">
                             <div class="col-6">
                                 <div class="form-floating">

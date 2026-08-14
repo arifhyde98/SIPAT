@@ -11,5 +11,5 @@ class StatusProsesModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
-    protected $allowedFields    = ['nama_status', 'urutan', 'warna'];
+    protected $allowedFields    = ['nama_status', 'urutan', 'warna', 'kategori'];
 }

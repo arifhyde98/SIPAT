@@ -20,6 +20,15 @@
                             <input type="text" name="nama_status" id="nama_status" class="form-control" placeholder="Nama Status" value="<?= old('nama_status') ?>" required>
                             <label for="nama_status">Nama Status</label>
                         </div>
+                        <div class="form-floating mb-2">
+                            <select name="kategori" id="c_kategori" class="form-select" required>
+                                <option value="belum_diurus" <?= old('kategori') === 'belum_diurus' ? 'selected' : '' ?>>Belum Diurus / Belum Diproses (Kartu Abu-abu)</option>
+                                <option value="proses" <?= old('kategori', 'proses') === 'proses' ? 'selected' : '' ?>>Sedang Diproses (Kartu Biru)</option>
+                                <option value="kendala" <?= old('kategori') === 'kendala' ? 'selected' : '' ?>>Kendala / Bermasalah (Kartu Merah)</option>
+                                <option value="bersertifikat" <?= old('kategori') === 'bersertifikat' ? 'selected' : '' ?>>Sudah Bersertifikat / Selesai (Kartu Hijau)</option>
+                            </select>
+                            <label for="c_kategori">Kategori Dashboard</label>
+                        </div>
                         
                         <div class="row g-3">
                             <div class="col-6">
