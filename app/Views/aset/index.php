@@ -258,6 +258,42 @@
         margin-left: 6px;
         vertical-align: middle;
     }
+
+    /* ── Bulk Floating Action Bar ── */
+    .bulk-floating-bar {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1050;
+        background: #0f172a;
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 50rem;
+        box-shadow: 0 10px 30px rgba(15,23,42,0.3);
+        min-width: 320px;
+        max-width: 90vw;
+        border: 1px solid #334155;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .form-check-input:checked {
+        background-color: #1E5EFF;
+        border-color: #1E5EFF;
+    }
+
+    /* ── Penyesuaian Resolusi 1366x768 Laptop ── */
+    @media screen and (max-width: 1440px), screen and (max-height: 850px) {
+        .page-header-bar { margin-bottom: 0.75rem !important; }
+        .page-header-bar h1 { font-size: 1.15rem !important; }
+        .page-header-bar .subtitle { font-size: 0.78rem !important; }
+        .btn-action-primary, .btn-action-secondary { padding: 5px 12px !important; font-size: 0.8rem !important; }
+        .filter-card { padding: 0.85rem 1rem !important; margin-bottom: 0.85rem !important; }
+        .form-control-soft, .form-select-soft { font-size: 0.8rem !important; padding: 4px 8px !important; }
+        .aset-table thead th { padding: 6px 8px !important; font-size: 0.65rem !important; }
+        .aset-table tbody td { padding: 5px 8px !important; font-size: 0.75rem !important; }
+        .badge-status { font-size: 0.68rem !important; padding: 3px 8px !important; }
+        .btn-icon-action { width: 28px; height: 28px; font-size: 0.75rem; }
+    }
 </style>
 <?php
     // Hitung filter aktif untuk chip counter
@@ -305,6 +341,9 @@
             <button type="button" id="btnCekGanda" class="btn-action-secondary d-flex align-items-center gap-2">
                 <i class="bi bi-shield-exclamation text-warning"></i> Cek Kode Ganda
             </button>
+            <button type="button" id="btnBulkStatusHeader" class="btn-action-secondary d-none align-items-center gap-2 text-primary border-primary bg-primary-subtle" data-bs-toggle="modal" data-bs-target="#modalBulkStatus">
+                <i class="bi bi-ui-checks"></i> Ubah Status Massal (<span id="bulkCountHeader">0</span>)
+            </button>
             <a href="<?= base_url('aset/create') ?>" class="btn-action-primary d-flex align-items-center gap-2 text-decoration-none">
                 <i class="bi bi-plus-lg"></i> Tambah Aset
             </a>
@@ -315,10 +354,10 @@
 <!-- ── Filter Card ── -->
 <div class="filter-card">
     <form method="get" id="filterForm">
-        <div class="row g-3 align-items-end">
-            <div class="col-md-auto">
+        <div class="row g-2 align-items-end">
+            <div class="col-auto">
                 <label class="form-label small fw-semibold text-secondary mb-1">OPD</label>
-                <select name="opd" class="form-select form-select-soft" style="min-width: 180px;">
+                <select name="opd" class="form-select form-select-soft" style="width: 145px;">
                     <option value="">Semua OPD</option>
                     <option value="KOSONG" <?= ($filters['opd'] === 'KOSONG') ? 'selected' : '' ?>>[Tanpa OPD / Kosong]</option>
                     <?php foreach ($opdList as $opd) : ?>
@@ -326,12 +365,11 @@
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-auto">
+            <div class="col-auto">
                 <label class="form-label small fw-semibold text-secondary mb-1">
                     Status <span class="filter-count-badge ms-0" style="background:#fef9c3;color:#92400e;">multi</span>
                 </label>
-                <!-- Multi-select status: name="status[]" agar controller menerima array -->
-                <select id="statusMultiSelect" name="status[]" multiple placeholder="Semua Status..." style="min-width: 220px;">
+                <select id="statusMultiSelect" name="status[]" multiple placeholder="Status..." style="width: 165px;">
                     <?php foreach ($statusList as $status) : ?>
                         <option value="<?= esc($status['id_status']) ?>"
                             <?= in_array((string)$status['id_status'], (array)($filters['status'] ?? []), true) ? 'selected' : '' ?>>
@@ -340,26 +378,38 @@
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-auto">
-                <label class="form-label small fw-semibold text-secondary mb-1">Tanggal Perolehan</label>
-                <input type="date" name="tanggal_perolehan" class="form-control form-control-soft"
+            <div class="col-auto">
+                <label class="form-label small fw-semibold text-secondary mb-1">Tgl Perolehan</label>
+                <input type="date" name="tanggal_perolehan" class="form-control form-control-soft" style="width: 135px;"
                     value="<?= esc($filters['tanggal_perolehan'] ?? '') ?>">
             </div>
+            <div class="col-auto">
+                <label class="form-label small fw-semibold text-secondary mb-1">Tampilkan</label>
+                <select name="per_page" class="form-select form-select-soft" style="width: 115px;" onchange="this.form.submit()">
+                    <option value="25" <?= ($perPageParam === '25' || empty($perPageParam)) ? 'selected' : '' ?>>25 hal</option>
+                    <option value="50" <?= ($perPageParam === '50') ? 'selected' : '' ?>>50 hal</option>
+                    <option value="100" <?= ($perPageParam === '100') ? 'selected' : '' ?>>100 hal</option>
+                    <option value="250" <?= ($perPageParam === '250') ? 'selected' : '' ?>>250 hal</option>
+                    <option value="all" <?= ($perPageParam === 'all') ? 'selected' : '' ?>>✨ Semua</option>
+                </select>
+            </div>
             <div class="col">
-                <label class="form-label small fw-semibold text-secondary mb-1">Pencarian</label>
+                <label class="form-label small fw-semibold text-secondary mb-1">
+                    Pencarian Cepat <span id="searchResultCount" class="text-primary small fw-normal ms-1"></span>
+                </label>
                 <div class="search-wrapper">
                     <i class="bi bi-search search-icon"></i>
-                    <input type="text" name="q" class="form-control form-control-soft"
-                        placeholder="Cari nama, kode aset, OPD..."
-                        value="<?= esc($filters['q'] ?? '') ?>">
+                    <input type="text" name="q" id="quickSearchInput" class="form-control form-control-soft"
+                        placeholder="Ketik nama, NIBAR, OPD..."
+                        value="<?= esc($filters['q'] ?? '') ?>" autocomplete="off">
                 </div>
             </div>
-            <div class="col-auto d-flex gap-2">
-                <button class="btn-action-primary px-4" type="submit">
+            <div class="col-auto d-flex gap-1">
+                <button class="btn-action-primary px-3" type="submit">
                     <i class="bi bi-funnel me-1"></i> Filter
                 </button>
                 <?php if ($activeFilterCount > 0): ?>
-                    <a href="<?= base_url('aset') ?>" class="btn-action-secondary d-flex align-items-center gap-1 text-decoration-none"
+                    <a href="<?= base_url('aset') ?>" class="btn-action-secondary d-flex align-items-center gap-1 text-decoration-none px-2"
                         title="Reset semua filter">
                         <i class="bi bi-x-circle"></i>
                     </a>
@@ -387,6 +437,11 @@
             <table class="table align-middle mb-0 aset-table">
                 <thead>
                     <tr>
+                        <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                            <th class="text-center" style="width:40px;">
+                                <input type="checkbox" id="checkAllAset" class="form-check-input" title="Pilih Semua">
+                            </th>
+                        <?php endif; ?>
                         <th class="d-none">Kode</th>
                         <th style="width:50px;">No</th>
                         <th>Nama Aset</th>
@@ -406,6 +461,11 @@
                     ?>
                     <?php foreach ($data as $row) : ?>
                         <tr>
+                            <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                                <td class="text-center">
+                                    <input type="checkbox" class="form-check-input aset-checkbox" value="<?= $row['id_aset'] ?>">
+                                </td>
+                            <?php endif; ?>
                             <td class="d-none"><?= esc($row['kode_aset']) ?></td>
                             <td class="text-muted fw-medium" style="font-size:0.8rem;"><?= $no++ ?></td>
                             <td class="fw-semibold text-dark"><?= esc($row['nama_aset']) ?></td>
@@ -462,9 +522,14 @@
         <?php foreach ($data as $row) : ?>
             <div class="mobile-data-card">
                 <div class="mobile-card-header">
-                    <div>
-                        <span class="mobile-card-code"><?= esc($row['kode_aset'] ?? 'ASET') ?></span>
-                        <div class="mobile-card-title mt-1"><?= esc($row['nama_aset']) ?></div>
+                    <div class="d-flex align-items-start gap-2">
+                        <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                            <input type="checkbox" class="form-check-input aset-checkbox mt-1" value="<?= $row['id_aset'] ?>">
+                        <?php endif; ?>
+                        <div>
+                            <span class="mobile-card-code"><?= esc($row['kode_aset'] ?? 'ASET') ?></span>
+                            <div class="mobile-card-title mt-1"><?= esc($row['nama_aset']) ?></div>
+                        </div>
                     </div>
                     <span class="badge-status bg-<?= esc($row['warna_status']) ?>">
                         <?= esc($row['status_terkini']) ?>
@@ -514,6 +579,84 @@
     <?php endif; ?>
 <?php endif; ?>
 
+<!-- ── Bulk Floating Action Bar ── -->
+<div id="bulkFloatingBar" class="bulk-floating-bar d-none">
+    <div class="d-flex align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-2 text-white fw-semibold" style="font-size: 0.875rem;">
+            <i class="bi bi-check-circle-fill text-warning fs-5"></i>
+            <span><strong id="bulkCountFloat">0</strong> aset dipilih</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-light fw-medium text-dark rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalBulkStatus">
+                <i class="bi bi-pencil-square me-1 text-primary"></i> Ubah Status Massal
+            </button>
+            <button type="button" id="btnCancelBulk" class="btn btn-sm btn-outline-light rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Modal Ubah Status Massal ── -->
+<div class="modal fade" id="modalBulkStatus" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold text-dark"><i class="bi bi-layers me-2 text-primary"></i>Ubah Status Massal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="<?= base_url('proses/bulk') ?>" method="post" id="formBulkStatus">
+                <?= csrf_field() ?>
+                <div id="bulkSelectedInputsContainer"></div>
+                <div class="modal-body pt-3">
+                    <div class="alert alert-primary d-flex align-items-center gap-2 mb-3" style="border-radius: 10px; font-size: 0.85rem;">
+                        <i class="bi bi-info-circle-fill fs-5"></i>
+                        <div>Anda akan memperbarui status untuk <strong id="modalBulkCount">0</strong> aset sekaligus.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-secondary">Status Proses Baru <span class="text-danger">*</span></label>
+                        <select name="id_status" class="form-select form-select-soft" required>
+                            <option value="">-- Pilih Status Proses --</option>
+                            <?php if (!empty($allStatusList)): ?>
+                                <?php foreach ($allStatusList as $st): ?>
+                                    <option value="<?= esc($st['id_status']) ?>"><?= esc($st['nama_status']) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-secondary">Tanggal Mulai</label>
+                            <input type="date" name="tgl_mulai" class="form-control form-control-soft" value="<?= date('Y-m-d') ?>">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-secondary">Tanggal Selesai</label>
+                            <input type="date" name="tgl_selesai" class="form-control form-control-soft">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <a class="small text-decoration-none fw-semibold text-primary d-inline-flex align-items-center gap-1 mb-1" data-bs-toggle="collapse" href="#collapseNibarList" role="button" aria-expanded="false">
+                            <i class="bi bi-clipboard-plus"></i> + Tempel / Masukkan NIBAR Massal (Database Global)
+                        </a>
+                        <div class="collapse mt-1" id="collapseNibarList">
+                            <textarea name="nibar_list" class="form-control form-control-soft font-monospace" rows="3" style="font-size: 0.8rem;" placeholder="Tempel daftar NIBAR di sini (dipisahkan baris/koma)...&#10;Contoh:&#10;12.01.02.01.001&#10;12.01.02.01.002"></textarea>
+                            <div class="text-muted mt-1" style="font-size: 0.72rem;">*NIBAR yang ditempel di sini akan dicocokkan ke seluruh database secara otomatis.</div>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold text-secondary">Keterangan / Catatan</label>
+                        <textarea name="keterangan" class="form-control form-control-soft" rows="2" placeholder="Catatan proses massal (opsional)...">Update status massal</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-light rounded-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary rounded-3 px-4"><i class="bi bi-save me-1"></i>Simpan Pembaruan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade modal-modern" id="modalRemote" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content"></div>
@@ -550,18 +693,138 @@
         const updated  = params.get('updated');
         const deleted  = params.get('deleted');
         const imported = params.get('imported');
+        const bulkUpdated = params.get('bulk_updated');
         const showAlert = (text) => {
             if (typeof Swal !== 'undefined') {
-                Swal.fire({ icon: 'success', title: 'Berhasil', text, timer: 1800, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: 'Berhasil', text, timer: 2000, showConfirmButton: false });
             }
         };
         if (created  === '1') { showAlert('Aset tanah berhasil ditambahkan.'); params.delete('created'); }
         if (updated  === '1') { showAlert('Aset tanah berhasil diperbarui.'); params.delete('updated'); }
         if (deleted  === '1') { showAlert('Aset tanah berhasil dihapus.'); params.delete('deleted'); }
         if (imported === '1') { showAlert('Import aset selesai.'); params.delete('imported'); }
-        if (created === '1' || updated === '1' || deleted === '1' || imported === '1') {
+        if (bulkUpdated === '1') { showAlert('Status massal berhasil diperbarui.'); params.delete('bulk_updated'); }
+        if (created === '1' || updated === '1' || deleted === '1' || imported === '1' || bulkUpdated === '1') {
             const newUrl = window.location.pathname + (params.toString() ? '?' + params.toString() : '');
             window.history.replaceState({}, document.title, newUrl);
+        }
+
+        // ── Bulk Status Update Handler ──
+        const checkAllEl = document.getElementById('checkAllAset');
+        const asetCheckboxes = document.querySelectorAll('.aset-checkbox');
+        const btnBulkHeader = document.getElementById('btnBulkStatusHeader');
+        const bulkFloatingBar = document.getElementById('bulkFloatingBar');
+        const bulkCountHeader = document.getElementById('bulkCountHeader');
+        const bulkCountFloat = document.getElementById('bulkCountFloat');
+        const modalBulkCount = document.getElementById('modalBulkCount');
+        const bulkInputsContainer = document.getElementById('bulkSelectedInputsContainer');
+        const btnCancelBulk = document.getElementById('btnCancelBulk');
+
+        function updateBulkUI() {
+            const selected = Array.from(document.querySelectorAll('.aset-checkbox:checked'));
+            const count = selected.length;
+
+            if (bulkCountHeader) bulkCountHeader.textContent = count;
+            if (bulkCountFloat) bulkCountFloat.textContent = count;
+            if (modalBulkCount) modalBulkCount.textContent = count;
+
+            if (count > 0) {
+                if (btnBulkHeader) btnBulkHeader.classList.remove('d-none'), btnBulkHeader.classList.add('d-inline-flex');
+                if (bulkFloatingBar) bulkFloatingBar.classList.remove('d-none');
+            } else {
+                if (btnBulkHeader) btnBulkHeader.classList.add('d-none'), btnBulkHeader.classList.remove('d-inline-flex');
+                if (bulkFloatingBar) bulkFloatingBar.classList.add('d-none');
+                if (checkAllEl) checkAllEl.checked = false;
+            }
+        }
+
+        // ── Live Instant Search & Smart Check All ──
+        const quickSearchInput = document.getElementById('quickSearchInput');
+        const searchResultCount = document.getElementById('searchResultCount');
+        const tableRows = document.querySelectorAll('.aset-table tbody tr');
+        const mobileCards = document.querySelectorAll('.mobile-data-card');
+
+        function filterRows() {
+            if (!quickSearchInput) return;
+            const q = quickSearchInput.value.toLowerCase().trim();
+            let visibleCount = 0;
+
+            tableRows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const match = text.includes(q);
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+
+            mobileCards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(q) ? '' : 'none';
+            });
+
+            if (searchResultCount) {
+                searchResultCount.textContent = q ? `(${visibleCount} cocok)` : '';
+            }
+
+            if (checkAllEl) {
+                const visibleCheckboxes = Array.from(document.querySelectorAll('.aset-table tbody tr:not([style*="display: none"]) .aset-checkbox'));
+                if (visibleCheckboxes.length > 0) {
+                    checkAllEl.checked = visibleCheckboxes.every(cb => cb.checked);
+                } else {
+                    checkAllEl.checked = false;
+                }
+            }
+        }
+
+        if (quickSearchInput) {
+            quickSearchInput.addEventListener('input', filterRows);
+        }
+
+        if (checkAllEl) {
+            checkAllEl.addEventListener('change', function () {
+                const visibleCheckboxes = Array.from(document.querySelectorAll('.aset-table tbody tr:not([style*="display: none"]) .aset-checkbox, .mobile-data-card:not([style*="display: none"]) .aset-checkbox'));
+                const targetCheckboxes = visibleCheckboxes.length > 0 ? visibleCheckboxes : asetCheckboxes;
+                targetCheckboxes.forEach(cb => cb.checked = checkAllEl.checked);
+                updateBulkUI();
+            });
+        }
+
+        asetCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                if (!this.checked && checkAllEl) {
+                    checkAllEl.checked = false;
+                } else if (checkAllEl) {
+                    const visibleCheckboxes = Array.from(document.querySelectorAll('.aset-table tbody tr:not([style*="display: none"]) .aset-checkbox'));
+                    if (visibleCheckboxes.length > 0) {
+                        checkAllEl.checked = visibleCheckboxes.every(c => c.checked);
+                    }
+                }
+                updateBulkUI();
+            });
+        });
+
+        if (btnCancelBulk) {
+            btnCancelBulk.addEventListener('click', function () {
+                if (checkAllEl) checkAllEl.checked = false;
+                asetCheckboxes.forEach(cb => cb.checked = false);
+                updateBulkUI();
+            });
+        }
+
+        const modalBulkStatusEl = document.getElementById('modalBulkStatus');
+        if (modalBulkStatusEl) {
+            modalBulkStatusEl.addEventListener('show.bs.modal', function () {
+                if (bulkInputsContainer) {
+                    bulkInputsContainer.innerHTML = '';
+                    const selected = Array.from(document.querySelectorAll('.aset-checkbox:checked'));
+                    selected.forEach(cb => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'aset_ids[]';
+                        input.value = cb.value;
+                        bulkInputsContainer.appendChild(input);
+                    });
+                }
+            });
         }
 
         // ── Cek Kode Ganda Handler ──

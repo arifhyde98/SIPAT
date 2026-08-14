@@ -337,8 +337,10 @@ class Dashboard extends BaseController
             return 'kendala';
         }
 
-        if (str_contains($normalized, 'sertifikat')
-            || str_contains($normalized, 'terbit')
+        // Kategori "Sudah Bersertifikat" hanya untuk sertifikat yang sudah jadi/final.
+        // Status seperti "Terbit Pertek", "Terbit SK", "Terbit PBT" adalah tahap proses permohonan.
+        if ((str_contains($normalized, 'sertifikat') && !str_contains($normalized, 'proses') && !str_contains($normalized, 'belum'))
+            || str_contains($normalized, 'terbit sertifikat')
             || $normalized === 'selesai') {
             return 'bersertifikat';
         }

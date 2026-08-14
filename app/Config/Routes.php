@@ -41,6 +41,8 @@ $routes->group('aset', ['filter' => 'role:Admin,Pengelola Aset'], static functio
     $routes->post('/', 'Aset::store');
     $routes->get('import', 'Aset::importForm');
     $routes->post('import', 'Aset::importProcess');
+    $routes->post('import-status', 'Aset::importStatusProcess');
+    $routes->get('template-status-csv', 'Aset::templateStatusCsv');
     $routes->get('export/csv', 'Aset::exportCsv');
     $routes->get('export/print', 'Aset::printReport');
     $routes->get('export/pdf', 'Aset::downloadReportPdf');
@@ -50,6 +52,7 @@ $routes->group('aset', ['filter' => 'role:Admin,Pengelola Aset'], static functio
 });
 
 $routes->group('proses', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {
+    $routes->post('bulk', 'Proses::bulkStore');
     $routes->post('(:num)', 'Proses::store/$1');
     $routes->delete('(:num)', 'Proses::delete/$1');
 });

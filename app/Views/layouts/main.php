@@ -195,6 +195,14 @@
                 padding-top: calc(var(--admin-header-height) + 24px);
             }
         }
+
+        /* ── Monitor & DPI Scaling Responsiveness ── */
+        @media (max-width: 1440px) {
+            .admin-content {
+                padding: 0 16px;
+                max-width: 100%;
+            }
+        }
         @media (max-width: 767.98px) {
             :root {
                 --lte-sidebar-width: 230px;
@@ -465,6 +473,42 @@
             box-shadow: 0 0 0 3px rgba(30,94,255,0.1);
         }
         .form-label { font-weight: 500; font-size: 0.875rem; color: #374151; }
+
+        /* ── Safe Global Responsiveness for All Pages (Laptop 1366x768 & Desktop) ── */
+        @media screen and (max-width: 1400px) {
+            .page-header-global, .page-header-bar {
+                margin-bottom: 1rem !important;
+            }
+            .page-header-global h1, .page-header-bar h1 {
+                font-size: 1.2rem !important;
+            }
+            .card, .filter-card {
+                padding: 1rem 1.15rem;
+                margin-bottom: 1rem;
+            }
+            .form-control, .form-select, .form-control-soft, .form-select-soft {
+                font-size: 0.82rem !important;
+                padding: 0.35rem 0.65rem !important;
+            }
+            .form-label {
+                font-size: 0.8rem !important;
+                margin-bottom: 0.25rem !important;
+            }
+            .table-responsive {
+                max-height: calc(100vh - var(--admin-header-height) - var(--admin-footer-height) - 190px);
+            }
+            .table-premium thead th, .aset-table thead th {
+                padding: 6px 10px !important;
+                font-size: 0.68rem !important;
+            }
+            .table-premium tbody td, .aset-table tbody td {
+                padding: 6px 10px !important;
+                font-size: 0.78rem !important;
+            }
+            .btn {
+                font-size: 0.82rem;
+            }
+        }
 
         /* ── List group polish ── */
         .list-group-item {

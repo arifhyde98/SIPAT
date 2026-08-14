@@ -22,9 +22,17 @@ class Aset extends BaseController
 
         $asetQuery = $this->applyAsetFilters($asetModel, $filters);
 
-        $perPage = 25;
-        $asetList = $asetQuery->orderBy('id_aset', 'DESC')->paginate($perPage, 'aset');
-        $pager = $asetModel->pager;
+        $perPageParam = $this->request->getGet('per_page');
+        if ($perPageParam === 'all' || $perPageParam === '0') {
+            $perPage = 0;
+            $asetList = $asetQuery->orderBy('id_aset', 'DESC')->findAll();
+            $pager = null;
+        } else {
+            $perPage = in_array((int) $perPageParam, [10, 25, 50, 100, 250, 500], true) ? (int) $perPageParam : 25;
+            $asetList = $asetQuery->orderBy('id_aset', 'DESC')->paginate($perPage, 'aset');
+            $pager = $asetModel->pager;
+        }
+
         $activeStatusIds = array_column(
             $db->query("SELECT DISTINCT p1.id_status 
                         FROM proses_aset p1
@@ -69,16 +77,25 @@ class Aset extends BaseController
         $opdList = $this->getOpdList();
 
         $queryParams = $this->buildFilterQueryParams($filters);
+        if ($perPageParam) {
+            $queryParams['per_page'] = $perPageParam;
+        }
         $queryString = http_build_query($queryParams);
-        $pager->setPath(base_url('aset') . ($queryString ? '?' . $queryString : ''));
+        if ($pager) {
+            $pager->setPath(base_url('aset') . ($queryString ? '?' . $queryString : ''));
+        }
+
+        $allStatusList = $statusModel->orderBy('urutan', 'ASC')->findAll();
 
         return view('aset/index', [
-            'data'       => $results,
-            'statusList' => $statusList,
-            'opdList'    => $opdList,
-            'pager'      => $pager,
-            'perPage'    => $perPage,
-            'filters'    => $filters,
+            'data'          => $results,
+            'statusList'    => $statusList,
+            'allStatusList' => $allStatusList,
+            'opdList'       => $opdList,
+            'pager'         => $pager,
+            'perPage'       => $perPage,
+            'perPageParam'  => $perPageParam,
+            'filters'       => $filters,
             'exportQueryString' => $queryString ? '?' . $queryString : '',
         ]);
     }
@@ -758,6 +775,185 @@ class Aset extends BaseController
         }
 
         return redirect()->to('/aset?imported=1')->with('success', "Import selesai. Berhasil: {$inserted}, Dilewati: {$skipped}.");
+    }
+
+    public function templateStatusCsv()
+    {
+        $filename = 'template_import_status_proses.csv';
+        $this->response->setHeader('Content-Type', 'text/csv');
+        $this->response->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"');
+
+        $out = fopen('php://temp', 'r+');
+        fputcsv($out, ['nibar', 'status_proses', 'tgl_mulai', 'tgl_selesai', 'keterangan']);
+        fputcsv($out, ['12.01.02.01.001', 'Sertifikat', date('Y-m-d'), '', 'Update status via Excel']);
+        fputcsv($out, ['12.01.02.01.002', 'Proses BPN', date('Y-m-d'), '', 'Update status via Excel']);
+        rewind($out);
+        $csv = stream_get_contents($out);
+        fclose($out);
+
+        return $this->response->setBody($csv);
+    }
+
+    public function importStatusProcess()
+    {
+        $rules = [
+            'file' => 'uploaded[file]|ext_in[file,csv,xlsx]|max_size[file,10240]',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        }
+
+        $file = $this->request->getFile('file');
+        if (!$file || !$file->isValid()) {
+            return redirect()->back()->withInput()->with('errors', ['File tidak valid.']);
+        }
+
+        $targetDir = WRITEPATH . 'uploads/sipat_import';
+        if (!is_dir($targetDir)) {
+            mkdir($targetDir, 0775, true);
+        }
+
+        $newName = $file->getRandomName();
+        $file->move($targetDir, $newName);
+        $filePath = $targetDir . DIRECTORY_SEPARATOR . $newName;
+
+        $extension = strtolower($file->getClientExtension());
+        $rows = [];
+
+        if ($extension === 'xlsx') {
+            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($filePath);
+            $sheetData = $spreadsheet->getActiveSheet()->toArray(null, true, true, false);
+            $rows = $sheetData;
+        } else {
+            $handle = fopen($filePath, 'r');
+            if (!$handle) {
+                return redirect()->back()->with('errors', ['Gagal membaca file.']);
+            }
+            while (($line = fgetcsv($handle)) !== false) {
+                $rows[] = $line;
+            }
+            fclose($handle);
+        }
+
+        if (empty($rows)) {
+            return redirect()->back()->with('errors', ['File kosong.']);
+        }
+
+        // Auto-detect apakah baris 1 adalah header atau langsung data NIBAR
+        $firstRow = $rows[0];
+        $col0 = strtolower(trim((string) ($firstRow[0] ?? '')));
+        $col1 = strtolower(trim((string) ($firstRow[1] ?? '')));
+
+        $hasHeader = ($col0 === 'nibar' || $col0 === 'kode_aset' || $col0 === 'kode' || $col1 === 'status_proses' || $col1 === 'status');
+
+        if ($hasHeader) {
+            $header = array_shift($rows);
+            $header = array_map(static fn ($h) => strtolower(trim((string) $h)), $header);
+
+            $nibarIndex = array_search('nibar', $header, true);
+            if ($nibarIndex === false) {
+                $nibarIndex = array_search('kode_aset', $header, true);
+            }
+            $statusIndex = array_search('status_proses', $header, true);
+            if ($statusIndex === false) {
+                $statusIndex = array_search('status', $header, true);
+            }
+
+            if ($nibarIndex === false || $statusIndex === false) {
+                return redirect()->back()->with('errors', ['File Excel/CSV dengan header wajib memiliki kolom "nibar" (atau "kode_aset") dan "status_proses".']);
+            }
+
+            $tglMulaiIndex = array_search('tgl_mulai', $header, true);
+            $tglSelesaiIndex = array_search('tgl_selesai', $header, true);
+            $keteranganIndex = array_search('keterangan', $header, true);
+        } else {
+            // Tanpa header: Data langsung dari Baris 1
+            // Kolom A (0) = NIBAR, Kolom B (1) = Status Proses
+            $nibarIndex = 0;
+            $statusIndex = 1;
+            $tglMulaiIndex = 2;
+            $tglSelesaiIndex = 3;
+            $keteranganIndex = 4;
+        }
+
+        $asetModel = new AsetModel();
+        $statusModel = new StatusProsesModel();
+        $prosesModel = new ProsesAsetModel();
+
+        $statusMap = [];
+        foreach ($statusModel->findAll() as $st) {
+            $statusMap[strtolower(trim($st['nama_status']))] = (int) $st['id_status'];
+        }
+
+        $inserted = 0;
+        $skipped = 0;
+
+        foreach ($rows as $row) {
+            if (count(array_filter($row, static fn ($v) => trim((string) $v) !== '')) === 0) {
+                continue;
+            }
+
+            $nibarVal = isset($row[$nibarIndex]) ? trim((string) $row[$nibarIndex]) : '';
+            $statusVal = isset($row[$statusIndex]) ? trim((string) $row[$statusIndex]) : '';
+
+            if ($nibarVal === '' || $statusVal === '') {
+                $skipped++;
+                continue;
+            }
+
+            $asetRow = $asetModel->where('kode_aset', $nibarVal)->first();
+            if (!$asetRow) {
+                $skipped++;
+                continue;
+            }
+
+            $statusId = $statusMap[strtolower($statusVal)] ?? null;
+            if (!$statusId) {
+                $skipped++;
+                continue;
+            }
+
+            $tglMulai = $tglMulaiIndex !== false && isset($row[$tglMulaiIndex]) ? trim((string) $row[$tglMulaiIndex]) : null;
+            $tglSelesai = $tglSelesaiIndex !== false && isset($row[$tglSelesaiIndex]) ? trim((string) $row[$tglSelesaiIndex]) : null;
+            $keterangan = $keteranganIndex !== false && isset($row[$keteranganIndex]) ? trim((string) $row[$keteranganIndex]) : 'Update status via Excel';
+
+            if (!empty($tglMulai) && is_numeric($tglMulai)) {
+                try {
+                    $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $tglMulai);
+                    $tglMulai = $dt->format('Y-m-d');
+                } catch (\Throwable $e) {}
+            }
+            if (!empty($tglSelesai) && is_numeric($tglSelesai)) {
+                try {
+                    $dt = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject((float) $tglSelesai);
+                    $tglSelesai = $dt->format('Y-m-d');
+                } catch (\Throwable $e) {}
+            }
+
+            $durasi = null;
+            if (!empty($tglMulai) && !empty($tglSelesai)) {
+                $durasi = (int) floor((strtotime($tglSelesai) - strtotime($tglMulai)) / 86400);
+                if ($durasi < 0) {
+                    $durasi = null;
+                }
+            }
+
+            $payload = [
+                'id_aset'     => (int) $asetRow['id_aset'],
+                'id_status'   => $statusId,
+                'tgl_mulai'   => $tglMulai ?: date('Y-m-d'),
+                'tgl_selesai' => $tglSelesai ?: null,
+                'keterangan'  => $keterangan,
+                'durasi_hari' => $durasi,
+            ];
+
+            $prosesModel->insert($payload);
+            $this->logAudit('create', 'proses_aset', (int) $prosesModel->getInsertID(), [], $payload);
+            $inserted++;
+        }
+
+        return redirect()->to('/aset?imported=1')->with('success', "Import status proses selesai. Berhasil: {$inserted} aset diperbarui, Dilewati: {$skipped} data.");
     }
 
     public function store()
