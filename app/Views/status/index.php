@@ -106,7 +106,10 @@
                 const content = modalEl.querySelector('.modal-content');
                 content.innerHTML = '<div class="modal-body p-4">Memuat...</div>';
                 try {
-                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    const res = await fetch(url, { 
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        cache: 'no-store'
+                    });
                     if (!res.ok) {
                         window.location.href = fallback;
                         return;

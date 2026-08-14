@@ -268,7 +268,7 @@
                         </div>
                         <div>
                             <div class="stat-label mt-0 mb-1">Total Aset</div>
-                            <div class="stat-value mt-0"><?= number_format($totalAsetVal, 0, ',', '.') ?></div>
+                            <div class="stat-value mt-0" id="rt-total-aset"><?= number_format($totalAsetVal, 0, ',', '.') ?></div>
                         </div>
                     </div>
                     <div class="stat-footer">
@@ -281,7 +281,7 @@
                 <div class="mt-4 pt-3 border-top position-relative" style="z-index: 1;">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted" style="font-size: 12px; font-weight: 500;">Belum Diurus</span>
-                        <span class="fw-semibold text-dark" style="font-size: 12px;"><?= number_format($asetBelumDiurusVal, 0, ',', '.') ?></span>
+                        <span class="fw-semibold text-dark" style="font-size: 12px;" id="rt-aset-belum-diurus"><?= number_format($asetBelumDiurusVal, 0, ',', '.') ?></span>
                     </div>
                     <?php $count = 0; foreach($breakdownBelumDiurus as $status => $val): if($count>=2) break; ?>
                     <div class="d-flex justify-content-between align-items-center mb-1">
@@ -303,14 +303,14 @@
                         </div>
                         <div>
                             <div class="stat-label mt-0 mb-1">Sudah Bersertifikat</div>
-                            <div class="stat-value mt-0"><?= number_format($asetBersertifikatVal, 0, ',', '.') ?></div>
+                            <div class="stat-value mt-0" id="rt-aset-bersertifikat"><?= number_format($asetBersertifikatVal, 0, ',', '.') ?></div>
                         </div>
                     </div>
                     <div class="stat-footer justify-content-between align-items-end mb-1 mt-3">
-                        <span><strong><?= str_replace('.', ',', $pctBersertifikat) ?>%</strong> dari total aset</span>
+                        <span><strong id="rt-pct-bersertifikat"><?= str_replace('.', ',', $pctBersertifikat) ?>%</strong> dari total aset</span>
                     </div>
                     <div class="progress-bar-thin">
-                        <div class="progress-value bg-gov-success" style="width: <?= $pctBersertifikat ?>%;"></div>
+                        <div class="progress-value bg-gov-success" id="rt-bar-bersertifikat" style="width: <?= $pctBersertifikat ?>%;"></div>
                     </div>
                 </div>
                 <!-- Breakdown Sertifikat -->
@@ -336,14 +336,14 @@
                         </div>
                         <div>
                             <div class="stat-label mt-0 mb-1">Dalam Proses</div>
-                            <div class="stat-value mt-0"><?= number_format($asetProsesVal, 0, ',', '.') ?></div>
+                            <div class="stat-value mt-0" id="rt-aset-proses"><?= number_format($asetProsesVal, 0, ',', '.') ?></div>
                         </div>
                     </div>
                     <div class="stat-footer justify-content-between align-items-end mb-1 mt-3">
-                        <span><strong><?= str_replace('.', ',', $pctProses) ?>%</strong> dari total aset</span>
+                        <span><strong id="rt-pct-proses"><?= str_replace('.', ',', $pctProses) ?>%</strong> dari total aset</span>
                     </div>
                     <div class="progress-bar-thin">
-                        <div class="progress-value bg-gov-warning" style="width: <?= $pctProses ?>%;"></div>
+                        <div class="progress-value bg-gov-warning" id="rt-bar-proses" style="width: <?= $pctProses ?>%;"></div>
                     </div>
                 </div>
                 <!-- Breakdown Proses -->
@@ -369,14 +369,14 @@
                         </div>
                         <div>
                             <div class="stat-label mt-0 mb-1">Ada Kendala</div>
-                            <div class="stat-value mt-0"><?= number_format($asetKendalaVal, 0, ',', '.') ?></div>
+                            <div class="stat-value mt-0" id="rt-aset-kendala"><?= number_format($asetKendalaVal, 0, ',', '.') ?></div>
                         </div>
                     </div>
                     <div class="stat-footer justify-content-between align-items-end mb-1 mt-3">
-                        <span><strong><?= str_replace('.', ',', $pctKendala) ?>%</strong> dari total aset</span>
+                        <span><strong id="rt-pct-kendala"><?= str_replace('.', ',', $pctKendala) ?>%</strong> dari total aset</span>
                     </div>
                     <div class="progress-bar-thin">
-                        <div class="progress-value bg-gov-danger" style="width: <?= $pctKendala ?>%;"></div>
+                        <div class="progress-value bg-gov-danger" id="rt-bar-kendala" style="width: <?= $pctKendala ?>%;"></div>
                     </div>
                 </div>
                 <!-- Breakdown Kendala -->
@@ -474,7 +474,7 @@
                     </div>
                     <div class="mt-3 p-3 bg-gov-bg rounded-3 d-flex flex-column">
                         <span class="text-gov-primary" style="font-size: 13px; font-weight: 500;">Total Aset</span>
-                        <span class="fw-bold text-dark" style="font-size: 16px;"><?= number_format($totalAsetVal, 0, ',', '.') ?> Aset</span>
+                        <span class="fw-bold text-dark" style="font-size: 16px;"><span id="rt-mini-total-aset"><?= number_format($totalAsetVal, 0, ',', '.') ?></span> Aset</span>
                     </div>
                 </div>
             </div>
@@ -489,103 +489,14 @@
                     <h5 class="card-title">Aktivitas Terbaru</h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex flex-column gap-4">
+                    <div class="d-flex flex-column gap-4" id="rt-recent-logs">
                         <?php if (empty($recentLogs)): ?>
                             <div class="text-center text-muted py-4">
                                 <i class="bi bi-clock-history fs-3 mb-2 d-block"></i>
                                 <span class="small">Belum ada riwayat aktivitas.</span>
                             </div>
                         <?php else: ?>
-                            <?php foreach ($recentLogs as $log): ?>
-                                <?php
-                                $badgeClass = 'bg-gov-primary-light text-gov-primary';
-                                $iconClass = 'bi bi-info-circle';
-                                if ($log['action'] === 'create') {
-                                    $badgeClass = 'bg-gov-success-light text-gov-success';
-                                    $iconClass = 'bi bi-plus-circle';
-                                } elseif ($log['action'] === 'update') {
-                                    $badgeClass = 'bg-gov-warning-light text-gov-warning';
-                                    $iconClass = 'bi bi-pencil-square';
-                                } elseif ($log['action'] === 'delete') {
-                                    $badgeClass = 'bg-gov-danger-light text-gov-danger';
-                                    $iconClass = 'bi bi-trash3';
-                                }
-
-                                // Format Entity Name
-                                $entityMap = [
-                                    'aset_tanah'     => 'Aset Tanah',
-                                    'users'          => 'User',
-                                    'proses_aset'    => 'Proses Sertifikasi',
-                                    'dokumen_aset'   => 'Dokumen Aset',
-                                    'status_proses'  => 'Status Proses',
-                                    'kepala_desa'    => 'Kepala Desa',
-                                    'camat'          => 'Camat',
-                                    'pemohon'        => 'Pemohon',
-                                    'kecamatan'      => 'Kecamatan',
-                                    'desa'           => 'Desa',
-                                    'opd'            => 'OPD',
-                                ];
-                                $entityName = $entityMap[$log['entity']] ?? esc($log['entity']);
-
-                                // Format Action Name
-                                $actionText = '';
-                                if ($log['action'] === 'create') {
-                                    $actionText = 'ditambahkan';
-                                } elseif ($log['action'] === 'update') {
-                                    $actionText = 'diperbarui';
-                                } elseif ($log['action'] === 'delete') {
-                                    $actionText = 'dihapus';
-                                } else {
-                                    $actionText = esc($log['action']);
-                                }
-
-                                // Get Item Name/Identifier
-                                $payload = json_decode($log['new_data'] ?: ($log['old_data'] ?: '{}'), true);
-                                if ($log['entity'] === 'proses_aset') {
-                                    $db = \Config\Database::connect();
-                                    $statusId = $payload['id_status'] ?? null;
-                                    $statusName = 'Status';
-                                    if ($statusId) {
-                                        $statusRow = $db->table('status_proses')->select('nama_status')->where('id_status', $statusId)->get()->getRowArray();
-                                        $statusName = $statusRow['nama_status'] ?? 'Status';
-                                    }
-                                    $asetId = $payload['id_aset'] ?? null;
-                                    $asetPeruntukan = '';
-                                    if ($asetId) {
-                                        $asetRow = $db->table('aset_tanah')->select('peruntukan')->where('id_aset', $asetId)->get()->getRowArray();
-                                        $asetPeruntukan = $asetRow['peruntukan'] ?? '';
-                                    }
-                                    $itemName = '"' . $statusName . '"' . ($asetPeruntukan ? ' pada "' . $asetPeruntukan . '"' : '');
-                                } elseif ($log['entity'] === 'dokumen_aset') {
-                                    $db = \Config\Database::connect();
-                                    $docName = $payload['nama_dokumen'] ?? ($payload['nama_file'] ?? 'Dokumen');
-                                    $asetId = $payload['id_aset'] ?? null;
-                                    $asetPeruntukan = '';
-                                    if ($asetId) {
-                                        $asetRow = $db->table('aset_tanah')->select('peruntukan')->where('id_aset', $asetId)->get()->getRowArray();
-                                        $asetPeruntukan = $asetRow['peruntukan'] ?? '';
-                                    }
-                                    $itemName = '"' . $docName . '"' . ($asetPeruntukan ? ' pada "' . $asetPeruntukan . '"' : '');
-                                } else {
-                                    $itemName = $payload['peruntukan'] ?? ($payload['nama_aset'] ?? ($payload['nama'] ?? ($payload['nama_status'] ?? ($payload['email'] ?? ($payload['nama_dokumen'] ?? ($payload['nama_file'] ?? 'ID #' . $log['entity_id']))))));
-                                }
-                                ?>
-                                <div class="d-flex align-items-start gap-3">
-                                    <div class="<?= $badgeClass ?> rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px; flex-shrink: 0;">
-                                        <i class="<?= $iconClass ?>"></i>
-                                    </div>
-                                    <div class="flex-grow-1 min-width-0 text-break">
-                                        <h6 class="mb-1 fw-bold text-dark" style="font-size: 14px;"><?= $entityName ?> <?= $actionText ?></h6>
-                                        <p class="mb-0 text-muted" style="font-size: 13px;">
-                                            <?= esc($itemName) ?> oleh <strong><?= esc($log['user_name'] ?: 'Sistem') ?></strong>
-                                        </p>
-                                    </div>
-                                    <div class="text-end" style="flex-shrink: 0;">
-                                        <div class="text-muted" style="font-size: 11px;"><?= date('d M Y', strtotime($log['created_at'])) ?></div>
-                                        <div class="text-muted" style="font-size: 11px;"><?= date('H:i', strtotime($log['created_at'])) ?> WIB</div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
+                            <?= $recentLogsHtml ?? '' ?>
                         <?php endif; ?>
                     </div>
                     <?php if (session()->get('user_role') === 'Admin'): ?>
@@ -609,11 +520,11 @@
                                 <div class="mini-stat-card h-100">
                                     <div class="text-gov-success fw-medium mb-2" style="font-size: 13px;">Sudah Bersertifikat</div>
                                     <div class="d-flex align-items-end justify-content-between mb-2">
-                                        <span class="fs-4 fw-bold text-dark"><?= number_format($asetBersertifikatVal, 0, ',', '.') ?></span>
-                                        <span class="text-muted" style="font-size: 12px;"><?= str_replace('.', ',', $pctBersertifikat) ?>%</span>
+                                        <span class="fs-4 fw-bold text-dark" id="rt-mini-aset-bersertifikat"><?= number_format($asetBersertifikatVal, 0, ',', '.') ?></span>
+                                        <span class="text-muted" style="font-size: 12px;"><span id="rt-mini-pct-bersertifikat"><?= str_replace('.', ',', $pctBersertifikat) ?></span>%</span>
                                     </div>
                                     <div class="progress-bar-thin mt-0 bg-gov-success-light">
-                                        <div class="progress-value bg-gov-success" style="width: <?= $pctBersertifikat ?>%;"></div>
+                                        <div class="progress-value bg-gov-success" id="rt-mini-bar-bersertifikat" style="width: <?= $pctBersertifikat ?>%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -621,11 +532,11 @@
                                 <div class="mini-stat-card h-100">
                                     <div class="text-gov-warning fw-medium mb-2" style="font-size: 13px;">Dalam Proses</div>
                                     <div class="d-flex align-items-end justify-content-between mb-2">
-                                        <span class="fs-4 fw-bold text-dark"><?= number_format($asetProsesVal, 0, ',', '.') ?></span>
-                                        <span class="text-muted" style="font-size: 12px;"><?= str_replace('.', ',', $pctProses) ?>%</span>
+                                        <span class="fs-4 fw-bold text-dark" id="rt-mini-aset-proses"><?= number_format($asetProsesVal, 0, ',', '.') ?></span>
+                                        <span class="text-muted" style="font-size: 12px;"><span id="rt-mini-pct-proses"><?= str_replace('.', ',', $pctProses) ?></span>%</span>
                                     </div>
                                     <div class="progress-bar-thin mt-0 bg-gov-warning-light">
-                                        <div class="progress-value bg-gov-warning" style="width: <?= $pctProses ?>%;"></div>
+                                        <div class="progress-value bg-gov-warning" id="rt-mini-bar-proses" style="width: <?= $pctProses ?>%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -633,11 +544,11 @@
                                 <div class="mini-stat-card h-100">
                                     <div class="text-gov-danger fw-medium mb-2" style="font-size: 13px;">Bermasalah</div>
                                     <div class="d-flex align-items-end justify-content-between mb-2">
-                                        <span class="fs-4 fw-bold text-dark"><?= number_format($asetKendalaVal, 0, ',', '.') ?></span>
-                                        <span class="text-muted" style="font-size: 12px;"><?= str_replace('.', ',', $pctKendala) ?>%</span>
+                                        <span class="fs-4 fw-bold text-dark" id="rt-mini-aset-kendala"><?= number_format($asetKendalaVal, 0, ',', '.') ?></span>
+                                        <span class="text-muted" style="font-size: 12px;"><span id="rt-mini-pct-kendala"><?= str_replace('.', ',', $pctKendala) ?></span>%</span>
                                     </div>
                                     <div class="progress-bar-thin mt-0 bg-gov-danger-light">
-                                        <div class="progress-value bg-gov-danger" style="width: <?= $pctKendala ?>%;"></div>
+                                        <div class="progress-value bg-gov-danger" id="rt-mini-bar-kendala" style="width: <?= $pctKendala ?>%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -645,11 +556,11 @@
                                 <div class="mini-stat-card h-100">
                                     <div class="text-gov-primary fw-medium mb-2" style="font-size: 13px;">Belum Bersertifikat</div>
                                     <div class="d-flex align-items-end justify-content-between mb-2">
-                                        <span class="fs-4 fw-bold text-dark"><?= number_format((isset($asetBelumDiurus) ? $asetBelumDiurus : 0), 0, ',', '.') ?></span>
-                                        <span class="text-muted" style="font-size: 12px;">0%</span>
+                                        <span class="fs-4 fw-bold text-dark" id="rt-mini-aset-belum-diurus"><?= number_format((isset($asetBelumDiurus) ? $asetBelumDiurus : 0), 0, ',', '.') ?></span>
+                                        <span class="text-muted" style="font-size: 12px;"><span id="rt-mini-pct-belum-diurus"><?= str_replace('.', ',', (isset($pctBelumDiurus) ? $pctBelumDiurus : 0)) ?></span>%</span>
                                     </div>
                                     <div class="progress-bar-thin mt-0 bg-secondary bg-opacity-10">
-                                        <div class="progress-value bg-secondary opacity-25" style="width: 0%;"></div>
+                                        <div class="progress-value bg-secondary opacity-25" id="rt-mini-bar-belum-diurus" style="width: <?= (isset($pctBelumDiurus) ? $pctBelumDiurus : 0) ?>%;"></div>
                                     </div>
                                 </div>
                             </div>
@@ -680,14 +591,14 @@
             gradient.addColorStop(0, 'rgba(30, 58, 138, 0.15)');
             gradient.addColorStop(1, 'rgba(30, 58, 138, 0)');
 
-            new Chart(progressCtx, {
+            window.progressChartObj = new Chart(progressCtx, {
                 type: 'line',
                 data: {
                     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
                     datasets: [
                         {
                             label: 'Sertifikat Selesai',
-                            data: [15, 20, 35, 35, 50, 65, 80, 95, 115, 130, 140, 160],
+                            data: <?= json_encode($chartSelesai ?? array_fill(0,12,0)) ?>,
                             borderColor: '#22C55E',
                             backgroundColor: 'transparent',
                             borderWidth: 2,
@@ -700,7 +611,7 @@
                         },
                         {
                             label: 'Dalam Proses',
-                            data: [30, 50, 75, 90, 110, 125, 140, 155, 175, 195, 220, 240],
+                            data: <?= json_encode($chartProses ?? array_fill(0,12,0)) ?>,
                             borderColor: '#F59E0B',
                             backgroundColor: 'transparent',
                             borderWidth: 2,
@@ -713,7 +624,7 @@
                         },
                         {
                             label: 'Belum Bersertifikat',
-                            data: [100, 120, 165, 185, 215, 255, 280, 295, 310, 320, 340, 380],
+                            data: <?= json_encode($chartBelum ?? array_fill(0,12,0)) ?>,
                             borderColor: '#1E5EFF',
                             backgroundColor: gradient,
                             borderWidth: 2,
@@ -790,6 +701,76 @@
                 }
             });
         }
+        // AJAX Polling logic for Realtime updates
+        const updateRealtimeDashboard = async () => {
+            try {
+                const response = await fetch('<?= base_url('dashboard/realtimeStats') ?>', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    cache: 'no-store'
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num);
+                    const formatPct = (pct) => pct.toString().replace('.', ',');
+                    
+                    // Update main cards
+                    if(document.getElementById('rt-total-aset')) document.getElementById('rt-total-aset').innerText = formatNumber(data.totalAset);
+                    
+                    if(document.getElementById('rt-aset-bersertifikat')) document.getElementById('rt-aset-bersertifikat').innerText = formatNumber(data.asetBersertifikat);
+                    if(document.getElementById('rt-pct-bersertifikat')) document.getElementById('rt-pct-bersertifikat').innerText = formatPct(data.pctBersertifikat) + '%';
+                    if(document.getElementById('rt-bar-bersertifikat')) document.getElementById('rt-bar-bersertifikat').style.width = data.pctBersertifikat + '%';
+                    
+                    if(document.getElementById('rt-aset-proses')) document.getElementById('rt-aset-proses').innerText = formatNumber(data.asetProses);
+                    if(document.getElementById('rt-pct-proses')) document.getElementById('rt-pct-proses').innerText = formatPct(data.pctProses) + '%';
+                    if(document.getElementById('rt-bar-proses')) document.getElementById('rt-bar-proses').style.width = data.pctProses + '%';
+                    
+                    if(document.getElementById('rt-aset-kendala')) document.getElementById('rt-aset-kendala').innerText = formatNumber(data.asetKendala);
+                    if(document.getElementById('rt-pct-kendala')) document.getElementById('rt-pct-kendala').innerText = formatPct(data.pctKendala) + '%';
+                    if(document.getElementById('rt-bar-kendala')) document.getElementById('rt-bar-kendala').style.width = data.pctKendala + '%';
+                    
+                    if(document.getElementById('rt-aset-belum-diurus')) document.getElementById('rt-aset-belum-diurus').innerText = formatNumber(data.asetBelumDiurus);
+                    
+                    // Update mini cards
+                    if(document.getElementById('rt-mini-total-aset')) document.getElementById('rt-mini-total-aset').innerText = formatNumber(data.totalAset);
+                    
+                    if(document.getElementById('rt-mini-aset-bersertifikat')) document.getElementById('rt-mini-aset-bersertifikat').innerText = formatNumber(data.asetBersertifikat);
+                    if(document.getElementById('rt-mini-pct-bersertifikat')) document.getElementById('rt-mini-pct-bersertifikat').innerText = formatPct(data.pctBersertifikat);
+                    if(document.getElementById('rt-mini-bar-bersertifikat')) document.getElementById('rt-mini-bar-bersertifikat').style.width = data.pctBersertifikat + '%';
+                    
+                    if(document.getElementById('rt-mini-aset-proses')) document.getElementById('rt-mini-aset-proses').innerText = formatNumber(data.asetProses);
+                    if(document.getElementById('rt-mini-pct-proses')) document.getElementById('rt-mini-pct-proses').innerText = formatPct(data.pctProses);
+                    if(document.getElementById('rt-mini-bar-proses')) document.getElementById('rt-mini-bar-proses').style.width = data.pctProses + '%';
+                    
+                    if(document.getElementById('rt-mini-aset-kendala')) document.getElementById('rt-mini-aset-kendala').innerText = formatNumber(data.asetKendala);
+                    if(document.getElementById('rt-mini-pct-kendala')) document.getElementById('rt-mini-pct-kendala').innerText = formatPct(data.pctKendala);
+                    if(document.getElementById('rt-mini-bar-kendala')) document.getElementById('rt-mini-bar-kendala').style.width = data.pctKendala + '%';
+                    
+                    if(document.getElementById('rt-mini-aset-belum-diurus')) document.getElementById('rt-mini-aset-belum-diurus').innerText = formatNumber(data.asetBelumDiurus);
+                    if(document.getElementById('rt-mini-pct-belum-diurus')) document.getElementById('rt-mini-pct-belum-diurus').innerText = formatPct(data.pctBelumDiurus);
+                    if(document.getElementById('rt-mini-bar-belum-diurus')) document.getElementById('rt-mini-bar-belum-diurus').style.width = data.pctBelumDiurus + '%';
+
+                    // Update recent logs
+                    if(document.getElementById('rt-recent-logs') && data.recentLogsHtml) {
+                        document.getElementById('rt-recent-logs').innerHTML = data.recentLogsHtml;
+                    }
+                    
+                    // Update Chart Data
+                    if (window.progressChartObj && data.chartSelesai && data.chartProses && data.chartBelum) {
+                        window.progressChartObj.data.datasets[0].data = data.chartSelesai;
+                        window.progressChartObj.data.datasets[1].data = data.chartProses;
+                        window.progressChartObj.data.datasets[2].data = data.chartBelum;
+                        window.progressChartObj.update();
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to fetch realtime stats:", error);
+            }
+        };
+
+        // Poll every 10 seconds (10000 ms)
+        setInterval(updateRealtimeDashboard, 10000);
     });
 </script>
 <?= $this->endSection() ?>

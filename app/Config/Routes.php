@@ -12,6 +12,7 @@ $routes->post('login', 'Auth::attempt');
 $routes->get('logout', 'Auth::logout');
 
 $routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
+$routes->get('dashboard/realtimeStats', 'Dashboard::realtimeStats', ['filter' => 'auth']);
 $routes->group('profile', ['filter' => 'auth'], static function ($routes) {
     $routes->get('/', 'Profile::index');
     $routes->post('update', 'Profile::update');

@@ -1,6 +1,6 @@
-<div class="modal-header">
+<div class="modal-header border-bottom-0 pb-0">
     <div>
-        <h5 class="modal-title">Edit Status</h5>
+        <h5 class="modal-title fw-bold">Edit Status</h5>
         <small class="text-muted">Perbarui status proses</small>
     </div>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
@@ -9,26 +9,53 @@
     <form action="<?= base_url('status/' . $row['id_status']) ?>" method="post">
         <?= csrf_field() ?>
         <input type="hidden" name="_method" value="PUT">
-        <div class="row g-3">
-            <div class="col-md-6">
-                <label class="form-label">Nama Status</label>
-                <input type="text" name="nama_status" class="form-control" value="<?= old('nama_status', $row['nama_status']) ?>" required>
+        
+        <div class="d-flex flex-column gap-4">
+            <div class="row g-3">
+                <div class="col-8">
+                    <div class="form-floating">
+                        <input type="text" name="nama_status" id="nama_status" class="form-control" placeholder="Nama Status" value="<?= old('nama_status', $row['nama_status']) ?>" required>
+                        <label for="nama_status">Nama Status</label>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-floating">
+                        <input type="number" name="urutan" id="urutan" class="form-control" placeholder="Urutan" value="<?= old('urutan', $row['urutan']) ?>" required>
+                        <label for="urutan">Urutan</label>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3">
-                <label class="form-label">Urutan</label>
-                <input type="number" name="urutan" class="form-control" value="<?= old('urutan', $row['urutan']) ?>" required>
-            </div>
-            <div class="col-md-3">
-                <label class="form-label">Warna</label>
-                <input type="text" name="warna" class="form-control" value="<?= old('warna', $row['warna']) ?>" placeholder="primary">
+            
+            <div>
+                <label class="form-label fw-semibold mb-2">Pilih Visual Warna</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <?php 
+                    $colors = [
+                        'primary'   => 'Biru',
+                        'secondary' => 'Abu-abu',
+                        'success'   => 'Hijau',
+                        'danger'    => 'Merah',
+                        'warning'   => 'Kuning',
+                        'info'      => 'Cyan',
+                        'dark'      => 'Hitam'
+                    ];
+                    $selected = old('warna', $row['warna']);
+                    foreach ($colors as $value => $label): ?>
+                        <input type="radio" class="btn-check" name="warna" id="e-c-<?= $value ?>" value="<?= $value ?>" autocomplete="off" <?= $value === $selected ? 'checked' : '' ?>>
+                        <label class="btn btn-outline-<?= $value ?> rounded-pill px-3 py-1 fw-medium" for="e-c-<?= $value ?>">
+                            <i class="bi bi-circle-fill small me-1"></i> <?= $label ?>
+                        </label>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
-        <div class="modal-footer px-0">
-            <button type="submit" class="btn btn-primary rounded-pill">
-                <i class="bi bi-save2 me-1"></i>Simpan
+        
+        <div class="mt-4 pt-3 border-top d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">
+                Batal
             </button>
-            <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">
-                <i class="bi bi-x-circle me-1"></i>Batal
+            <button type="submit" class="btn btn-primary rounded-pill px-4 fw-semibold shadow-sm">
+                <i class="bi bi-save2 me-2"></i>Update
             </button>
         </div>
     </form>
