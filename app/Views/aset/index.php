@@ -183,6 +183,42 @@
         transition: all 0.2s;
     }
     .btn-icon:hover, .btn-icon[aria-expanded="true"] { background-color: #f1f5f9; color: #1E5EFF; }
+    
+    /* ── Inline Action Buttons ── */
+    .btn-icon-action {
+        width: 34px; height: 34px; padding: 0;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 10px; border: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-decoration: none;
+    }
+    .btn-icon-primary {
+        background-color: #e0e7ff; color: #4f46e5;
+        box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15);
+    }
+    .btn-icon-primary:hover {
+        background-color: #4f46e5; color: #fff;
+        box-shadow: 0 6px 14px rgba(79, 70, 229, 0.35);
+        transform: translateY(-2px);
+    }
+    .btn-icon-warning {
+        background-color: #fef3c7; color: #d97706;
+        box-shadow: 0 4px 10px rgba(217, 119, 6, 0.15);
+    }
+    .btn-icon-warning:hover {
+        background-color: #d97706; color: #fff;
+        box-shadow: 0 6px 14px rgba(217, 119, 6, 0.35);
+        transform: translateY(-2px);
+    }
+    .btn-icon-danger {
+        background-color: #fee2e2; color: #dc2626;
+        box-shadow: 0 4px 10px rgba(220, 38, 38, 0.15);
+    }
+    .btn-icon-danger:hover {
+        background-color: #dc2626; color: #fff;
+        box-shadow: 0 6px 14px rgba(220, 38, 38, 0.35);
+        transform: translateY(-2px);
+    }
     .dropdown-menu {
         border: 1px solid #e2e8f0;
         box-shadow: 0 8px 24px rgba(15,23,42,0.1);
@@ -395,35 +431,23 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <div class="dropdown">
-                                    <button class="btn btn-icon" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-three-dots-vertical"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a class="dropdown-item" href="<?= base_url('aset/' . $row['id_aset']) ?>"
-                                                data-modal-aset data-modal-url="<?= base_url('aset/' . $row['id_aset'] . '/modal') ?>">
-                                                <i class="bi bi-eye me-2 text-primary"></i>Detail
-                                            </a>
-                                        </li>
-                                        <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
-                                            <li>
-                                                <a class="dropdown-item" href="<?= base_url('aset/' . $row['id_aset'] . '/edit') . ($exportQueryString ?? '') ?>">
-                                                    <i class="bi bi-pencil me-2 text-warning"></i>Edit
-                                                </a>
-                                            </li>
-                                            <li><hr class="dropdown-divider my-1"></li>
-                                            <li>
-                                                <form action="<?= base_url('aset/' . $row['id_aset']) ?>" method="post" data-confirm="Hapus aset ini?">
-                                                    <?= csrf_field() ?>
-                                                    <input type="hidden" name="_method" value="DELETE">
-                                                    <button type="submit" class="dropdown-item text-danger">
-                                                        <i class="bi bi-trash me-2"></i>Hapus
-                                                    </button>
-                                                </form>
-                                            </li>
-                                        <?php endif; ?>
-                                    </ul>
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a class="btn-icon-action btn-icon-primary" href="<?= base_url('aset/' . $row['id_aset']) ?>"
+                                        data-modal-aset data-modal-url="<?= base_url('aset/' . $row['id_aset'] . '/modal') ?>" title="Detail">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                                        <a class="btn-icon-action btn-icon-warning" href="<?= base_url('aset/' . $row['id_aset'] . '/edit') . ($exportQueryString ?? '') ?>" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form action="<?= base_url('aset/' . $row['id_aset']) ?>" method="post" data-confirm="Hapus aset ini?" class="m-0">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn-icon-action btn-icon-danger" title="Hapus">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
@@ -461,15 +485,24 @@
                     </div>
                 </div>
                 <div class="mobile-card-actions">
-                    <a class="btn btn-sm btn-outline-primary" href="<?= base_url('aset/' . $row['id_aset']) ?>"
-                       data-modal-aset data-modal-url="<?= base_url('aset/' . $row['id_aset'] . '/modal') ?>">
-                        <i class="bi bi-eye"></i> Detail
-                    </a>
-                    <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
-                        <a class="btn btn-sm btn-outline-warning" href="<?= base_url('aset/' . $row['id_aset'] . '/edit') . ($exportQueryString ?? '') ?>">
-                            <i class="bi bi-pencil"></i> Edit
+                    <div class="d-flex gap-2">
+                        <a class="btn btn-sm btn-outline-primary" href="<?= base_url('aset/' . $row['id_aset']) ?>"
+                           data-modal-aset data-modal-url="<?= base_url('aset/' . $row['id_aset'] . '/modal') ?>" title="Detail">
+                            <i class="bi bi-eye"></i> Detail
                         </a>
-                    <?php endif; ?>
+                        <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
+                            <a class="btn btn-sm btn-outline-warning" href="<?= base_url('aset/' . $row['id_aset'] . '/edit') . ($exportQueryString ?? '') ?>" title="Edit">
+                                <i class="bi bi-pencil"></i> Edit
+                            </a>
+                            <form action="<?= base_url('aset/' . $row['id_aset']) ?>" method="post" data-confirm="Hapus aset ini?" class="m-0">
+                                <?= csrf_field() ?>
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -621,6 +654,16 @@
                     if (!res.ok) { window.location.href = fallback; return; }
                     const html = await res.text();
                     content.innerHTML = html;
+                    // Re-execute scripts injected via innerHTML
+                    content.querySelectorAll('script').forEach(function(oldScript) {
+                        const newScript = document.createElement('script');
+                        if (oldScript.src) {
+                            newScript.src = oldScript.src;
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
                     modal.show();
                 } catch (err) {
                     window.location.href = fallback;

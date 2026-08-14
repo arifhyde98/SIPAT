@@ -565,6 +565,12 @@
                                     <p>Laporan</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="<?= base_url('rekon') ?>" class="nav-link <?= $is('rekon') ? 'active' : '' ?>">
+                                    <i class="nav-icon bi bi-arrow-left-right"></i>
+                                    <p>Laporan Rekon</p>
+                                </a>
+                            </li>
                         <?php endif; ?>
                         <?php if (in_array(session()->get('user_role'), ['Admin', 'Pengelola Aset'], true)) : ?>
                             <li class="nav-item <?= $is('surat') ? 'menu-open' : '' ?>">

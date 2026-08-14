@@ -24,6 +24,10 @@ $routes->group('laporan', ['filter' => 'role:Admin,Pengelola Aset'], static func
     $routes->get('aset/download-pdf', 'Laporan::downloadPdf');
 });
 
+$routes->group('rekon', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {
+    $routes->get('/', 'Rekonsiliasi::index');
+});
+
 $routes->group('aset', ['filter' => 'auth'], static function ($routes) {
     $routes->get('/', 'Aset::index');
     $routes->get('cek-ganda', 'Aset::cekGanda');
@@ -172,3 +176,6 @@ $routes->group('master', ['filter' => 'role:Admin'], static function ($routes) {
 
 // Monitoring API (Spoke)
 $routes->get('api/health-check', 'HealthCheck::index');
+
+// SIPAT - eLabel Arsip Proxy
+$routes->get('api/arsip/cek/(:num)', 'Api\ArsipProxy::cekElabel/$1', ['filter' => 'auth']);
