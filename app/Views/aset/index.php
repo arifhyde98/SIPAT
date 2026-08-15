@@ -492,7 +492,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="d-flex justify-content-center gap-1">
-                                    <a class="btn-icon-action btn-icon-primary" href="<?= base_url('aset/' . $row['id_aset']) ?>"
+                                    <a class="btn-icon-action btn-icon-info" href="<?= base_url('aset/' . $row['id_aset']) ?>"
                                         data-modal-aset data-modal-url="<?= base_url('aset/' . $row['id_aset'] . '/modal') ?>" title="Detail">
                                         <i class="bi bi-eye"></i>
                                     </a>

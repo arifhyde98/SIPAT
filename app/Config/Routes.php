@@ -11,6 +11,13 @@ $routes->get('login', 'Auth::login');
 $routes->post('login', 'Auth::attempt');
 $routes->get('logout', 'Auth::logout');
 
+// Public Integration APIs
+$routes->group('api/v1', static function ($routes) {
+    $routes->get('sertifikat-proxy/(:segment)', 'Api\ArsipProxy::cekElabel/$1');
+    $routes->get('aset-tanah', 'Api\AsetApi::index');
+    $routes->get('aset-tanah/(:segment)', 'Api\AsetApi::show/$1');
+});
+
 $routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
 $routes->get('dashboard/realtimeStats', 'Dashboard::realtimeStats', ['filter' => 'auth']);
 $routes->group('profile', ['filter' => 'auth'], static function ($routes) {

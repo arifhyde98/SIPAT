@@ -60,13 +60,15 @@
                                         </span>
                                     </td>
                                     <td style="padding:12px 20px;" class="text-end">
-                                        <a href="<?= base_url('master/opd/' . $row['id'] . '/edit') ?>" class="btn btn-sm btn-outline-primary me-1">
-                                            <i class="bi bi-pencil me-1"></i>Edit
-                                        </a>
-                                        <form method="post" action="<?= base_url('master/opd/delete/' . $row['id']) ?>" data-confirm="Hapus OPD ini?" class="d-inline">
-                                            <?= csrf_field() ?>
-                                            <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Hapus</button>
-                                        </form>
+                                        <div class="btn-group gap-1 justify-content-end" role="group">
+                                            <a href="<?= base_url('master/opd/' . $row['id'] . '/edit') ?>" class="btn-icon-action btn-icon-warning" title="Edit OPD">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <form method="post" action="<?= base_url('master/opd/delete/' . $row['id']) ?>" data-confirm="Hapus OPD ini?" class="d-inline m-0">
+                                                <?= csrf_field() ?>
+                                                <button class="btn-icon-action btn-icon-danger" title="Hapus OPD"><i class="bi bi-trash"></i></button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

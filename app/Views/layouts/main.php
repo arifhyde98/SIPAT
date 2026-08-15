@@ -429,30 +429,81 @@
             transition: box-shadow 0.2s ease;
         }
 
-        /* ── Table premium global ── */
+        /* ── Table Premium & Modern Table System ── */
+        .table-premium {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
         .table-premium thead th {
             text-transform: uppercase;
-            letter-spacing: .05em;
-            font-size: 0.7rem;
-            color: #64748b;
-            font-weight: 600;
+            letter-spacing: .06em;
+            font-size: 0.72rem;
+            color: #475569;
+            font-weight: 700;
             background: #f8fafc;
-            border-bottom: 1.5px solid #cbd5e1;
-            padding: 8px 12px !important;
+            border-bottom: 2px solid #e2e8f0;
+            padding: 10px 12px !important;
+            white-space: nowrap;
+        }
+        .table-premium tbody tr {
+            transition: all 0.15s ease;
         }
         .table-premium tbody tr:hover td {
-            background: #f0f7ff !important;
-            transition: background 0.15s;
+            background-color: #f0f7ff !important;
         }
-        .table-premium tbody tr:nth-child(even) td {
-            background-color: #fafbfc;
+        .table-premium tbody tr.table-row-selected td,
+        .table-premium tbody tr.selected-row td {
+            background-color: #eff6ff !important;
         }
         .table-premium tbody td {
             vertical-align: middle;
-            border-bottom: 1px solid #cbd5e1;
-            font-size: 0.8rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.82rem;
             color: #334155;
-            padding: 8px 12px !important;
+            padding: 9px 12px !important;
+        }
+
+        /* ── Floating Action Buttons (Universal Standard) ── */
+        .btn-icon-action {
+            width: 32px;
+            height: 32px;
+            padding: 0;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.82rem;
+            border: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-icon-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(15,23,42,0.15);
+        }
+        .btn-icon-info {
+            background-color: #eff6ff;
+            color: #1E5EFF;
+        }
+        .btn-icon-info:hover {
+            background-color: #1E5EFF;
+            color: #ffffff;
+        }
+        .btn-icon-warning {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+        .btn-icon-warning:hover {
+            background-color: #d97706;
+            color: #ffffff;
+        }
+        .btn-icon-danger {
+            background-color: #fee2e2;
+            color: #dc2626;
+        }
+        .btn-icon-danger:hover {
+            background-color: #dc2626;
+            color: #ffffff;
         }
 
         /* ── Badge global ── */
@@ -1003,7 +1054,18 @@
                         $table.off('draw.dt');
                     }
                 });
-            });
+        // Universal checked row highlight handler for all tables
+        document.addEventListener('change', function (e) {
+            if (e.target && (e.target.matches('.form-check-input') || e.target.matches('.aset-checkbox'))) {
+                const tr = e.target.closest('tr');
+                if (tr) {
+                    if (e.target.checked) {
+                        tr.classList.add('table-row-selected');
+                    } else {
+                        tr.classList.remove('table-row-selected');
+                    }
+                }
+            }
         });
     </script>
     <?= $this->renderSection('scripts') ?>

@@ -170,9 +170,10 @@
                                         href="<?= base_url('logs/detail/' . $log['id']) ?>"
                                         data-modal-log
                                         data-modal-url="<?= base_url('logs/detail/' . $log['id']) ?>"
-                                        class="btn btn-xs btn-outline-primary"
+                                        class="btn-icon-action btn-icon-info"
+                                        title="Detail Log"
                                     >
-                                        <i class="bi bi-search me-1"></i>Detail
+                                        <i class="bi bi-eye"></i>
                                     </a>
                                 </td>
                             </tr>
