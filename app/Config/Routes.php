@@ -16,6 +16,9 @@ $routes->group('api/v1', static function ($routes) {
     $routes->get('sertifikat-proxy/(:segment)', 'Api\ArsipProxy::cekElabel/$1');
     $routes->get('aset-tanah', 'Api\AsetApi::index');
     $routes->get('aset-tanah/(:segment)', 'Api\AsetApi::show/$1');
+    $routes->post('integration/certificate-issued', 'Api\IntegrationApi::certificateIssued');
+    $routes->post('integration/asset-updated', 'Api\IntegrationApi::assetUpdated');
+    $routes->post('integration/certificate-deleted', 'Api\IntegrationApi::certificateDeleted');
 });
 
 $routes->get('dashboard', 'Dashboard::index', ['filter' => 'auth']);
@@ -105,6 +108,11 @@ $routes->group('logs', ['filter' => 'role:Admin'], static function ($routes) {
     $routes->get('/', 'AuditLogs::index');
     $routes->get('detail/(:num)', 'AuditLogs::detail/$1');
     $routes->post('clear', 'AuditLogs::clear');
+});
+
+$routes->group('integration-logs', ['filter' => 'role:Admin'], static function ($routes) {
+    $routes->get('/', 'IntegrationLogController::index');
+    $routes->post('retry/(:num)', 'IntegrationLogController::retry/$1');
 });
 
 $routes->group('status', ['filter' => 'role:Admin,Pengelola Aset'], static function ($routes) {

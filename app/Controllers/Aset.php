@@ -1082,6 +1082,70 @@ class Aset extends BaseController
         }
         $this->logAudit('update', 'aset_tanah', (int) $id, $old, $payload);
 
+        // Integration Sync Trigger (SIPAT -> eLabel)
+        $isFromIntegration = ($this->request->getVar('_sync_source') === 'integration');
+        if (!$isFromIntegration && !empty($kodeAset)) {
+            $sharedFields = [
+                'luas'              => 'luas',
+                'alamat'            => 'alamat',
+                'harga_perolehan'   => 'nilai_perolehan',
+                'tanggal_perolehan' => 'tanggal_perolehan',
+                'dasar_perolehan'   => 'cara_perolehan',
+                'opd'               => 'dinas',
+                'peruntukan'        => 'status_penggunaan',
+                'nama_aset'         => 'spesifikasi'
+            ];
+
+            $changes = [];
+            foreach ($sharedFields as $sipatField => $elabelField) {
+                $oldVal = $old[$sipatField] ?? null;
+                $newVal = $payload[$sipatField] ?? null;
+                if ((string)$oldVal !== (string)$newVal) {
+                    $changes[$elabelField] = ['old' => $oldVal, 'new' => $newVal];
+                }
+            }
+
+            if (!empty($changes)) {
+                $eventId = bin2hex(random_bytes(16));
+                $elabelSyncUrl = env('ELABEL_API_ASSET_UPDATED_URL', 'https://elabel.sipat-donggala.my.id/api/v1/integration/asset-updated');
+                $syncData = [
+                    'event_id' => $eventId,
+                    'source'   => 'sipat',
+                    'nibar'    => $kodeAset,
+                    'changes'  => $changes,
+                    'reason'   => 'Pembaruan data aset di SIPAT',
+                    'operator' => session()->get('user_id') ? 'User #' . session()->get('user_id') : 'Admin SIPAT'
+                ];
+
+                $res = \App\Libraries\SyncService::dispatch($elabelSyncUrl, $syncData);
+                if ($res['success']) {
+                    \App\Libraries\SyncService::logAudit([
+                        'event_id'      => $eventId,
+                        'nibar'         => $kodeAset,
+                        'event_name'    => 'ASSET_DATA_CHANGED',
+                        'source_system' => 'sipat',
+                        'direction'     => 'outbound',
+                        'changes'       => $changes,
+                        'reason'        => $syncData['reason'],
+                        'sync_status'   => 'SUCCESS'
+                    ]);
+                } else {
+                    \App\Libraries\SyncService::enqueue($eventId, $elabelSyncUrl, $syncData);
+                    \App\Libraries\SyncService::logAudit([
+                        'event_id'      => $eventId,
+                        'nibar'         => $kodeAset,
+                        'event_name'    => 'ASSET_DATA_CHANGED',
+                        'source_system' => 'sipat',
+                        'direction'     => 'outbound',
+                        'changes'       => $changes,
+                        'reason'        => $syncData['reason'],
+                        'sync_status'   => 'PENDING',
+                        'error_message' => $res['error'] ?? 'API Unreachable'
+                    ]);
+                }
+            }
+        }
+
         $queryParams['updated'] = '1';
         $redirectUrl = '/aset?' . http_build_query($queryParams);
 

@@ -795,6 +795,12 @@
                                                 <p>Log Aktivitas</p>
                                             </a>
                                         </li>
+                                        <li class="nav-item">
+                                            <a href="<?= base_url('integration-logs') ?>" class="nav-link <?= $is('integration-logs') ? 'active' : '' ?>">
+                                                <i class="nav-icon bi bi-diagram-3"></i>
+                                                <p>Log Integrasi API</p>
+                                            </a>
+                                        </li>
                                     <?php endif; ?>
                                 </ul>
                             </li>
