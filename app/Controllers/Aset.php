@@ -17,7 +17,6 @@ class Aset extends BaseController
     {
         $asetModel = new AsetModel();
         $statusModel = new StatusProsesModel();
-        $db = \Config\Database::connect();
         $filters = $this->getAsetFilters();
 
         $asetQuery = $this->applyAsetFilters($asetModel, $filters);
@@ -33,16 +32,7 @@ class Aset extends BaseController
             $pager = $asetModel->pager;
         }
 
-        $activeStatusIds = array_column(
-            $db->query("SELECT DISTINCT p1.id_status 
-                        FROM proses_aset p1
-                        JOIN (
-                            SELECT id_aset, MAX(id_proses) AS max_id
-                            FROM proses_aset
-                            GROUP BY id_aset
-                        ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id")->getResultArray(),
-            'id_status'
-        );
+        $activeStatusIds = $asetModel->getActiveStatusIds();
         $statusList = [];
         if (!empty($activeStatusIds)) {
             $statusList = $statusModel->whereIn('id_status', $activeStatusIds)->orderBy('urutan', 'ASC')->findAll();
@@ -51,19 +41,7 @@ class Aset extends BaseController
         $results = [];
         $statusMap = [];
         if (!empty($asetList)) {
-            $ids = implode(',', array_map('intval', array_column($asetList, 'id_aset')));
-            $sql = "SELECT p1.id_aset, p1.durasi_hari, s.nama_status, s.warna
-                    FROM proses_aset p1
-                    JOIN status_proses s ON s.id_status = p1.id_status
-                    JOIN (
-                        SELECT id_aset, MAX(id_proses) AS max_id
-                        FROM proses_aset
-                        WHERE id_aset IN ($ids)
-                        GROUP BY id_aset
-                    ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id";
-            foreach ($db->query($sql)->getResultArray() as $row) {
-                $statusMap[(int) $row['id_aset']] = $row;
-            }
+            $statusMap = $asetModel->getLatestStatusMap(array_column($asetList, 'id_aset'));
         }
         foreach ($asetList as $aset) {
             $latest = $statusMap[(int) $aset['id_aset']] ?? null;
@@ -240,51 +218,8 @@ class Aset extends BaseController
 
     private function buildExportQuery(array $filters)
     {
-        $db = \Config\Database::connect();
-        $builder = $db->table('aset_tanah a')
-            ->select('a.kode_aset, a.nama_aset, a.peruntukan, a.opd, a.luas, a.harga_perolehan, a.tanggal_perolehan, a.keterangan as keterangan_aset, sp.nama_status, p.durasi_hari')
-            ->join(
-                '(SELECT p1.id_aset, p1.id_status, p1.durasi_hari
-                  FROM proses_aset p1
-                  JOIN (
-                      SELECT id_aset, MAX(id_proses) AS max_id
-                      FROM proses_aset
-                      GROUP BY id_aset
-                  ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id) p',
-                'p.id_aset = a.id_aset',
-                'left',
-                false
-            )
-            ->join('status_proses sp', 'sp.id_status = p.id_status', 'left')
-            ->orderBy('a.id_aset', 'DESC');
-
-        if ($filters['opd'] !== '') {
-            if ($filters['opd'] === 'KOSONG') {
-                $builder->groupStart()
-                    ->where('a.opd', null)
-                    ->orWhere('a.opd', '')
-                    ->groupEnd();
-            } else {
-                $builder->where('a.opd', $filters['opd']);
-            }
-        }
-        if ($filters['tanggal_perolehan'] !== '') {
-            $builder->where('a.tanggal_perolehan', $filters['tanggal_perolehan']);
-        }
-        if ($filters['q'] !== '') {
-            $builder->groupStart()
-                ->like('a.kode_aset', $filters['q'])
-                ->orLike('a.nama_aset', $filters['q'])
-                ->orLike('a.peruntukan', $filters['q'])
-                ->orLike('a.opd', $filters['q'])
-                ->groupEnd();
-        }
-        // status sekarang array
-        if (!empty($filters['status'])) {
-            $builder->whereIn('a.id_aset', $this->getLatestStatusAssetIds($filters['status']));
-        }
-
-        return $builder;
+        $asetModel = new AsetModel();
+        return $asetModel->buildExportQuery($filters);
     }
 
     /**
@@ -293,31 +228,8 @@ class Aset extends BaseController
      */
     private function getLatestStatusAssetIds(array $statusIds): array
     {
-        if (empty($statusIds)) {
-            return [0];
-        }
-
-        $db = \Config\Database::connect();
-        // buat placeholders
-        $placeholders = implode(',', array_fill(0, count($statusIds), '?'));
-        $statusRows = $db->query(
-            "SELECT p1.id_aset
-             FROM proses_aset p1
-             JOIN (
-                SELECT id_aset, MAX(id_proses) AS max_id
-                FROM proses_aset
-                GROUP BY id_aset
-             ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
-             WHERE p1.id_status IN ($placeholders)",
-            $statusIds
-        )->getResultArray();
-
-        $asetIds = array_values(array_filter(array_map(
-            static fn ($row) => (int) ($row['id_aset'] ?? 0),
-            $statusRows
-        )));
-
-        return $asetIds !== [] ? $asetIds : [0];
+        $asetModel = new AsetModel();
+        return $asetModel->getLatestStatusAssetIds($statusIds);
     }
 
     private function formatHargaPerolehan($value): string
@@ -636,7 +548,7 @@ class Aset extends BaseController
         }
 
         $db = \Config\Database::connect();
-        $db->transBegin();
+        $db->transStart();
 
         try {
             $model = new AsetModel();
@@ -763,14 +675,13 @@ class Aset extends BaseController
                 $inserted += count($batch);
             }
 
+            $db->transComplete();
+
             if ($db->transStatus() === false) {
-                throw new \RuntimeException('Transaksi import gagal.');
+                return redirect()->back()->with('errors', ['Import gagal terjadi kesalahan transaksi database.']);
             }
-            $db->transCommit();
         } catch (\Throwable $e) {
-            if ($db->transStatus()) {
-                $db->transRollback();
-            }
+            $db->transRollback();
             return redirect()->back()->with('errors', ['Import gagal: ' . $e->getMessage()]);
         }
 
@@ -964,20 +875,9 @@ class Aset extends BaseController
             return redirect()->to('/aset/create')->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
         }
 
-        $rules = [
-            'kode_aset' => 'required|is_unique[aset_tanah.kode_aset]',
-            'nama_aset' => 'required',
-        ];
-
-        $messages = [
-            'kode_aset' => [
-                'required' => 'Kode aset wajib diisi.',
-                'is_unique' => 'Data sudah ada. Kode aset tersebut sudah digunakan.',
-            ],
-            'nama_aset' => [
-                'required' => 'Nama aset wajib diisi.',
-            ],
-        ];
+        $asetModel = new AsetModel();
+        $rules = $asetModel->getValidationRules(['id_aset' => 0]);
+        $messages = $asetModel->getValidationMessages();
 
         if (!$this->validate($rules, $messages)) {
             return redirect()->to('/aset/create')->withInput()->with('errors', $this->validator->getErrors());
@@ -1040,20 +940,9 @@ class Aset extends BaseController
             return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
         }
 
-        $rules = [
-            'kode_aset' => "required|is_unique[aset_tanah.kode_aset,id_aset,{$id}]",
-            'nama_aset' => 'required',
-        ];
-
-        $messages = [
-            'kode_aset' => [
-                'required' => 'Kode aset wajib diisi.',
-                'is_unique' => 'Data sudah ada. Kode aset tersebut sudah digunakan.',
-            ],
-            'nama_aset' => [
-                'required' => 'Nama aset wajib diisi.',
-            ],
-        ];
+        $asetModel = new AsetModel();
+        $rules = $asetModel->getValidationRules(['id_aset' => (int) $id]);
+        $messages = $asetModel->getValidationMessages();
 
         if (!$this->validate($rules, $messages)) {
             return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)->withInput()->with('errors', $this->validator->getErrors());
@@ -1180,15 +1069,8 @@ class Aset extends BaseController
 
     public function cekGanda()
     {
-        $db = \Config\Database::connect();
-        $duplicates = $db->table('aset_tanah')
-            ->select('kode_aset, COUNT(*) as jumlah, GROUP_CONCAT(nama_aset SEPARATOR ", ") as daftar_aset')
-            ->where('kode_aset IS NOT NULL')
-            ->where('kode_aset !=', '')
-            ->groupBy('kode_aset')
-            ->having('jumlah > 1')
-            ->get()
-            ->getResultArray();
+        $asetModel = new AsetModel();
+        $duplicates = $asetModel->getDuplicates();
 
         return $this->response->setJSON([
             'success' => true,

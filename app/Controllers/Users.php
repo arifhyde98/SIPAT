@@ -27,12 +27,10 @@ class Users extends BaseController
 
     public function store()
     {
-        $rules = [
-            'nama'     => 'required|min_length[3]',
-            'email'    => 'required|valid_email|is_unique[users.email]',
-            'role'     => 'required',
+        $model = new UserModel();
+        $rules = array_merge($model->getValidationRules(['id_user' => 0]), [
             'password' => 'required|min_length[6]',
-        ];
+        ]);
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
@@ -78,11 +76,8 @@ class Users extends BaseController
 
     public function update($id)
     {
-        $rules = [
-            'nama'  => 'required|min_length[3]',
-            'email' => "required|valid_email|is_unique[users.email,id_user,{$id}]",
-            'role'  => 'required',
-        ];
+        $model = new UserModel();
+        $rules = $model->getValidationRules(['id_user' => (int) $id]);
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());

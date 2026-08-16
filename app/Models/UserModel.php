@@ -16,4 +16,10 @@ class UserModel extends Model
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+
+    protected $validationRules = [
+        'nama'  => 'required|min_length[3]',
+        'email' => 'required|valid_email|is_unique[users.email,id_user,{id_user}]',
+        'role'  => 'required',
+    ];
 }

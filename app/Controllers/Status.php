@@ -27,13 +27,8 @@ class Status extends BaseController
 
     public function store()
     {
-        $rules = [
-            'nama_status' => 'required',
-            'urutan'      => 'required|numeric',
-            'kategori'    => 'required|in_list[belum_diurus,proses,kendala,bersertifikat]',
-        ];
-
-        if (!$this->validate($rules)) {
+        $model = new StatusProsesModel();
+        if (!$this->validate($model->getValidationRules())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -74,13 +69,8 @@ class Status extends BaseController
 
     public function update($id)
     {
-        $rules = [
-            'nama_status' => 'required',
-            'urutan'      => 'required|numeric',
-            'kategori'    => 'required|in_list[belum_diurus,proses,kendala,bersertifikat]',
-        ];
-
-        if (!$this->validate($rules)) {
+        $model = new StatusProsesModel();
+        if (!$this->validate($model->getValidationRules())) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 

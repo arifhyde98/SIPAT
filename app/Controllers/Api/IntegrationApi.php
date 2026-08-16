@@ -5,6 +5,8 @@ namespace App\Controllers\Api;
 use App\Controllers\BaseController;
 use App\Libraries\SyncService;
 use App\Models\AsetModel;
+use App\Models\ProsesAsetModel;
+use App\Models\StatusProsesModel;
 
 class IntegrationApi extends BaseController
 {
@@ -49,8 +51,8 @@ class IntegrationApi extends BaseController
             ]);
         }
 
-        $db = \Config\Database::connect();
-        $aset = $db->table('aset_tanah')->where('kode_aset', $nibar)->get()->getRowArray();
+        $asetModel = new AsetModel();
+        $aset = $asetModel->where('kode_aset', $nibar)->first();
 
         if (!$aset) {
             return $this->response->setJSON([
@@ -69,25 +71,23 @@ class IntegrationApi extends BaseController
         }
 
         if (!empty($updateData)) {
-            $updateData['updated_at'] = date('Y-m-d H:i:s');
-            $db->table('aset_tanah')->where('id_aset', $aset['id_aset'])->update($updateData);
+            $asetModel->update($aset['id_aset'], $updateData);
         }
 
         // Add progress 'Bersertifikat' if status_proses table has it
-        $statusBersertifikat = $db->table('status_proses')
+        $statusModel = new StatusProsesModel();
+        $statusBersertifikat = $statusModel
             ->like('nama_status', 'Bersertifikat')
             ->orLike('nama_status', 'Sertifikat')
-            ->get()
-            ->getRowArray();
+            ->first();
 
         if ($statusBersertifikat) {
-            $db->table('proses_aset')->insert([
+            $prosesModel = new ProsesAsetModel();
+            $prosesModel->insert([
                 'id_aset'     => $aset['id_aset'],
                 'id_status'   => $statusBersertifikat['id_status'],
                 'keterangan'  => 'Status terbukti otomatis dari pengarsipan eLabel: ' . ($json['no_sertipikat'] ?? '-'),
                 'tgl_mulai'   => date('Y-m-d'),
-                'created_at'  => date('Y-m-d H:i:s'),
-                'updated_at'  => date('Y-m-d H:i:s')
             ]);
         }
 
@@ -151,8 +151,8 @@ class IntegrationApi extends BaseController
             ]);
         }
 
-        $db = \Config\Database::connect();
-        $aset = $db->table('aset_tanah')->where('kode_aset', $nibar)->get()->getRowArray();
+        $asetModel = new AsetModel();
+        $aset = $asetModel->where('kode_aset', $nibar)->first();
 
         if (!$aset) {
             return $this->response->setJSON([
@@ -182,8 +182,7 @@ class IntegrationApi extends BaseController
         }
 
         if (!empty($updateData)) {
-            $updateData['updated_at'] = date('Y-m-d H:i:s');
-            $db->table('aset_tanah')->where('id_aset', $aset['id_aset'])->update($updateData);
+            $asetModel->update($aset['id_aset'], $updateData);
         }
 
         // Audit Log
@@ -236,19 +235,20 @@ class IntegrationApi extends BaseController
             ]);
         }
 
-        $db = \Config\Database::connect();
-        $aset = $db->table('aset_tanah')->where('kode_aset', $nibar)->get()->getRowArray();
+        $asetModel = new AsetModel();
+        $aset = $asetModel->where('kode_aset', $nibar)->first();
 
         if ($aset) {
-            $statusBersertifikat = $db->table('status_proses')
+            $statusModel = new StatusProsesModel();
+            $statusBersertifikat = $statusModel
                 ->like('nama_status', 'Bersertifikat')
                 ->orLike('nama_status', 'Sertifikat')
-                ->get()
-                ->getRowArray();
+                ->first();
 
             if ($statusBersertifikat) {
                 // Delete the latest proses_aset entry matching this status for this asset to revert back to previous status
-                $db->table('proses_aset')
+                $prosesModel = new ProsesAsetModel();
+                $prosesModel
                     ->where('id_aset', $aset['id_aset'])
                     ->where('id_status', $statusBersertifikat['id_status'])
                     ->delete();

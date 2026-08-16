@@ -3,6 +3,7 @@
 namespace App\Controllers\Api;
 
 use App\Controllers\BaseController;
+use App\Models\AsetModel;
 
 class AsetApi extends BaseController
 {
@@ -26,7 +27,6 @@ class AsetApi extends BaseController
             ])->setStatusCode(401);
         }
 
-        $db = \Config\Database::connect();
         $q = trim((string) $this->request->getGet('q'));
         $opd = trim((string) $this->request->getGet('opd'));
         $limit = (int) ($this->request->getGet('limit') ?? 5000);
@@ -35,35 +35,8 @@ class AsetApi extends BaseController
             $limit = 5000;
         }
 
-        $builder = $db->table('aset_tanah a')
-            ->select('a.*, sp.nama_status as status_terkini, sp.warna as warna_status, sp.kategori as kategori_status')
-            ->join('(
-                SELECT p1.id_aset, p1.id_status
-                FROM proses_aset p1
-                JOIN (
-                    SELECT id_aset, MAX(id_proses) AS max_id
-                    FROM proses_aset
-                    GROUP BY id_aset
-                ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
-            ) r', 'r.id_aset = a.id_aset', 'left')
-            ->join('status_proses sp', 'sp.id_status = r.id_status', 'left');
-
-        if (!empty($q)) {
-            $builder->groupStart()
-                ->like('a.kode_aset', $q)
-                ->orLike('a.nama_aset', $q)
-                ->orLike('a.peruntukan', $q)
-                ->groupEnd();
-        }
-
-        if (!empty($opd)) {
-            $builder->where('a.opd', $opd);
-        }
-
-        $builder->orderBy('a.id_aset', 'DESC')
-            ->limit($limit);
-
-        $results = $builder->get()->getResultArray();
+        $asetModel = new AsetModel();
+        $results = $asetModel->getAssetsForApi(['q' => $q, 'opd' => $opd], $limit);
 
         return $this->response->setJSON([
             'status' => 200,
@@ -81,27 +54,8 @@ class AsetApi extends BaseController
             ])->setStatusCode(401);
         }
 
-        $db = \Config\Database::connect();
-        $builder = $db->table('aset_tanah a')
-            ->select('a.*, sp.nama_status as status_terkini, sp.warna as warna_status, sp.kategori as kategori_status')
-            ->join('(
-                SELECT p1.id_aset, p1.id_status
-                FROM proses_aset p1
-                JOIN (
-                    SELECT id_aset, MAX(id_proses) AS max_id
-                    FROM proses_aset
-                    GROUP BY id_aset
-                ) p2 ON p1.id_aset = p2.id_aset AND p1.id_proses = p2.max_id
-            ) r', 'r.id_aset = a.id_aset', 'left')
-            ->join('status_proses sp', 'sp.id_status = r.id_status', 'left');
-
-        if (is_numeric($nibarOrId)) {
-            $builder->where('a.id_aset', $nibarOrId)->orWhere('a.kode_aset', $nibarOrId);
-        } else {
-            $builder->where('a.kode_aset', urldecode($nibarOrId));
-        }
-
-        $asset = $builder->get()->getRowArray();
+        $asetModel = new AsetModel();
+        $asset = $asetModel->getAssetWithStatusForApi($nibarOrId);
 
         if (!$asset) {
             return $this->response->setJSON([

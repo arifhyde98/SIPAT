@@ -52,7 +52,8 @@ class SsoAuthFilter implements FilterInterface
         // If not logged in locally, redirect to SSO Auth Server
         if (!$session->get('is_login')) {
             $ssoServerUrl = 'https://auth.sipat-donggala.my.id/auth/login';
-            $currentFullUrl = current_url() . ($_SERVER['QUERY_STRING'] ? '?' . $_SERVER['QUERY_STRING'] : '');
+            $queryString = $request->getUri()->getQuery();
+            $currentFullUrl = current_url() . ($queryString !== '' ? '?' . $queryString : '');
             
             return redirect()->to($ssoServerUrl . '?redirect_to=' . urlencode($currentFullUrl));
         }

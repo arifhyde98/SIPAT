@@ -10,10 +10,8 @@ class Dokumen extends BaseController
 {
     public function store($idAset)
     {
-        $rules = [
-            'jenis_dokumen' => 'required',
-            'file'          => 'uploaded[file]|max_size[file,5120]|ext_in[file,pdf,jpg,jpeg,png,gif,webp,docx,xlsx]|mime_in[file,application/pdf,image/jpeg,image/png,image/gif,image/webp,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet]',
-        ];
+        $model = new DokumenAsetModel();
+        $rules = array_merge($model->getValidationRules(), DokumenAsetModel::$fileValidationRules);
 
         if (!$this->validate($rules)) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
