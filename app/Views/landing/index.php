@@ -13,12 +13,14 @@
     <title><?= esc($siteTitle) ?></title>
     <link rel="icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
     <link rel="shortcut icon" type="image/png" href="<?= esc(get_landing_logo_url()) ?>">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="<?= base_url('assets/css/mobile-custom.css') ?>" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap');
         html { scroll-behavior: smooth; }
         :root {
             --gov-primary: #0b4f84;
@@ -117,6 +119,22 @@
             background: #ffffff;
             border-color: #ffffff;
             color: var(--gov-primary);
+        }
+        .btn-hero-secondary {
+            color: var(--gov-primary);
+            border: 2px solid var(--gov-primary);
+            border-radius: 6px;
+            padding: 10px 18px;
+            font-weight: 600;
+            background: rgba(11, 79, 132, 0.05);
+            transition: all 0.3s ease;
+        }
+        .btn-hero-secondary:hover {
+            background: var(--gov-primary);
+            color: #ffffff;
+            border-color: var(--gov-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(11, 79, 132, 0.2);
         }
         .btn-accent {
             background: linear-gradient(135deg, var(--gov-accent) 0%, #e2ba4b 100%);
@@ -362,16 +380,40 @@
             border: 1px solid #d9e7f3;
             padding: 8px;
             box-shadow: 0 10px 20px rgba(11, 79, 132, 0.06);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
         }
         .gallery-shot:hover {
-            transform: scale(1.02);
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 14px 28px rgba(11, 79, 132, 0.12);
         }
         .gallery-shot img {
             width: 100%;
-            height: 170px;
+            height: 190px;
             object-fit: cover;
             border-radius: 4px;
+            transition: transform 0.3s ease;
+        }
+        .gallery-shot:hover img {
+            transform: scale(1.03);
+        }
+        .gallery-overlay {
+            position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            background: rgba(11, 79, 132, 0.45);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 24px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .gallery-shot:hover .gallery-overlay {
+            opacity: 1;
         }
         .footer-note {
             border-top: 1px solid #d8e5f1;
@@ -457,6 +499,7 @@
     </style>
 </head>
 <body style="padding-bottom: 80px;">
+    <a href="#mainContent" class="visually-hidden-focusable btn btn-gov position-absolute top-0 start-0 z-3 m-2">Skip to main content</a>
     <div class="scroll-progress" id="scrollProgress"></div>
     <header id="mainNav" class="fixed-top py-2 py-md-4 navbar-transition">
         <div class="container gov-container d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -479,7 +522,7 @@
         </div>
     </header>
 
-    <main style="padding-top: var(--landing-nav-height, 90px);">
+    <main id="mainContent" style="padding-top: var(--landing-nav-height, 90px);">
         <section class="pt-2 pt-md-5 pb-5 position-relative">
             <!-- Background decoration -->
             <div class="parallax-bg" style="position: absolute; top: -50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(234, 179, 8, 0.05) 0%, transparent 70%); border-radius: 50%; z-index: -1; transition: transform 0.1s ease-out;"></div>
@@ -499,8 +542,8 @@
                             <?= esc($heroSubtitle !== '' ? $heroSubtitle : 'SIPAT membantu pengelola aset memantau proses pensertifikatan dari awal hingga sertifikat terbit, lengkap dengan dokumen digital, durasi proses, dan dashboard pimpinan yang mudah dipahami.') ?>
                         </p>
                         <div class="d-none d-md-flex flex-wrap gap-2 mt-4">
-                            <a class="btn btn-gov" href="<?= base_url('login') ?>">Akses Sistem</a>
-                            <a class="btn btn-outline-gov" href="#fitur">Lihat Fitur</a>
+                            <a class="btn btn-gov" href="<?= base_url('login') ?>"><i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i> Akses Sistem</a>
+                            <a class="btn btn-hero-secondary" href="#fitur"><i class="bi bi-eye me-1" aria-hidden="true"></i> Lihat Fitur</a>
                         </div>
                         <div class="mt-3 text-secondary small">
                             <?php
@@ -519,7 +562,12 @@
                                 <img class="hero-image hero-image-animate" src="<?= esc($heroImageUrl) ?>" alt="Hero SIPAT">
                             <?php endif; ?>
                             <div class="mt-4">
-                                <div class="badge-gov mb-2">Ringkasan Cepat</div>
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <div class="badge-gov">Ringkasan Cepat</div>
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 small fw-semibold">
+                                        <i class="bi bi-broadcast me-1" aria-hidden="true"></i>Live Data
+                                    </span>
+                                </div>
                                 <h3 class="mt-2">Status Proses Terkini</h3>
                                 <p class="text-secondary mb-3">Data real-time dari database SIPAT.</p>
                                  <div class="row g-3 stat-card-grid-mobile">
@@ -722,8 +770,11 @@
                             $url = $file ? base_url('landing/media/' . $file) : $galleryDefaults[$i];
                         ?>
                         <div class="col-md-4" data-aos="fade-up" data-aos-delay="<?= $i * 100 ?>">
-                            <div class="gallery-shot">
-                                <img src="<?= esc($url) ?>" alt="Dokumentasi lapangan">
+                            <div class="gallery-shot" onclick="openGalleryModal('<?= esc($url) ?>')" title="Klik untuk memperbesar">
+                                <img src="<?= esc($url) ?>" alt="Dokumentasi lapangan pensertifikatan tanah <?= $i + 1 ?>">
+                                <div class="gallery-overlay">
+                                    <i class="bi bi-zoom-in" aria-hidden="true"></i>
+                                </div>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -752,10 +803,26 @@
 
     <!-- Mobile Landing Sticky CTA (<768px) -->
     <div class="landing-mobile-sticky-cta d-md-none">
-        <a class="btn btn-outline-gov text-dark border-secondary bg-white" href="#fitur"><i class="bi bi-info-circle me-1"></i> Fitur</a>
-        <a class="btn btn-gov shadow-sm" href="<?= base_url('login') ?>"><i class="bi bi-box-arrow-in-right me-1"></i> <?= esc($getSetting($landing ?? [], 'landing_nav_login_label', 'Login Pegawai')) ?></a>
+        <a class="btn btn-outline-gov text-dark border-secondary bg-white" href="#fitur"><i class="bi bi-info-circle me-1" aria-hidden="true"></i> Fitur</a>
+        <a class="btn btn-gov shadow-sm" href="<?= base_url('login') ?>"><i class="bi bi-box-arrow-in-right me-1" aria-hidden="true"></i> <?= esc($getSetting($landing ?? [], 'landing_nav_login_label', 'Login Pegawai')) ?></a>
     </div>
 
+    <!-- Gallery Lightbox Modal -->
+    <div class="modal fade" id="galleryModal" tabindex="-1" aria-labelledby="galleryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+                <div class="modal-header border-0 bg-dark text-white py-2 px-3">
+                    <h6 class="modal-title fs-6 fw-semibold" id="galleryModalLabel"><i class="bi bi-image me-2" aria-hidden="true"></i>Dokumentasi Lapangan</h6>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body p-0 bg-black text-center position-relative">
+                    <img id="galleryModalImg" src="" alt="Dokumentasi Lapangan Full" class="img-fluid" style="max-height: 80vh; object-fit: contain;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         const sipatUpdateLandingNavHeight = () => {
@@ -825,29 +892,44 @@
             }
         });
 
-        // Simple Counter Animation
+        // Gallery Lightbox Function
+        function openGalleryModal(imgUrl) {
+            const imgEl = document.getElementById('galleryModalImg');
+            if (imgEl) imgEl.src = imgUrl;
+            const modalEl = document.getElementById('galleryModal');
+            if (modalEl && window.bootstrap) {
+                const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+                bsModal.show();
+            }
+        }
+
+        // Smooth 60fps Counter Animation using requestAnimationFrame
         const counters = document.querySelectorAll('.stat-value[data-count]');
-        const speed = 200;
 
         const animateCounters = () => {
             counters.forEach(counter => {
-                const updateCount = () => {
-                    const target = +counter.getAttribute('data-count');
-                    if (target === 0) {
-                        counter.innerText = '0';
-                        return;
-                    }
-                    const count = +counter.innerText.replace(/,/g, '');
-                    const inc = target / speed;
+                const target = +counter.getAttribute('data-count');
+                if (target === 0) {
+                    counter.innerText = '0';
+                    return;
+                }
+                const duration = 1200;
+                const startTime = performance.now();
 
-                    if (count < target) {
-                        counter.innerText = Math.ceil(count + inc).toLocaleString();
-                        setTimeout(updateCount, 20);
+                const updateCount = (currentTime) => {
+                    const elapsedTime = currentTime - startTime;
+                    const progress = Math.min(elapsedTime / duration, 1);
+                    const easeProgress = progress * (2 - progress);
+                    const currentVal = Math.floor(easeProgress * target);
+                    counter.innerText = currentVal.toLocaleString();
+
+                    if (progress < 1) {
+                        requestAnimationFrame(updateCount);
                     } else {
                         counter.innerText = target.toLocaleString();
                     }
                 };
-                updateCount();
+                requestAnimationFrame(updateCount);
             });
         };
 

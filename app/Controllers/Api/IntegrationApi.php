@@ -166,7 +166,6 @@ class IntegrationApi extends BaseController
             'luas'              => 'luas',
             'alamat'            => 'alamat',
             'nilai_perolehan'   => 'harga_perolehan',
-            'tanggal_perolehan' => 'tanggal_perolehan',
             'cara_perolehan'    => 'dasar_perolehan',
             'opd'               => 'opd',
             'status_penggunaan' => 'peruntukan',

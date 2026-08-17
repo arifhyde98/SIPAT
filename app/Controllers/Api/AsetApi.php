@@ -29,10 +29,10 @@ class AsetApi extends BaseController
 
         $q = trim((string) $this->request->getGet('q'));
         $opd = trim((string) $this->request->getGet('opd'));
-        $limit = (int) ($this->request->getGet('limit') ?? 5000);
+        $limit = (int) ($this->request->getGet('limit') ?? 500);
 
-        if ($limit <= 0 || $limit > 10000) {
-            $limit = 5000;
+        if ($limit <= 0 || $limit > 1000) {
+            $limit = 500;
         }
 
         $asetModel = new AsetModel();

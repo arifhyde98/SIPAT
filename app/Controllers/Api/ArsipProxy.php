@@ -8,10 +8,25 @@ use App\Models\AsetModel;
 class ArsipProxy extends BaseController
 {
     // Configure this URL in your .env file: ELABEL_API_URL="https://elabel.subdomain.com/api/v1/sertifikat/"
-    // Default fallback is elabel.test
+    private function validateApiKey(): bool
+    {
+        $expectedKey = env('SIPAT_API_KEY', 'SIPAT-ELABEL-SECURE-KEY-2026');
+        $headerKey   = $this->request->getHeaderLine('X-API-KEY');
+        $queryKey    = $this->request->getGet('api_key');
+        $providedKey = !empty($headerKey) ? $headerKey : $queryKey;
+
+        return !empty($providedKey) && hash_equals($expectedKey, $providedKey);
+    }
 
     public function cekElabel($id_aset)
     {
+        if (!session()->get('is_login') && !$this->validateApiKey()) {
+            return $this->response->setJSON([
+                'status'  => 401,
+                'message' => 'Unauthorized: Access requires valid login session or API Key'
+            ])->setStatusCode(401);
+        }
+
         $asetModel = new AsetModel();
         $aset = $asetModel->find($id_aset);
 

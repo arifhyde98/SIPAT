@@ -20,10 +20,12 @@ class HealthCheck extends Controller
             $db->query('SELECT 1');
         } catch (DatabaseException $e) {
             $status = 'unhealthy';
-            $dbStatus = 'disconnected: ' . $e->getMessage();
+            $dbStatus = 'disconnected';
+            log_message('error', 'HealthCheck DB exception: ' . $e->getMessage());
         } catch (\Exception $e) {
             $status = 'unhealthy';
-            $dbStatus = 'disconnected: ' . $e->getMessage();
+            $dbStatus = 'disconnected';
+            log_message('error', 'HealthCheck exception: ' . $e->getMessage());
         }
 
         return $this->response->setJSON([

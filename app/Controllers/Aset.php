@@ -978,7 +978,6 @@ class Aset extends BaseController
                 'luas'              => 'luas',
                 'alamat'            => 'alamat',
                 'harga_perolehan'   => 'nilai_perolehan',
-                'tanggal_perolehan' => 'tanggal_perolehan',
                 'dasar_perolehan'   => 'cara_perolehan',
                 'opd'               => 'dinas',
                 'peruntukan'        => 'status_penggunaan',

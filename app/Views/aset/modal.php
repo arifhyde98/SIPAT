@@ -481,6 +481,10 @@
                             <div class="fw-semibold text-dark fs-6" id="lblNoSertifikat">-</div>
                         </div>
                         <div class="col-md-6">
+                            <div class="detail-label">Tanggal Sertifikat</div>
+                            <div class="fw-semibold text-dark fs-6" id="lblTglSertifikat">-</div>
+                        </div>
+                        <div class="col-md-6">
                             <div class="detail-label">Atas Nama Pemilik</div>
                             <div class="fw-semibold text-dark fs-6" id="lblNamaPemilik">-</div>
                         </div>
@@ -545,6 +549,7 @@
                     elabelLoaded = true;
 
                     document.getElementById('lblNoSertifikat').textContent = data.no_sertipikat || '-';
+                    document.getElementById('lblTglSertifikat').textContent = data.tanggal_sertifikat || '-';
                     document.getElementById('lblNamaPemilik').textContent = data.nama_pemilik || '-';
                     
                     if (data.is_archived) {
