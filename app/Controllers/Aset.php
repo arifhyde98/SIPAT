@@ -942,6 +942,7 @@ class Aset extends BaseController
 
         $asetModel = new AsetModel();
         $rules = $asetModel->getValidationRules(['id_aset' => (int) $id]);
+        $rules['kode_aset'] = "required|is_unique[aset_tanah.kode_aset,id_aset,{$id}]";
         $messages = $asetModel->getValidationMessages();
 
         if (!$this->validate($rules, $messages)) {
@@ -965,9 +966,15 @@ class Aset extends BaseController
             'keterangan'      => $this->request->getPost('keterangan'),
         ];
         try {
-            $asetModel->update($id, $payload);
+            $updated = $asetModel->skipValidation(true)->update($id, $payload);
+            if (!$updated) {
+                return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)
+                    ->withInput()
+                    ->with('errors', $asetModel->errors() ?: ['Gagal memperbarui data di database SIPAT.']);
+            }
         } catch (\Throwable $e) {
-            return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)->withInput()->with('errors', ['Data sudah ada. Kode aset tersebut sudah digunakan.']);
+            log_message('error', 'Gagal update aset ID ' . $id . ': ' . $e->getMessage());
+            return redirect()->to('/aset/' . $id . '/edit' . $querySuffix)->withInput()->with('errors', ['Gagal memperbarui data aset: ' . $e->getMessage()]);
         }
         $this->logAudit('update', 'aset_tanah', (int) $id, $old, $payload);
 

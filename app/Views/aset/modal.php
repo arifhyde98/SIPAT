@@ -410,7 +410,7 @@
                                         <td class="text-end pe-4">
                                             <?php if ($canManageDocs) : ?>
                                                 <div class="btn-group">
-                                                    <a href="<?= base_url('dokumen/view/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-primary" target="_blank" title="Lihat">
+                                                    <a href="<?= base_url('dokumen/view/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-primary btn-pdf-view" data-title="<?= esc(!empty($aset['peruntukan']) ? $aset['peruntukan'] : $dok['jenis_dokumen']) ?>" title="Lihat Dokumen">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
                                                     <a href="<?= base_url('dokumen/download/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-primary" title="Unduh">
@@ -489,7 +489,7 @@
                             <div class="fw-semibold text-dark fs-6" id="lblNamaPemilik">-</div>
                         </div>
                         <div class="col-12 mt-4 text-center" id="pdfContainer">
-                            <a href="#" id="btnPdfViewer" target="_blank" class="btn btn-primary rounded-pill px-4 shadow-sm">
+                            <a href="#" id="btnPdfViewer" class="btn btn-primary rounded-pill px-4 shadow-sm" data-title="<?= esc(!empty($aset['peruntukan']) ? $aset['peruntukan'] : ($aset['nama_aset'] ?? 'Scan Sertifikat')) ?>">
                                 <i class="bi bi-file-earmark-pdf me-1"></i> Lihat Scan Dokumen Asli
                             </a>
                         </div>
@@ -566,7 +566,7 @@
 
                     if (data.pdf_url) {
                         document.getElementById('pdfContainer').classList.remove('d-none');
-                        document.getElementById('btnPdfViewer').href = data.pdf_url;
+                        document.getElementById('btnPdfViewer').href = '<?= base_url("api/arsip/pdf/") ?>' + currentAsetId;
                     } else {
                         document.getElementById('pdfContainer').classList.add('d-none');
                     }

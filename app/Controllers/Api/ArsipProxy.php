@@ -80,4 +80,76 @@ class ArsipProxy extends BaseController
             ])->setStatusCode(500);
         }
     }
+
+    public function viewPdf($id_aset)
+    {
+        if (!session()->get('is_login') && !$this->validateApiKey()) {
+            return $this->response->setStatusCode(401)->setBody('Unauthorized: Access requires valid login session or API Key');
+        }
+
+        $asetModel = new AsetModel();
+        $aset = $asetModel->find($id_aset);
+
+        if (!$aset || empty($aset['kode_aset'])) {
+            return $this->response->setStatusCode(404)->setBody('Aset tidak ditemukan atau tidak memiliki Kode Aset');
+        }
+
+        $nibar = $aset['kode_aset'];
+        $client = \Config\Services::curlrequest();
+
+        try {
+            $apiUrl = env('ELABEL_API_URL', 'http://elabel.test/api/v1/sertifikat/');
+            $apiKey = env('ELABEL_API_KEY', 'SIPAT-ELABEL-SECURE-KEY-2026');
+
+            $response = $client->request('GET', $apiUrl . urlencode($nibar), [
+                'headers' => [
+                    'X-API-KEY' => $apiKey,
+                    'Accept'    => 'application/json'
+                ],
+                'http_errors' => false,
+                'connect_timeout' => 5,
+                'timeout' => 10
+            ]);
+
+            $statusCode = $response->getStatusCode();
+            $body = json_decode($response->getBody(), true);
+
+            if ($statusCode !== 200 || empty($body['data']['pdf_url'])) {
+                return $this->response->setStatusCode(404)->setBody('File PDF Sertifikat belum tersedia di server eLabel');
+            }
+
+            $pdfUrl = $body['data']['pdf_url'];
+
+            if (!str_starts_with($pdfUrl, 'http://') && !str_starts_with($pdfUrl, 'https://')) {
+                $parsedApiUrl = parse_url($apiUrl);
+                $baseUrl = ($parsedApiUrl['scheme'] ?? 'http') . '://' . ($parsedApiUrl['host'] ?? 'localhost') . (isset($parsedApiUrl['port']) ? ':' . $parsedApiUrl['port'] : '');
+                $pdfUrl = $baseUrl . '/' . ltrim($pdfUrl, '/');
+            }
+
+            $pdfResponse = $client->request('GET', $pdfUrl, [
+                'headers' => [
+                    'X-API-KEY' => $apiKey,
+                ],
+                'http_errors' => false,
+                'connect_timeout' => 10,
+                'timeout' => 30
+            ]);
+
+            if ($pdfResponse->getStatusCode() !== 200) {
+                return $this->response->setStatusCode(404)->setBody('Gagal memuat dokumen PDF dari server eLabel');
+            }
+
+            $pdfContent = $pdfResponse->getBody();
+            $contentType = $pdfResponse->getHeaderLine('Content-Type') ?: 'application/pdf';
+
+            return $this->response
+                ->setHeader('Content-Type', $contentType)
+                ->setHeader('Content-Disposition', 'inline; filename="Sertifikat_' . preg_replace('/[^a-zA-Z0-9_-]/', '_', $nibar) . '.pdf"')
+                ->setHeader('Content-Length', (string) strlen($pdfContent))
+                ->setBody($pdfContent);
+
+        } catch (\Exception $e) {
+            return $this->response->setStatusCode(500)->setBody('Gagal terhubung ke server eLabel: ' . $e->getMessage());
+        }
+    }
 }

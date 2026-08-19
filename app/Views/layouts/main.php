@@ -851,6 +851,38 @@
         </nav>
     </div>
 
+    <!-- ── Modal Pop-up Preview PDF Global ── -->
+    <div class="modal fade modal-modern" id="modalPdfViewer" tabindex="-1" aria-labelledby="modalPdfViewerLabel" aria-hidden="true" style="z-index: 1070;">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content shadow-lg border-0 rounded-4 overflow-hidden" style="height: 80vh;">
+                <div class="modal-header bg-dark text-white px-4 py-3 border-0 d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3 overflow-hidden me-3">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center p-2" style="width: 38px; height: 38px; min-width: 38px;">
+                            <i class="bi bi-file-earmark-pdf fs-5"></i>
+                        </div>
+                        <div class="text-truncate">
+                            <h6 class="modal-title fw-bold text-white mb-0 text-truncate" id="modalPdfTitle">Pratinjau Dokumen PDF</h6>
+                            <small class="text-white-50" style="font-size: 0.75rem;">Sistem Informasi Pensertifikatan Tanah (SIPAT)</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <a href="#" id="modalPdfDownloadBtn" download class="btn btn-sm btn-outline-light rounded-pill px-3 d-inline-flex align-items-center gap-1" target="_blank" title="Unduh File">
+                            <i class="bi bi-download"></i> <span class="d-none d-sm-inline">Unduh</span>
+                        </a>
+                        <button type="button" class="btn-close btn-close-white ms-2 shadow-none" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-0 bg-secondary bg-opacity-10 position-relative d-flex justify-content-center align-items-center" style="height: calc(80vh - 65px);">
+                    <div id="modalPdfLoading" class="position-absolute top-50 start-50 translate-middle text-center">
+                        <div class="spinner-border text-primary mb-2" role="status"></div>
+                        <div class="text-muted small">Memuat dokumen PDF...</div>
+                    </div>
+                    <iframe id="modalPdfIframe" src="" style="width:100%; height:100%; border:none;" onload="const loader = document.getElementById('modalPdfLoading'); if(loader) loader.classList.add('d-none');"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.11.0/browser/overlayscrollbars.browser.es6.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"></script>
@@ -979,6 +1011,63 @@
         });
 
         document.addEventListener('DOMContentLoaded', sipatCleanupOverlays);
+
+        // ── Global PDF Viewer Pop-up Handler ──
+        window.openPdfPreview = function (url, title = 'Pratinjau Dokumen PDF') {
+            const modalEl = document.getElementById('modalPdfViewer');
+            if (!modalEl || typeof bootstrap === 'undefined') return;
+
+            const titleEl = document.getElementById('modalPdfTitle');
+            if (titleEl) titleEl.textContent = title;
+
+            const loadingEl = document.getElementById('modalPdfLoading');
+            if (loadingEl) loadingEl.classList.remove('d-none');
+
+            const iframe = document.getElementById('modalPdfIframe');
+            if (iframe) iframe.src = url;
+
+            const downloadBtn = document.getElementById('modalPdfDownloadBtn');
+            if (downloadBtn) downloadBtn.href = url;
+
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            bsModal.show();
+        };
+
+        document.addEventListener('click', function (e) {
+            const targetLink = e.target.closest('a[data-pdf-view], .btn-pdf-view, #btnPdfViewer, a[href*="dokumen/view/"]');
+            if (targetLink) {
+                const href = targetLink.getAttribute('href');
+                if (href && href !== '#' && !href.startsWith('javascript:')) {
+                    e.preventDefault();
+                    const title = targetLink.getAttribute('data-title') 
+                               || targetLink.getAttribute('title') 
+                               || targetLink.textContent.trim() 
+                               || 'Pratinjau Dokumen PDF';
+                    openPdfPreview(href, title);
+                }
+            }
+        });
+
+        document.addEventListener('show.bs.modal', function (e) {
+            if (e.target && e.target.id === 'modalPdfViewer') {
+                setTimeout(() => {
+                    const backdrops = document.querySelectorAll('.modal-backdrop');
+                    if (backdrops.length > 1) {
+                        backdrops[backdrops.length - 1].style.zIndex = '1065';
+                    }
+                }, 20);
+            }
+        });
+
+        document.addEventListener('hidden.bs.modal', function (e) {
+            if (e.target && e.target.id === 'modalPdfViewer') {
+                const iframe = document.getElementById('modalPdfIframe');
+                if (iframe) iframe.src = 'about:blank';
+                if (document.querySelectorAll('.modal.show').length > 0) {
+                    document.body.classList.add('modal-open');
+                }
+            }
+        });
     </script>
     <script>
         $(function() {

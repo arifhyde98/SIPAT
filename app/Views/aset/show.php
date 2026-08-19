@@ -247,7 +247,7 @@
                                                 </div>
                                                 <div class="d-flex gap-2">
                                                     <?php if ($canManageDocs) : ?>
-                                                        <a href="<?= base_url('dokumen/view/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-primary rounded-pill" target="_blank" rel="noopener">
+                                                        <a href="<?= base_url('dokumen/view/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-primary rounded-pill btn-pdf-view" data-title="<?= esc(!empty($aset['peruntukan']) ? $aset['peruntukan'] : $dok['jenis_dokumen']) ?>" title="Lihat Dokumen">
                                                             <i class="bi bi-eye me-1"></i>Lihat
                                                         </a>
                                                         <a href="<?= base_url('dokumen/download/' . $dok['id_dokumen']) ?>" class="btn btn-sm btn-outline-secondary rounded-pill">

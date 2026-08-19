@@ -198,3 +198,4 @@ $routes->get('api/health-check', 'HealthCheck::index');
 
 // SIPAT - eLabel Arsip Proxy
 $routes->get('api/arsip/cek/(:num)', 'Api\ArsipProxy::cekElabel/$1', ['filter' => 'auth']);
+$routes->get('api/arsip/pdf/(:num)', 'Api\ArsipProxy::viewPdf/$1', ['filter' => 'auth']);

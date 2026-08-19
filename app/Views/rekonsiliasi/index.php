@@ -103,7 +103,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('aset/' . $aset['id_aset']) ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3" target="_blank">
+                                    <a href="<?= base_url('aset/' . $aset['id_aset']) ?>" data-modal-aset data-modal-url="<?= base_url('aset/' . $aset['id_aset'] . '/modal') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3">
                                         Detail
                                     </a>
                                 </td>
@@ -156,7 +156,7 @@
                                     </span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="<?= base_url('aset/' . $aset['id_aset']) ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3" target="_blank">
+                                    <a href="<?= base_url('aset/' . $aset['id_aset']) ?>" data-modal-aset data-modal-url="<?= base_url('aset/' . $aset['id_aset'] . '/modal') ?>" class="btn btn-sm btn-outline-primary rounded-pill px-3">
                                         Detail
                                     </a>
                                 </td>
@@ -178,4 +178,47 @@
     </div>
 </div>
 
+<div class="modal fade modal-modern" id="modalRemote" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content"></div>
+    </div>
+</div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('click', async function (e) {
+            const link = e.target.closest('[data-modal-aset]');
+            if (link) {
+                e.preventDefault();
+                const url      = link.getAttribute('data-modal-url') || link.getAttribute('href');
+                const fallback = link.getAttribute('href');
+                const modalEl  = document.getElementById('modalRemote');
+                if (!modalEl || typeof bootstrap === 'undefined') { window.location.href = fallback; return; }
+                const modal   = bootstrap.Modal.getOrCreateInstance(modalEl);
+                const content = modalEl.querySelector('.modal-content');
+                content.innerHTML = '<div class="modal-body p-4 text-center"><div class="spinner-border text-primary me-2" role="status"></div> Memuat detail aset...</div>';
+                modal.show();
+                try {
+                    const res = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!res.ok) { window.location.href = fallback; return; }
+                    const html = await res.text();
+                    content.innerHTML = html;
+                    content.querySelectorAll('script').forEach(function(oldScript) {
+                        const newScript = document.createElement('script');
+                        if (oldScript.src) {
+                            newScript.src = oldScript.src;
+                        } else {
+                            newScript.textContent = oldScript.textContent;
+                        }
+                        oldScript.parentNode.replaceChild(newScript, oldScript);
+                    });
+                } catch (err) {
+                    window.location.href = fallback;
+                }
+            }
+        });
+    });
+</script>
 <?= $this->endSection() ?>
